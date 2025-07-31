@@ -9,3 +9,7 @@ ngrok http 5050
 ```
  uvicorn app.main:app --port 5050       
 ```
+Создания миграции
+```
+alembic revision --autogenerate -m "Initial revision"
+```
