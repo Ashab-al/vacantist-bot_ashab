@@ -1,6 +1,8 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn
+from typing import Optional
+
 
 class Settings(BaseSettings):
     BOT_TOKEN: str
@@ -10,7 +12,8 @@ class Settings(BaseSettings):
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )
 
-    database_dns: PostgresDsn
+    database_dsn: PostgresDsn
+    echo_db_engine: Optional[bool] = True
 
     def get_webhook_url(self) -> str:
         """Возвращает URL вебхука с кодированием специальных символов."""
