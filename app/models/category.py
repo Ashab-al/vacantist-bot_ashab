@@ -4,10 +4,9 @@ from app.database import Base
 import enum
 
 
-class BlackList(Base):
-    __tablename__ = 'blacklists'
+class Category(Base):
+    __tablename__ = 'categories'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    contact_information: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    complaint_counter: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    name: Mapped[str] = mapped_column(String(200), unique=True, nullable=False)
 
