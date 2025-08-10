@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncAttrs
 from config import settings
 from datetime import datetime
 
-database_url = settings.database_dsn
+database_url: str = settings.database_dsn
 engine = create_async_engine(url=database_url)
 async_session_maker = async_sessionmaker(engine, class_=AsyncSession)
 
