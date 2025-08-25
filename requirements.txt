@@ -38,3 +38,5 @@ starlette==0.38.6
 typing_extensions==4.14.1
 uvicorn==0.31.0
 yarl==1.20.1
+debugpy
+requests
