@@ -26,10 +26,7 @@ class Settings(BaseSettings):
     ngrok_authtoken: Optional[str] = None
 
     def ngrok_url(self):
-        """
-        Получает публичный HTTPS URL от локального API ngrok.
-        Пытается несколько раз, если ngrok еще не запустился.
-        """
+        """Получает публичный HTTPS URL от локального API ngrok."""
         logging.info(f"Поиск Ngrok URL")
         response = requests.get(self.ngrok_api)
         response.raise_for_status()
