@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
     def get_webhook_url(self) -> str:
         """Возвращает URL вебхука с кодированием специальных символов."""
-        return f"{self.ngrok_url()}/webhook"
+        return f"{self.ngrok_url()}/api/v1/webhook"
 
 
 settings = Settings()
