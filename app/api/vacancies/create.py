@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, Body
+from fastapi import Depends, APIRouter, Body, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session
 from typing import Annotated
@@ -18,6 +18,20 @@ async def create_new_vacancy(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     vacancy_data: Annotated[CreateVacancyRequest, Body()]
 ):
-    new_vacancy = await check_and_create_vacancy_then_send_to_users(session, vacancy_data)
+    try:
+        new_vacancy = await check_and_create_vacancy_then_send_to_users(
+            session, 
+            vacancy_data
+        )
+    except Exception as e:
+        raise HTTPException(400, str(e))
     
-    return CreateVacancyResponse(**new_vacancy.dict())
+    return CreateVacancyResponse(
+        id=new_vacancy.id,
+        title=new_vacancy.title, 
+        category_title=vacancy_data.category_title,
+        description=new_vacancy.description,
+        contact_information=new_vacancy.contact_information,
+        source=new_vacancy.source,
+        platform_id=new_vacancy.platform_id
+    )

@@ -19,6 +19,6 @@ async def get_category_by_name(
     """
     return (
         await db.execute(
-            select(Category).where(Category.name == vacancy_data.category_title )
+            select(Category).where(Category.name == name )
         )
     ).scalar_one_or_none()

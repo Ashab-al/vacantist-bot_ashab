@@ -30,15 +30,19 @@ async def check_and_create_vacancy_then_send_to_users(
     Returns:
         Vacancy: Созданная вакансия.
     """
-    blacklist = await black_list_check(
-        db, 
-        vacancy_data.platform_id, 
-        vacancy_data.contact_information
-    )
-    if blacklist:
-        raise ValueError("Вакансия в черном списке")
+    try:
+        await black_list_check(
+            db, 
+            vacancy_data.platform_id, 
+            vacancy_data.contact_information
+        )
+    except ValueError:
+        raise
+    except Exception as e:
+        e.add_note('Непредвиденная ошибка. Метод black_list_check')
+        raise
     
-    category = await get_category_by_name(
+    category: Category = await get_category_by_name(
         db, 
         vacancy_data.category_title
     )
@@ -46,5 +50,12 @@ async def check_and_create_vacancy_then_send_to_users(
     if not category:
         raise ValueError("Такой категории не существует")
     
-    # TODO
+    vacancy: Vacancy = await create_vacancy(
+        db,
+        vacancy_data,
+        category
+    )
 
+    # TODO https://github.com/Ashab-al/telegram-bot_ashab/blob/6b99b295ca1f3c22b5a081ee06c19d275dc13769/app/interactors/api/vacancy/check_and_create_vacancy_then_send_to_users_interactor.rb#L26-L29
+
+    return vacancy

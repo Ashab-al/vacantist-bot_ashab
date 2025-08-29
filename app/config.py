@@ -7,8 +7,8 @@ import requests
 
 
 class Settings(BaseSettings):
-    BOT_TOKEN: str
-    ADMIN_ID: int
+    bot_token: str
+    admin_id: int
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )

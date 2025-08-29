@@ -16,6 +16,8 @@ from database import Base, database_url
 from models.user import User
 from models.blacklist import BlackList
 from models.category import Category
+from models.vacancy import Vacancy
+from models.subscription import subscription
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

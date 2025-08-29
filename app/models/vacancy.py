@@ -15,6 +15,7 @@ from database import Base
 class Vacancy(Base):
     __tablename__ = 'vacancies'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(300), nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
     contact_information: Mapped[str] = mapped_column(String, nullable=False)
     source: Mapped[str] = mapped_column(String, nullable=False)
