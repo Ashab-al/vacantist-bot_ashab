@@ -6,7 +6,7 @@ from typing import Annotated
 
 router = APIRouter()
 
-@router.post(
+@router.get(
     "/",
     summary='Получить все категории',
     description='Возвращает все категории которые есть'

@@ -6,7 +6,7 @@ from typing import Annotated
 
 router = APIRouter()
 
-@router.post(
+@router.patch(
     "/",
     summary='Обновить категорию',
     description='Обновляет категорию'

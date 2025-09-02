@@ -6,8 +6,8 @@ from typing import Annotated
 
 router = APIRouter()
 
-@router.post(
-    "/",
+@router.get(
+    "/{id}",
     summary='Получить категорию',
     description='Возвращает информацию о категории'
 )

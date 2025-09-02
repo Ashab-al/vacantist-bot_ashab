@@ -6,7 +6,7 @@ from typing import Annotated
 
 router = APIRouter()
 
-@router.post(
+@router.delete(
     "/",
     summary='Удалить категорию',
     description='Удаляет категорию категорию'
