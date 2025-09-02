@@ -2,7 +2,6 @@ from fastapi import Depends, APIRouter, Body, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session
 from typing import Annotated
-from schemas.api.vacancies.list.response import ListVacancyResponse
 from repositories.vacancies.get_all_vacancies import get_all_vacancies
 from models.vacancy import Vacancy
 from schemas.api.vacancies.vacancy import VacancySchema
