@@ -6,6 +6,7 @@ import enum
 from models.subscription import subscription
 from models.user import User
 
+
 class Category(Base):
     __tablename__ = 'categories'
 
