@@ -1,6 +1,6 @@
 from sqlalchemy import String, BigInteger, Integer, Date, Time, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.database import Base
+from database import Base
 import enum
 
 

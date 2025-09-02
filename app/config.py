@@ -7,8 +7,8 @@ import requests
 
 
 class Settings(BaseSettings):
-    BOT_TOKEN: str
-    ADMIN_ID: int
+    bot_token: str
+    admin_id: int
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )
@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
     def get_webhook_url(self) -> str:
         """Возвращает URL вебхука с кодированием специальных символов."""
-        return f"{self.ngrok_url()}/webhook"
+        return f"{self.ngrok_url()}/api/v1/webhook"
 
 
 settings = Settings()

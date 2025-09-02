@@ -1,9 +1,10 @@
 from sqlalchemy import String, BigInteger, Integer, Date, Time, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
-from app.database import Base
+from database import Base
 import enum
-from app.models.subscription import subscription
+from models.subscription import subscription
+from models.user import User
 
 class Category(Base):
     __tablename__ = 'categories'

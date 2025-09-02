@@ -40,3 +40,4 @@ uvicorn==0.31.0
 yarl==1.20.1
 debugpy
 requests
+fastapi_camelcase

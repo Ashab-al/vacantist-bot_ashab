@@ -9,9 +9,9 @@ from sqlalchemy import (
     Column
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.database import Base
-from app.enums.bot_status_enum import BotStatusEnum
-from app.models.subscription import subscription
+from database import Base
+from enums.bot_status_enum import BotStatusEnum
+from models.subscription import subscription
 from typing import List
 
 class User(Base):

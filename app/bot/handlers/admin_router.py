@@ -1,12 +1,12 @@
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
-from app.bot.keyboards.kbs import main_keyboard, admin_keyboard
-from app.config import settings
+from bot.keyboards.kbs import main_keyboard, admin_keyboard
+from config import settings
 
 admin_router = Router()
 
 
-@admin_router.message(F.text == '🔑 Админ панель', F.from_user.id.in_([settings.ADMIN_ID]))
+@admin_router.message(F.text == '🔑 Админ панель', F.from_user.id.in_([settings.admin_id]))
 async def admin_panel(message: Message):
     await message.answer(
         f"Здравствуйте, <b>{message.from_user.full_name}</b>!\n\n"
