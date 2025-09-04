@@ -2,7 +2,7 @@ from fastapi_camelcase import CamelModel
 from pydantic import Field, ConfigDict, computed_field
 from datetime import datetime
 from enums.bot_status_enum import BotStatusEnum
-
+from schemas.api.categories.list.response import CategoryResponse
 
 class UserResponse(CamelModel):
     """Схема для возврата Пользователей"""
@@ -20,17 +20,7 @@ class UserResponse(CamelModel):
     created_at: datetime = Field(..., description='Дата создания пользователя')
     updated_at: datetime = Field(..., description='Дата последнего обновления пользователя')
 
-    @computed_field(
-        return_type=list[str],
-        description='Список категорий пользователя',
-        examples=[['Тех-спец', 'SMM']]
-    )
-    def categories(self) -> list[str]:
-        categories: list[str] = []
-        
-        for category in self.categories:
-            categories.append(category.name)
-        return categories
+    categories: list[CategoryResponse] = Field(..., description='Список категорий')
 
 
 class ListUsersResponse(CamelModel):

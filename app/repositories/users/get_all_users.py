@@ -10,6 +10,6 @@ async def get_all_users(
         await db.execute(
             select(User).options(joinedload(User.categories))
         )
-    ).scalars().all()
+    ).unique().scalars().all()
 
     return users
