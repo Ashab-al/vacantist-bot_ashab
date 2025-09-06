@@ -1,6 +1,7 @@
 from fastapi_camelcase import CamelModel
 from pydantic import Field, ConfigDict, computed_field
 
+
 class VacancySchema(CamelModel):
     model_config = ConfigDict(from_attributes=True)
 
