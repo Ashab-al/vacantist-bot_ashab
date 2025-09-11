@@ -3,6 +3,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 from bot.keyboards.kbs import app_keyboard
 from bot.utils.utils import greet_user, get_about_us_text
+from lib.tg.common import jinja_render
 
 user_router = Router()
 user_router.message.filter(
@@ -14,8 +15,8 @@ async def cmd_start(message: Message) -> None:
     """
     Обрабатывает команду /start.
     """
-
-    await message.answer("Обработка команды /start...")
+    text: str = await jinja_render('menu/default', {"name": "Асхаб"})
+    await message.answer(text)
 
 
 @user_router.message(F.text == '🔙 Назад')

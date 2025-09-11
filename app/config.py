@@ -4,7 +4,9 @@ from pydantic import PostgresDsn
 from typing import Optional
 import logging
 import requests
+from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Settings(BaseSettings):
     bot_token: str
@@ -43,3 +45,8 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+jinja_env = Environment(
+    loader=FileSystemLoader(os.path.join(BASE_DIR, "templates")),
+    autoescape=select_autoescape()
+)
