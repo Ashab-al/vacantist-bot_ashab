@@ -5,4 +5,4 @@ async def jinja_render(
     hash = {}
 ) -> str:
     """Вернуть отрендеренный html """
-    return jinja_env.get_template(f"/bot/{action}.jinja").render(**hash)
+    return await (jinja_env.get_template(f"/bot/{action}.jinja")).render_async(**hash)

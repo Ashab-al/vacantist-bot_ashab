@@ -5,6 +5,8 @@ from typing import Optional
 import logging
 import requests
 from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
+import json
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -48,5 +50,12 @@ settings = Settings()
 
 jinja_env = Environment(
     loader=FileSystemLoader(os.path.join(BASE_DIR, "templates")),
-    autoescape=select_autoescape()
+    autoescape=select_autoescape(),
+    enable_async=True
 )
+
+with open("locales/ru-RU/bot.json") as f:
+    i18n: dict[str, str] = json.load(f)['ru']
+    """json с текстами"""
+
+jinja_env.globals['i18n'] = i18n
