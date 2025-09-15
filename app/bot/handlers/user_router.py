@@ -4,12 +4,11 @@ from aiogram.types import Message
 from bot.keyboards.kbs import app_keyboard
 from bot.utils.utils import greet_user, get_about_us_text
 from lib.tg.common import jinja_render
-from config import i18n
-from fastapi import Depends
-from database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Annotated
 from database import with_session
+from services.tg.user.find_or_create_with_update_by_platform_id import find_or_create_with_update_by_platform_id
+from config import i18n
+
 
 user_router = Router()
 user_router.message.filter(
@@ -25,9 +24,15 @@ async def cmd_start(
     """
     Обрабатывает команду /start.
     """
-
-    
-    await message.answer(await jinja_render('menu/default'))
+    await find_or_create_with_update_by_platform_id(
+        session,
+        message.from_user    
+    )
+    # await message.answer(
+    #     (await jinja_render('menu/default')) 
+    #     + "\n\n" + 
+    #     (await jinja_render('menu/instructions'))
+    # )
 
 
 @user_router.message(F.text == '🔙 Назад')

@@ -16,6 +16,9 @@ from typing import List
 
 class User(Base):
     __tablename__ = 'users'
+
+    DEFAULT_POINT=0
+    DEFAULT_BONUS=5
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     platform_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
@@ -23,8 +26,8 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(100), nullable=True, unique=True)
     email: Mapped[str] = mapped_column(String(100), nullable=True, unique=True)
     phone: Mapped[str] = mapped_column(String(100), nullable=True, unique=True)
-    point: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    bonus: Mapped[int] = mapped_column(Integer, default=5, nullable=False)
+    point: Mapped[int] = mapped_column(Integer, default=DEFAULT_POINT, nullable=False)
+    bonus: Mapped[int] = mapped_column(Integer, default=DEFAULT_BONUS, nullable=False)
     bot_status: Mapped[BotStatusEnum] = mapped_column(Enum(BotStatusEnum, name='bot_status'), nullable=False)
 
     categories: Mapped[List["Category"]] = relationship("Category", secondary=subscription, back_populates="users")
