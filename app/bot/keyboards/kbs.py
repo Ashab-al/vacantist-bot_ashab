@@ -1,8 +1,8 @@
-from aiogram.types import ReplyKeyboardMarkup, WebAppInfo, InlineKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, WebAppInfo, InlineKeyboardMarkup, KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
-
-from config import settings
-
+import asyncio
+from config import settings, i18n
+from lib.tg.common import jinja_render
 
 def main_keyboard(user_id: int, first_name: str) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
@@ -39,3 +39,21 @@ def app_keyboard(user_id: int, first_name: str) -> InlineKeyboardMarkup:
     kb.button(text="📝 Оставить заявку", web_app=WebAppInfo(url=url_add_application))
     kb.adjust(1)
     return kb.as_markup()
+
+async def menu_keyboard() -> InlineKeyboardMarkup:
+    """Вернуть кнопки для главного меню"""
+    kb = ReplyKeyboardBuilder()
+    
+    btns_text = await asyncio.gather(
+        jinja_render('menu/button/points'), 
+        jinja_render('menu/button/advertisement'),
+        jinja_render('menu/button/help'),
+        jinja_render('menu/button/categories')
+    )
+    
+    for text in btns_text:
+        kb.add(KeyboardButton(text=str(text)))
+    
+    kb.adjust(3, 1)
+    
+    return kb.as_markup(resize_keyboard=True)

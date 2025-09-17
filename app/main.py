@@ -55,5 +55,7 @@ async def webhook(
 ) -> None:
     logging.info("Received webhook request")
     update = Update.model_validate(await request.json(), context={"bot": bot})
+    logging.info("ВЕБХУК")
+    logging.info(update)
     await dp.feed_update(bot, update)
     logging.info("Update processed")
