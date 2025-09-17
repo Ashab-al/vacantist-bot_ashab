@@ -53,8 +53,7 @@ async def reaction_btn_advertisement(message: Message) -> None:
 
 @user_router.message(HelpButtonFilter())
 async def reaction_btn_help(message: Message) -> None:
-
-    await message.answer("3")
+    await message.answer(await jinja_render('menu/instructions'))
 
 @user_router.message(PointsButtonFilter())
 async def reaction_btn_points(message: Message) -> None:
