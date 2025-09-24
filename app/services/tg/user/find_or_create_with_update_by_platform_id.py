@@ -33,4 +33,4 @@ async def find_or_create_with_update_by_platform_id(
         
         return user
     
-    return TgUser.model_validate(user)
+    return user

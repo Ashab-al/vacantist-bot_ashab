@@ -18,7 +18,7 @@ from bot.filters.button import (
 )
 from services.tg.category.find_subscribe import find_subscribe
 from bot.filters.callback.category_callback import CategoryCallback
-
+from services.tg.user.update_subscription_with_category import update_subscription_with_category
 
 
 user_router = Router()
@@ -58,17 +58,37 @@ async def reaction_btn_categories(
         reply_markup=await with_all_categories_keyboard(session, subscribed_categories)
     )
 
-@user_router.callback_query(
-    CategoryCallback.filter()
-)
-async def reaction_btn_advertisement(
+@user_router.callback_query(CategoryCallback.filter())
+@with_session
+async def reaction_btn_choice_category(
     query: CallbackQuery, 
     callback_data: CategoryCallback, 
-    bot: Bot
+    session: AsyncSession
 ) -> None:
     """Реакция на кнопки с категориями"""
-    await query.answer('Привет!')
+    view_path: dict[str, str] = await update_subscription_with_category(
+        callback_data, 
+        session, 
+        await find_subscribe(
+            session, 
+            query.from_user
+        ), 
+        await find_or_create_with_update_by_platform_id(
+            session,
+            query.from_user    
+        )
+    )
+    await query.message.edit_reply_markup(
+        reply_markup=await with_all_categories_keyboard(
+            session, 
+            await find_subscribe(session, query.from_user)
+        )
+    )
 
+    await query.answer(
+        await jinja_render(f"callback_query/{view_path['path_to_templates']}"),
+        show_alert=True
+    )
 
 @user_router.message(AdvertisementButtonFilter())
 async def reaction_btn_advertisement(message: Message) -> None:
