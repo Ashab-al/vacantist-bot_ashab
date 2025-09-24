@@ -21,6 +21,8 @@ from bot.filters.callback.category_callback import CategoryCallback
 from services.tg.user.update_subscription_with_category import update_subscription_with_category
 from services.tg.user.current_user import current_user
 from services.tg.advertisement import advertisement
+from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
+
 
 
 user_router = Router()
@@ -96,7 +98,7 @@ async def reaction_btn_advertisement(
     await message.answer(
         await jinja_render(
             'menu/advertisement', 
-            hash={"category_name_and_count": await advertisement(session)}
+            {"category_name_and_count": await advertisement(session)}
         )
     )
 
@@ -105,9 +107,19 @@ async def reaction_btn_help(message: Message) -> None:
     await message.answer(await jinja_render('menu/instructions'))
 
 @user_router.message(PointsButtonFilter())
-async def reaction_btn_points(message: Message) -> None:
-
-    await message.answer("4")
+@with_session
+async def reaction_btn_points(
+    message: Message,
+    session: AsyncSession
+) -> None:
+    
+    await message.answer(
+        await jinja_render(
+            'points/description', 
+            {"user": await current_user(session, message=message)}
+        ),
+        reply_markup=await with_all_tariffs_keyboard()
+    )
 
 # @user_router.message(F.text == '🔙 Назад')
 # async def cmd_back_home(message: Message) -> None:
