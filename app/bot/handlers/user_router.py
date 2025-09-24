@@ -19,6 +19,8 @@ from bot.filters.button import (
 from services.tg.category.find_subscribe import find_subscribe
 from bot.filters.callback.category_callback import CategoryCallback
 from services.tg.user.update_subscription_with_category import update_subscription_with_category
+from services.tg.user.current_user import current_user
+from services.tg.advertisement import advertisement
 
 
 user_router = Router()
@@ -30,15 +32,13 @@ user_router.message.filter(
 @with_session
 async def cmd_start(
     message: Message,
-    session: AsyncSession 
+    session: AsyncSession
 ) -> None:
     """
     Обрабатывает команду /start.
     """
-    user = await find_or_create_with_update_by_platform_id(
-        session,
-        message.from_user    
-    )
+    await current_user(session, message=message)
+    
     await message.answer(
         (await jinja_render('menu/default')) 
         + "\n\n" + 
@@ -73,10 +73,7 @@ async def reaction_btn_choice_category(
             session, 
             query.from_user
         ), 
-        await find_or_create_with_update_by_platform_id(
-            session,
-            query.from_user    
-        )
+        await current_user(session, query=query)
     )
     await query.message.edit_reply_markup(
         reply_markup=await with_all_categories_keyboard(
@@ -91,9 +88,17 @@ async def reaction_btn_choice_category(
     )
 
 @user_router.message(AdvertisementButtonFilter())
-async def reaction_btn_advertisement(message: Message) -> None:
-
-    await message.answer("2")
+@with_session
+async def reaction_btn_advertisement( 
+    message: Message,
+    session: AsyncSession
+) -> None:
+    await message.answer(
+        await jinja_render(
+            'menu/advertisement', 
+            hash={"category_name_and_count": await advertisement(session)}
+        )
+    )
 
 @user_router.message(HelpButtonFilter())
 async def reaction_btn_help(message: Message) -> None:
