@@ -1,8 +1,8 @@
 from aiogram import Router, F, Bot
-from aiogram.filters import CommandStart
-from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
-from bot.keyboards.kbs import app_keyboard
-from bot.utils.utils import greet_user, get_about_us_text
+from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType, ChatMemberUpdated
+from aiogram.filters.chat_member_updated import ChatMemberUpdatedFilter, MEMBER, KICKED
+from aiogram.filters.command import CommandStart
+
 from lib.tg.common import jinja_render
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import with_session
@@ -25,12 +25,28 @@ from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
 from bot.filters.callback.tariff_callback import TariffCallback
 from services.tg.user.update_points import update_points
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
-
+from services.tg.user.status_changes_for_block import status_changes_for_block
 
 user_router = Router()
-user_router.message.filter(
-    F.chat.type.in_({"private"})
-)
+user_router.message.filter(F.chat.type == "private")
+user_router.my_chat_member.filter(F.chat.type == "private")
+
+@user_router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=KICKED))
+@with_session
+async def user_blocked_bot(
+    event: ChatMemberUpdated,
+    session: AsyncSession
+):
+    await status_changes_for_block(session, event.from_user)
+
+@user_router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=MEMBER))
+@with_session
+async def user_unblocked_bot(
+    event: ChatMemberUpdated,
+    session: AsyncSession
+):
+    await current_user(session, event=event)
+
 
 @user_router.message(CommandStart())
 @with_session
