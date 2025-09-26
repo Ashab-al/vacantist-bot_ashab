@@ -6,7 +6,7 @@ from bot.filters.callback.tariff_callback import TariffCallback
 
 CURRENCY = 'XTR'
 TARIFFS_PRICES = {
-    10: 31, 
+    10: 1, 
     30: 85, 
     50: 135, 
     100: 255, 
@@ -18,10 +18,10 @@ MAX_COUNT_BUTTON_IN_LINE = 1
 async def with_all_tariffs_keyboard():
     kb = InlineKeyboardBuilder()
 
-    for tariff, price in TARIFFS_PRICES.items():
+    for points, price in TARIFFS_PRICES.items():
         kb.button(
-            text= await jinja_render('points/tariff_name', {"tariff": tariff, "price": price}),
-            callback_data=TariffCallback(tariff=tariff, price=price, currency=CURRENCY).pack()
+            text= await jinja_render('points/tariff_name', {"tariff": points, "price": price}),
+            callback_data=TariffCallback(points=points, price=price, currency=CURRENCY).pack()
         )
     
     kb.adjust(MAX_COUNT_BUTTON_IN_LINE, repeat=True)

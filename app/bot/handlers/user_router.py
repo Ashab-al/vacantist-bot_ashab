@@ -1,13 +1,13 @@
 from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
 from bot.keyboards.kbs import app_keyboard
 from bot.utils.utils import greet_user, get_about_us_text
 from lib.tg.common import jinja_render
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import with_session
 from services.tg.user.find_or_create_with_update_by_platform_id import find_or_create_with_update_by_platform_id
-from config import i18n
+from config import i18n, settings
 from bot.keyboards.kbs import menu_keyboard
 from bot.keyboards.with_all_categories_keyboard import with_all_categories_keyboard
 from bot.filters.button import (
@@ -22,7 +22,9 @@ from services.tg.user.update_subscription_with_category import update_subscripti
 from services.tg.user.current_user import current_user
 from services.tg.advertisement import advertisement
 from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
-
+from bot.filters.callback.tariff_callback import TariffCallback
+from services.tg.user.update_points import update_points
+from services.tg.send_info_about_new_payment import send_info_about_new_payment
 
 
 user_router = Router()
@@ -112,7 +114,7 @@ async def reaction_btn_points(
     message: Message,
     session: AsyncSession
 ) -> None:
-    
+    """Вывод тарифов"""
     await message.answer(
         await jinja_render(
             'points/description', 
@@ -121,15 +123,76 @@ async def reaction_btn_points(
         reply_markup=await with_all_tariffs_keyboard()
     )
 
-# @user_router.message(F.text == '🔙 Назад')
-# async def cmd_back_home(message: Message) -> None:
-#     """
-#     Обрабатывает нажатие кнопки "Назад".
-#     """
-#     await greet_user(message, is_new_user=False)
+@user_router.callback_query(TariffCallback.filter())
+async def reaction_choice_tariff(
+    query: CallbackQuery, 
+    callback_data: TariffCallback, 
+    bot: Bot
+):
+    await query.answer()
+    await bot.send_invoice(
+        chat_id=query.from_user.id,
+        title=await jinja_render('payment/title', {"tariff": callback_data.points}),
+        description=await jinja_render('points/tariff_callback', {"tariff": callback_data.points}),
+        payload=callback_data.pack(),
+        currency=callback_data.currency,
+        prices=[
+            LabeledPrice(
+                label=await jinja_render('points/tariff_callback', {"tariff": callback_data.points}),
+                amount=callback_data.price
+            )    
+        ]
+    )
+    
 
+@user_router.pre_checkout_query()
+@with_session
+async def process_pre_checkout_query(
+    pre_checkout_query: PreCheckoutQuery, 
+    bot: Bot, 
+    session: AsyncSession
+):
+    try:
+        await update_points(
+            session, 
+            pre_checkout_query.from_user, 
+            TariffCallback.unpack(pre_checkout_query.invoice_payload).points
+        )
+    except Exception as e:
+        await bot.send_message(
+            chat_id=pre_checkout_query.from_user.id,
+            text=await jinja_render('pre_checkout_query/fail_payment')
+        )
+        
+        await bot.send_message(
+            chat_id=settings.admin_chat_id,
+            text=str(e) + "\n\nМетод process_pre_checkout_query"
+        )
+    else:
+        await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
-# @user_router.message(F.text == "ℹ️ О нас")
-# async def about_us(message: Message):
-#     kb = app_keyboard(user_id=message.from_user.id, first_name=message.from_user.first_name)
-#     await message.answer(get_about_us_text(), reply_markup=kb)
+    
+@user_router.message(
+    F.content_type == ContentType.SUCCESSFUL_PAYMENT
+)
+async def successful_payment_handler(
+    message: Message,
+    bot: Bot
+):
+    tariff: TariffCallback = TariffCallback.unpack(message.successful_payment.invoice_payload)
+
+    await send_info_about_new_payment(
+        bot,
+        tariff,
+        message.from_user
+    )
+    await message.answer(
+        await jinja_render(
+            'pre_checkout_query/success_payment', 
+            {
+                "points": tariff.points
+            }
+        )
+    )
+
+    await reaction_btn_points(message=message)
