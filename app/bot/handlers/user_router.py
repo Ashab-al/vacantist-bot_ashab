@@ -139,15 +139,33 @@ async def reaction_btn_points(
         reply_markup=await with_all_tariffs_keyboard()
     )
 
+@user_router.callback_query(F.data == i18n['buttons']['points'])
+@with_session
+async def choice_btn_points(
+    callback: CallbackQuery, 
+    bot: Bot, 
+    session: AsyncSession
+):
+    await callback.answer()
+
+    await bot.send_message(
+        chat_id=callback.from_user.id,
+        text=await jinja_render(
+            'points/description', 
+            {"user": await current_user(session, query=callback)}
+        ),
+        reply_markup=await with_all_tariffs_keyboard()
+    )
+
 @user_router.callback_query(TariffCallback.filter())
 async def reaction_choice_tariff(
-    query: CallbackQuery, 
+    callback: CallbackQuery, 
     callback_data: TariffCallback, 
     bot: Bot
 ):
-    await query.answer()
+    await callback.answer()
     await bot.send_invoice(
-        chat_id=query.from_user.id,
+        chat_id=callback.from_user.id,
         title=await jinja_render('payment/title', {"tariff": callback_data.points}),
         description=await jinja_render('points/tariff_callback', {"tariff": callback_data.points}),
         payload=callback_data.pack(),

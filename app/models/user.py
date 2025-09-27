@@ -19,6 +19,7 @@ class User(Base):
 
     DEFAULT_POINT=0
     DEFAULT_BONUS=5
+    COUNT_FOR_FULL_BATTERY = 5
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     platform_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
