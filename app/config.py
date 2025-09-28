@@ -7,6 +7,8 @@ import requests
 from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
 import json
 from lib.tg.pluralize import pluralize
+import asyncio
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -61,3 +63,5 @@ with open("locales/ru-RU/bot.json") as f:
 
 jinja_env.globals['i18n'] = i18n
 jinja_env.globals['pluralize'] = pluralize
+
+vacancy_queue: asyncio.Queue = asyncio.Queue(maxsize=0)

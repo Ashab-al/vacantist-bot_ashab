@@ -6,7 +6,9 @@ from config import settings
 from aiogram.types import Update
 from fastapi import FastAPI, Request
 from api import api_router
-
+import asyncio
+from services.tg.vacancy.sender_worker import sender_worker
+from config import vacancy_queue
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -23,11 +25,21 @@ async def lifespan(app: FastAPI):
         allowed_updates=dp.resolve_used_update_types(),
         drop_pending_updates=True
     )
+    worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))
 
     logging.info(f"Webhook set to {webhook_url}")
+
     yield
+    
+    logging.info("Sending shutdown signal to sender_worker...")
+    await vacancy_queue.put(None)
+    await vacancy_queue.join()
+    worker_task.cancel()
+    logging.info("Sender_worker finished successfully.")
+    
     logging.info("Shutting down bot...")
     await bot.delete_webhook()
+    
     await stop_bot()
     logging.info("Webhook deleted")
 
