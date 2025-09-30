@@ -12,7 +12,7 @@ from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
 from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallback
 from services.tg.open_vacancy import open_vacancy
 from bot.keyboards.open_vacancy_keyboard import open_vacancy_keyboard
-
+from services.tg.spam_vacancy import spam_vacancy, BLACKLISTED
 
 router = Router(name="Обработчик вакансий")
 
@@ -26,22 +26,28 @@ async def reaction_choice_vacancy(
 ):
     user = await current_user(session, query=callback)
     vacancy_data: dict = await open_vacancy(session, user, callback_data.vacancy_id)
+    alert_data: dict = {}
     if vacancy_data.get('status') == 'warning':
-        await callback.answer(
-            await jinja_render(vacancy_data['path_view'], {'open_vacancy': vacancy_data, 'user': user}),
-            show_alert=True 
+        alert_data['text'] = await jinja_render(
+            vacancy_data['path_view'], 
+            {'open_vacancy': vacancy_data, 'user': user}
         )
-    else:
-        callback.answer()
+        alert_data['show_alert'] = True
+
+    await callback.answer(**alert_data)
     
     if vacancy_data.get('status') == 'open_vacancy':
-        btns = await open_vacancy_keyboard(user=user, vacancy=vacancy_data.get('vacancy'))
-        text = await jinja_render(vacancy_data.get('path_view'), {"open_vacancy": vacancy_data, "user": user})
         await bot.edit_message_text(
             chat_id=callback.from_user.id,
             message_id=callback.message.message_id,
-            text=text,
-            reply_markup=btns
+            text=await jinja_render(
+                vacancy_data.get('path_view'), 
+                {"open_vacancy": vacancy_data, "user": user}
+            ),
+            reply_markup=await open_vacancy_keyboard(
+                user=user, 
+                vacancy=vacancy_data.get('vacancy')
+            )
         )
 
 @router.callback_query(SpamVacancyCallback.filter())
@@ -51,4 +57,13 @@ async def reaction_choice_spam_vacancy(
     callback_data: SpamVacancyCallback, 
     session: AsyncSession
 ):
-    await callback.answer()
+    await callback.answer(
+        await jinja_render(
+            'callback_query/spam_vacancy', 
+            {
+                "outcome": await spam_vacancy(session, callback_data.vacancy_id), 
+                "BLACKLISTED": BLACKLISTED
+             }
+        ),
+        show_alert=True
+    )
