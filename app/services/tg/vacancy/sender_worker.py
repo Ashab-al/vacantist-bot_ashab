@@ -12,13 +12,14 @@ from database import get_async_session_for_bot
 
 BASE_DELAY = 0.1  # минимальная задержка
 MAX_DELAY = 1.0   # максимальная задержка
-
+DELAY = 0.4
 async def sender_worker(
     queue: asyncio.Queue,
     bot: Bot
 ):
     print("Воркер для рассылки запущен и ждет вакансии...")
     while True:
+        print("ЦИКЛ ЗАПУЩЕН, ОЖИДАЮ ВАКАНСИИ")
         vacancy: Vacancy | None = await queue.get()
         
         if vacancy is None:
@@ -36,15 +37,17 @@ async def sender_worker(
                 queue.task_done()
                 continue 
 
-            delay: float | int = min(BASE_DELAY + len(users) * 0.002, MAX_DELAY)
+            delay: float | int = DELAY
             
             for user in users:
                 try:
-                    await bot.send_message(
+                    res = await bot.send_message(
                         chat_id=user.platform_id,
                         text=await jinja_render('vacancy', { "vacancy": vacancy, "user": user }),
                         reply_markup=await vacancy_keyboard(vacancy=vacancy, user=user)
                     )
+                    print("ВАКАНСИЯ ОТПРАВЛЕНА")
+                    print(res)
                 except TelegramForbiddenError:
                     blocked_user_ids.append(user.id)
                 # TODO except Exceptions

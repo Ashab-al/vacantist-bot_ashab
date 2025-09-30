@@ -15,10 +15,10 @@ from services.tg.user.current_user import current_user
 from services.tg.advertisement import advertisement
 
 
-menu_router = Router(name="Обработчик главного меню")
-menu_router.message.filter(F.chat.type == "private")
+router = Router(name="Обработчик главного меню")
+router.message.filter(F.chat.type == "private")
 
-@menu_router.message(CommandStart())
+@router.message(CommandStart())
 @with_session
 async def cmd_start(
     message: Message,
@@ -37,7 +37,7 @@ async def cmd_start(
     )
 
 
-@menu_router.message(AdvertisementButtonFilter())
+@router.message(AdvertisementButtonFilter())
 @with_session
 async def reaction_btn_advertisement( 
     message: Message,
@@ -50,7 +50,7 @@ async def reaction_btn_advertisement(
         )
     )
 
-@menu_router.message(HelpButtonFilter())
+@router.message(HelpButtonFilter())
 async def reaction_btn_help(message: Message) -> None:
     await message.answer(await jinja_render('menu/instructions'))
 

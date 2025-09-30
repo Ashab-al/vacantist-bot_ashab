@@ -26,7 +26,7 @@ async def create_new_vacancy(
         )
     except Exception as e:
         raise HTTPException(400, str(e))
-    
+    print("Вакансия создана")
     await add_vacancy_to_sending_queue(new_vacancy)
     
     return CreateVacancyResponse(

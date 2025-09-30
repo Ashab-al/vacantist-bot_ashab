@@ -12,12 +12,12 @@ from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
 from bot.filters.callback.tariff_callback import TariffCallback
 from services.tg.user.update_points import update_points
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
-from bot.handlers import payment_router
 
-payment_router = Router(name="Обработчик тарифов и платежей")
-payment_router.message.filter(F.chat.type == "private")
 
-@payment_router.message(PointsButtonFilter())
+router = Router(name="Обработчик тарифов и платежей")
+router.message.filter(F.chat.type == "private")
+
+@router.message(PointsButtonFilter())
 @with_session
 async def reaction_btn_points(
     message: Message,
@@ -32,7 +32,7 @@ async def reaction_btn_points(
         reply_markup=await with_all_tariffs_keyboard()
     )
 
-@payment_router.callback_query(F.data == i18n['buttons']['points'])
+@router.callback_query(F.data == i18n['buttons']['points'])
 @with_session
 async def choice_btn_points(
     callback: CallbackQuery, 
@@ -50,7 +50,7 @@ async def choice_btn_points(
         reply_markup=await with_all_tariffs_keyboard()
     )
 
-@payment_router.callback_query(TariffCallback.filter())
+@router.callback_query(TariffCallback.filter())
 async def reaction_choice_tariff(
     callback: CallbackQuery, 
     callback_data: TariffCallback, 
@@ -71,7 +71,7 @@ async def reaction_choice_tariff(
         ]
     )
 
-@payment_router.pre_checkout_query()
+@router.pre_checkout_query()
 @with_session
 async def process_pre_checkout_query(
     pre_checkout_query: PreCheckoutQuery, 
@@ -98,7 +98,7 @@ async def process_pre_checkout_query(
         await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
     
-@payment_router.message(
+@router.message(
     F.content_type == ContentType.SUCCESSFUL_PAYMENT
 )
 async def successful_payment_handler(

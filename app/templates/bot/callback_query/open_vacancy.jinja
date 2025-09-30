@@ -1,0 +1,11 @@
+<b>{{ i18n['vacancy']['category'] }}:</b> {{ open_vacancy['vacancy'].category.name }}
+<b>{{ i18n['vacancy']['date_create'] }}:</b> {{ open_vacancy['vacancy'].created_at.strftime('%d.%m.%Y %H:%M') }}
+<b>{{ i18n['user']['balance']['total_balance'] }}:</b> {{ user.point + user.bonus }}
+
+{{ open_vacancy['vacancy'].description }}
+
+<b>{{ i18n['vacancy']['contacts'] }}:</b>
+
+{{ open_vacancy['vacancy'].contact_information }}
+
+{{ i18n['vacancy']['signature'] }}

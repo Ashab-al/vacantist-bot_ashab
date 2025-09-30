@@ -13,10 +13,10 @@ from services.tg.user.update_subscription_with_category import update_subscripti
 from services.tg.user.current_user import current_user
 
 
-category_router = Router(name="Обработчик категорий")
-category_router.message.filter(F.chat.type == "private")
+router = Router(name="Обработчик категорий")
+router.message.filter(F.chat.type == "private")
 
-@category_router.message(CategoryButtonFilter())
+@router.message(CategoryButtonFilter())
 @with_session
 async def reaction_btn_categories(
     message: Message, 
@@ -28,7 +28,7 @@ async def reaction_btn_categories(
         reply_markup=await with_all_categories_keyboard(session, subscribed_categories)
     )
 
-@category_router.callback_query(CategoryCallback.filter())
+@router.callback_query(CategoryCallback.filter())
 @with_session
 async def reaction_btn_choice_category(
     query: CallbackQuery, 
