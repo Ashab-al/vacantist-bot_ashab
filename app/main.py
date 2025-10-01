@@ -25,16 +25,16 @@ async def lifespan(app: FastAPI):
         allowed_updates=dp.resolve_used_update_types(),
         drop_pending_updates=True
     )
-    worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))
+    # worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))#TODO потом включить
 
     logging.info(f"Webhook set to {webhook_url}")
 
     yield
     
     logging.info("Sending shutdown signal to sender_worker...")
-    await vacancy_queue.put(None)
-    await vacancy_queue.join()
-    worker_task.cancel()
+    # await vacancy_queue.put(None)#TODO потом включить
+    # await vacancy_queue.join()#TODO потом включить
+    # worker_task.cancel() #TODO потом включить
     logging.info("Sender_worker finished successfully.")
     
     logging.info("Shutting down bot...")

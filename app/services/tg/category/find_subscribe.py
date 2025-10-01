@@ -6,11 +6,21 @@ from models.category import Category
 
 async def find_subscribe(
     db: AsyncSession,
-    user_data: AiogramTgUser
+    user_data: AiogramTgUser | User
 ) -> list[Category]:
-    user: User | None = await get_user_by_platform_id(
-        db,
-        user_data.id
-    )
+
+    platform_id: str | None = None
+    
+    if isinstance(user_data, AiogramTgUser):    
+        platform_id: str = user_data.id
+
+    elif isinstance(user_data, User):
+        platform_id: str = user_data.platform_id
+    
+    user: User | None = await get_user_by_platform_id(db,platform_id)
+    
+    if not user:
+        raise ValueError('Пользователь не найден')
+    
     return user.categories
 
