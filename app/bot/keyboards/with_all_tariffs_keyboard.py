@@ -6,7 +6,7 @@ from bot.filters.callback.tariff_callback import TariffCallback
 
 CURRENCY = 'XTR'
 TARIFFS_PRICES = {
-    10: 1, 
+    10: 31, 
     30: 85, 
     50: 135, 
     100: 255, 
