@@ -5,7 +5,6 @@ from enums.bot_status_enum import BotStatusEnum
 from schemas.api.categories.list.response import CategoryResponse
 from models.user import User
 
-
 class TgUser(CamelModel):
     """Схема для Пользователя телеграм"""
     model_config = ConfigDict(from_attributes=True)
@@ -16,3 +15,5 @@ class TgUser(CamelModel):
     point: int = Field(default=User.DEFAULT_POINT, description='Количество поинтов у пользователя', examples=[10])
     bonus: int = Field(default=User.DEFAULT_BONUS, description='Количество бонусных поинтов у пользователя', examples=[10])
     bot_status: BotStatusEnum = Field(default=BotStatusEnum.WORKS, description='Статус пользователя в системе', examples=['WORKS', 'BOT_BLOCKED'])
+    email: str | None = Field(None, description="Почта пользователя", examples=['test@gmail.com'])
+    phone: str | None = Field(None, description="Телефон пользователя", examples=['79287804986'])
