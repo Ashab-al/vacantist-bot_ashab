@@ -8,7 +8,16 @@ async def find_subscribe(
     db: AsyncSession,
     user_data: AiogramTgUser | User
 ) -> list[Category]:
+    """
+    Вернуть список категорий, на которые подписан пользователь `User`
 
+    Args:
+        db (AsyncSession): Асинхронная сессия
+        user_data (AiogramTgUser | User): Объект AiogramTgUser либо User
+    
+    Returns:
+        user.categories (list[Category]): Список категорий, на которые подписан пользователь
+    """
     platform_id: str | None = None
     
     if isinstance(user_data, AiogramTgUser):    
