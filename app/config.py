@@ -4,11 +4,18 @@ from pydantic import PostgresDsn
 from typing import Optional
 import logging
 import requests
+from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
+import json
+from lib.tg.pluralize import pluralize
+import asyncio
 
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Settings(BaseSettings):
     bot_token: str
     admin_id: int
+    admin_chat_id: str
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )
@@ -43,3 +50,18 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+jinja_env = Environment(
+    loader=FileSystemLoader(os.path.join(BASE_DIR, "templates")),
+    autoescape=select_autoescape(),
+    enable_async=True
+)
+
+with open("locales/ru-RU/bot.json") as f:
+    i18n: dict[str, str] = json.load(f)['ru']
+    """json с текстами"""
+
+jinja_env.globals['i18n'] = i18n
+jinja_env.globals['pluralize'] = pluralize
+
+vacancy_queue: asyncio.Queue = asyncio.Queue(maxsize=0)

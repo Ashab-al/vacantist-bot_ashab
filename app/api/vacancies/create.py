@@ -4,7 +4,8 @@ from database import get_async_session
 from typing import Annotated
 from schemas.api.vacancies.create.response import CreateVacancyResponse
 from schemas.api.vacancies.create.request import CreateVacancyRequest
-from services.api.vacancy.check_and_create_vacancy_then_send_to_users import check_and_create_vacancy_then_send_to_users
+from services.api.vacancy.check_and_create_vacancy import check_and_create_vacancy
+from services.tg.vacancy.add_vacancy_to_sending_queue import add_vacancy_to_sending_queue
 
 router = APIRouter()
 
@@ -19,12 +20,14 @@ async def create_new_vacancy(
     vacancy_data: Annotated[CreateVacancyRequest, Body()]
 ):
     try:
-        new_vacancy = await check_and_create_vacancy_then_send_to_users(
+        new_vacancy = await check_and_create_vacancy(
             session, 
             vacancy_data
         )
     except Exception as e:
         raise HTTPException(400, str(e))
+    print("Вакансия создана")
+    await add_vacancy_to_sending_queue(new_vacancy)
     
     return CreateVacancyResponse(
         id=new_vacancy.id,
