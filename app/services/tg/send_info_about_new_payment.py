@@ -19,10 +19,12 @@ async def send_info_about_new_payment(
     """
     await bot.send_message(
         chat_id=settings.admin_chat_id,
-        text=await jinja_render('payment_info_for_admin', {
-            "name": aiogram_user.first_name, 
-            "points": tariff_data.points, 
-            "stars": tariff_data.price
+        text=await jinja_render(
+            'payment_info_for_admin', 
+            {
+                "name": aiogram_user.first_name, 
+                "points": tariff_data.points, 
+                "stars": tariff_data.price
             }
         )
     )
