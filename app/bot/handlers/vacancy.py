@@ -13,6 +13,8 @@ from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallback
 from services.tg.open_vacancy import open_vacancy
 from bot.keyboards.open_vacancy_keyboard import open_vacancy_keyboard
 from services.tg.spam_vacancy import spam_vacancy, BLACKLISTED
+from enums.check_vacancy_enum import CheckVacancyEnum
+
 
 router = Router(name="Обработчик вакансий")
 
@@ -27,7 +29,7 @@ async def reaction_choice_vacancy(
     user = await current_user(session, query=callback)
     vacancy_data: dict = await open_vacancy(session, user, callback_data.vacancy_id)
     alert_data: dict = {}
-    if vacancy_data.get('status') == 'warning':
+    if vacancy_data.get('status') == CheckVacancyEnum.WARNING:
         alert_data['text'] = await jinja_render(
             vacancy_data['path_view'], 
             {'open_vacancy': vacancy_data, 'user': user}
@@ -36,7 +38,7 @@ async def reaction_choice_vacancy(
 
     await callback.answer(**alert_data)
     
-    if vacancy_data.get('status') == 'open_vacancy':
+    if vacancy_data.get('status') == CheckVacancyEnum.OPEN_VACANCY:
         await bot.edit_message_text(
             chat_id=callback.from_user.id,
             message_id=callback.message.message_id,
