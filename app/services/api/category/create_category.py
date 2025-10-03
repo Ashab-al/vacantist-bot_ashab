@@ -1,17 +1,29 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.category import Category
-from sqlalchemy import (
-    select,
-)
 from schemas.api.categories.create.response import CreateCategoryResponse
 from schemas.api.categories.create.request import CreateCategoryRequest
 from repositories.categories.get_category_by_name import get_category_by_name
+
 
 async def create_category(
     db: AsyncSession,
     category_data: CreateCategoryRequest
 ) -> CreateCategoryResponse:
-    category: Category = await get_category_by_name(
+    """
+    Создает новую категорию
+
+    Args:
+        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных
+        category_data (CreateCategoryRequest): Схема для создания категории
+    
+    Returns:
+        CreateCategoryResponse: Схема для возврата успешного ответа после создании категории
+    
+    Raises:
+        ValueError: Такая категория уже существует
+
+    """
+    category: Category | None = await get_category_by_name(
         db, 
         category_data.name
     )
