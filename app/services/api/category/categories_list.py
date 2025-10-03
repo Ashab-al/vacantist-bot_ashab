@@ -5,7 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 async def categories_list(
     db: AsyncSession
-) -> list:
-    categories: list[Category] = await get_all_categories(db)
+) -> list[Category]:
+    """
+    Возвращает список всех категорий
 
-    return categories
+    Args:
+        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных
+    Returns:
+        list[Category]: Список категорий
+    """
+    return await get_all_categories(db)
