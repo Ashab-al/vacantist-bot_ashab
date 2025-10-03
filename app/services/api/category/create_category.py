@@ -17,11 +17,10 @@ async def create_category(
         category_data (CreateCategoryRequest): Схема для создания категории
     
     Returns:
-        CreateCategoryResponse: Схема для возврата успешного ответа после создании категории
+        category (CreateCategoryResponse): Схема для возврата успешного ответа после создании категории
     
     Raises:
         ValueError: Такая категория уже существует
-
     """
     category: Category | None = await get_category_by_name(
         db, 
