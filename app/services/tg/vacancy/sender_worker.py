@@ -97,7 +97,7 @@ async def update_users_bot_status(
     Обновить `bot_status` на `BOT_BLOCKED` у пользователей
 
     Args:
-        db (AsyncSession): app/services/tg/user/update_points.py
+        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
         blocked_user_ids (list[int]): Список id пользователей
     """
     await db.execute(
