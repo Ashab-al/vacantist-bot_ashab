@@ -19,6 +19,22 @@ async def create_new_vacancy(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     vacancy_data: Annotated[CreateVacancyRequest, Body()]
 ):
+    """
+    Создать новую вакансию и отправить её пользователям.
+
+    Эндпоинт проверяет данные вакансии, сохраняет их в базе данных 
+    и добавляет вакансию в очередь рассылки пользователям.
+
+    Args:
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
+        vacancy_data (CreateVacancyRequest): Данные новой вакансии (название, описание, контакты, категория и др.).
+
+    Raises:
+        HTTPException: Ошибка 400, если создание вакансии не удалось.
+
+    Returns:
+        CreateVacancyResponse: Данные созданной вакансии (id, название, описание, контакты, источник, платформа).
+    """
     try:
         new_vacancy = await check_and_create_vacancy(
             session, 
@@ -26,7 +42,7 @@ async def create_new_vacancy(
         )
     except Exception as e:
         raise HTTPException(400, str(e))
-    print("Вакансия создана")
+    
     await add_vacancy_to_sending_queue(new_vacancy)
     
     return CreateVacancyResponse(

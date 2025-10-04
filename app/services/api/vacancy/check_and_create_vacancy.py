@@ -27,6 +27,11 @@ async def check_and_create_vacancy(
     
     Returns:
         Vacancy: Созданная вакансия.
+    
+    Raises:
+        ValueError: Вакансия в черном списке
+        ValueError: Такой категории не существует
+        Exception: Непредвиденная ошибка. Метод black_list_check
     """
     try:
         await black_list_check(

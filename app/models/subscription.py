@@ -1,15 +1,4 @@
-from sqlalchemy import (
-    String, 
-    BigInteger, 
-    Integer, 
-    Date, 
-    Time, 
-    ForeignKey, 
-    Enum,
-    Column,
-    Table
-)
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey, Column, Table
 from database import Base
 
 subscription = Table(
@@ -18,3 +7,12 @@ subscription = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("category_id", ForeignKey("categories.id"), primary_key=True)
 )
+"""
+Промежуточная таблица для связи многие-ко-многим между пользователями и категориями.
+
+Таблица `subscriptions` хранит подписки пользователей на категории вакансий.
+
+Колонки:
+- user_id (FK): ID пользователя.
+- category_id (FK): ID категории.
+"""

@@ -1,5 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, WebAppInfo, InlineKeyboardMarkup, KeyboardButton
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
 from lib.tg.common import jinja_render
 from bot.filters.callback.tariff_callback import TariffCallback
 
@@ -15,13 +14,32 @@ TARIFFS_PRICES = {
 }
 MAX_COUNT_BUTTON_IN_LINE = 1
 
-async def with_all_tariffs_keyboard():
+async def with_all_tariffs_keyboard() -> InlineKeyboardMarkup:
+    """
+    Создать и вернуть клавиатуру с тарифами.
+
+    Для каждого тарифа формируется кнопка с количеством поинтов и ценой.
+    Данные берутся из словаря `TARIFFS_PRICES`.
+
+    Returns:
+        InlineKeyboardMarkup: Объект клавиатуры с кнопками всех доступных тарифов.
+    """
     kb = InlineKeyboardBuilder()
 
     for points, price in TARIFFS_PRICES.items():
         kb.button(
-            text= await jinja_render('points/tariff_name', {"tariff": points, "price": price}),
-            callback_data=TariffCallback(points=points, price=price, currency=CURRENCY).pack()
+            text= await jinja_render(
+                'points/tariff_name', 
+                {
+                    "tariff": points, 
+                    "price": price
+                }
+            ),
+            callback_data=TariffCallback(
+                points=points, 
+                price=price, 
+                currency=CURRENCY
+            ).pack()
         )
     
     kb.adjust(MAX_COUNT_BUTTON_IN_LINE, repeat=True)

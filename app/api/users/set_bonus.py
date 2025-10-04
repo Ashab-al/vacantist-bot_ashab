@@ -20,6 +20,21 @@ async def update_bonus(
     bonus: Annotated[SetBonusRequest, Body()],
     user_id: Annotated[SetBonusUserIdRequest, Path()]
 ):
+    """
+    Обновить количество бонусов у пользователя.
+
+    Args:
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
+        bonus (SetBonusRequest): Тело запроса с новым количеством бонусов.
+        user_id (SetBonusUserIdRequest): Идентификатор пользователя, 
+            которому нужно изменить бонусы.
+
+    Raises:
+        HTTPException: Возвращает ошибку 400, если пользователь не найден или обновление невозможно.
+
+    Returns:
+        SetBonusResponse: Обновлённые данные пользователя с новым количеством бонусов.
+    """
     try:
         user = await set_bonus(session, user_id, bonus)
     except ValueError as e:

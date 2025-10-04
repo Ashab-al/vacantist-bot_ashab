@@ -1,12 +1,10 @@
-from aiogram.types import CallbackQuery
-from aiogram import Bot
 from bot.filters.callback.category_callback import CategoryCallback
 from repositories.categories.get_category_by_id import get_category_by_id
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.category import Category
-from aiogram.types.user import User as AiogramTgUser
-from services.tg.category.find_subscribe import find_subscribe
 from models.user import User
+from enums.category_subscription_enum import CategorySubscriptionEnum
+
 
 async def update_subscription_with_category(
     category_callback: CategoryCallback, 
@@ -14,24 +12,39 @@ async def update_subscription_with_category(
     subscribed_categories: list[Category],
     user: User
 ) -> dict[str, str]:
-    category: Category | None = await get_category_by_id(
-        db, 
-        category_callback.category_id
-    )
-    data: dict[str, str] = {"path_to_templates": ""}
+    """
+    Обновляет подписку пользователя на категорию.
 
-    if category is None:
-        raise ValueError('Такой категории не найдено')
+    Args:
+        category_callback (CategoryCallback): Callback-данные с идентификатором категории
+        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных
+        subscribed_categories (list[Category]): Список категорий, на которые подписан пользователь
+        user (User): Объект пользователя
     
+    Returns:
+        dict (str, str): Словарь с ключом "path_to_templates" и значением — 
+                         строкой, указывающей на шаблон ("subscribe" или "unsubscribe")
+    
+    Raises:
+        ValueError: Если категория с указанным id не найдена
+    """
+    if not (category := await get_category_by_id(
+            db, 
+            category_callback.category_id
+        )
+    ):
+        raise ValueError('Такой категории не найдено')
+
+    template: str | None = None
+
     if category in subscribed_categories:
         user.categories.remove(category)
-        data['path_to_templates'] = "unsubscribe"
+        template: str = CategorySubscriptionEnum.UNSUBSCRIBE.value
     else:
         user.categories.append(category)
-        data['path_to_templates'] = "subscribe"
-    
+        template: str = CategorySubscriptionEnum.SUBSCRIBE.value
     
     await db.commit()
 
-    return data
+    return {"path_to_templates": template}
     

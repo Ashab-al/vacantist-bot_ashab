@@ -1,7 +1,6 @@
 from models.user import User
 from models.vacancy import Vacancy
 from models.category import Category
-from models.blacklist import BlackList
 from sqlalchemy.ext.asyncio import AsyncSession
 from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
 from repositories.vacancies.vacancies_for_the_week import VacancyForTheWeekRepository
@@ -15,7 +14,30 @@ async def fetch_vacancies_for_the_week(
     page: int,
     page_size: int
 ) -> dict:
+    """
+    Возвращает список вакансий за неделю с поддержкой пагинации
 
+    Args:
+        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
+        user (User): Пользователь, для которого выполняется выборка.
+        page (int): Номер страницы (начиная с 1).
+        page_size (int): Количество элементов на странице.
+    
+    Returns:
+        dict: Словарь с результатом выборки.
+            - status (VacanciesForTheWeekStatusEnum): Статус выполнения
+            - items (list[Vacancy]): Список вакансий для текущей страницы (если есть)
+            - meta (dict): Метаданные пагинации с ключами:
+                - count (int): Общее количество вакансий
+                - page (int): Текущая страница
+                - max_pages (int): Общее количество страниц
+    
+    Notes:
+        - Если у пользователя нет подписки на категории, возвращается:
+            {"status": SUBSCRIBED_CATEGORIES_EMPTY}
+        - Если вакансий не найдено, возвращается:
+            {"status": VACANCY_LIST_EMPTY}
+    """
     subscribed_categories: list[Category] | list = await find_subscribe(db, user)
 
     if not subscribed_categories:

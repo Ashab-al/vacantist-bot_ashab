@@ -19,6 +19,25 @@ async def update_status(
     user_id: Annotated[SetStatusUserIdRequest, Path()],
     bot_status: Annotated[SetStatusRequest, Body()]
 ):
+    """
+    Изменить статус пользователя в боте.
+
+    Эндпоинт обновляет статус пользователя в системе. 
+    Доступные варианты статуса:
+    - `WORKS` — пользователь активен;
+    - `BOT_BLOCKED` — пользователь заблокировал бота.
+
+    Args:
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
+        user_id (SetStatusUserIdRequest): Идентификатор пользователя, у которого нужно изменить статус.
+        bot_status (SetStatusRequest): Новое значение статуса пользователя.
+
+    Raises:
+        HTTPException: Возвращает ошибку 400, если передан некорректный статус или пользователь не найден.
+
+    Returns:
+        SetStatusResponse: Обновлённые данные пользователя со статусом.
+    """
     try:
         user = await set_status(session, user_id, bot_status)
     except ValueError as e:

@@ -1,13 +1,23 @@
-from sqlalchemy import String, BigInteger, Integer, Date, Time, ForeignKey, Enum
+from sqlalchemy import String, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
 from database import Base
-import enum
 from models.subscription import subscription
 from models.user import User
 
 
 class Category(Base):
+    """
+    Модель категории вакансий.
+
+    Таблица `categories` хранит категории вакансий и связи с пользователями.
+
+    Attributes:
+        id (int): Уникальный идентификатор категории.
+        name (str): Название категории (уникальное, обязательно к заполнению).
+        vacancies (List[Vacancy]): Список вакансий, относящихся к этой категории.
+        users (List[User]): Список пользователей, подписанных на эту категорию.
+    """
     __tablename__ = 'categories'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

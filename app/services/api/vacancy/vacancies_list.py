@@ -1,4 +1,3 @@
-from models.vacancy import Vacancy
 from schemas.api.vacancies.vacancy import VacancySchema
 from repositories.vacancies.get_all_vacancies import get_all_vacancies
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,11 +5,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 async def vacancies_list(
     db: AsyncSession
 ) -> list[VacancySchema]:
-    vacancies: list[VacancySchema] = await get_all_vacancies(db)
-    
-    vacancies_to_schema: list[VacancySchema] = [
-        VacancySchema.model_validate(vacancy)
-        for vacancy in vacancies
-    ]
+    """
+    Возвращает список всех вакансий
 
-    return vacancies_to_schema
+    Args:
+        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных
+    
+    Returns:
+        list[VacancySchema]: Список вакансий, представленных в виде схем Pydantic.
+    """
+    return [
+        VacancySchema.model_validate(vacancy)
+        for vacancy in await get_all_vacancies(db)
+    ]

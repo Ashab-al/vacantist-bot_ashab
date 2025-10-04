@@ -1,18 +1,25 @@
-from sqlalchemy import (
-    String, 
-    BigInteger, 
-    Integer, 
-    Date, 
-    Time, 
-    ForeignKey, 
-    Enum,
-    Column
-)
+from sqlalchemy import String, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
 
 class Vacancy(Base):
+    """
+    Модель вакансии.
+
+    Таблица `vacancies` хранит информацию о вакансиях, полученных из разных источников,
+    включая контактные данные и категорию, к которой относится вакансия.
+
+    Attributes:
+        id (int): Уникальный идентификатор вакансии.
+        title (str): Заголовок вакансии.
+        description (str): Описание вакансии.
+        contact_information (str): Контактные данные для связи с отправителем вакансии.
+        source (str): Источник вакансии (например, Telegram chat, сайт и т.д.).
+        platform_id (str): Идентификатор отправителя вакансии.
+        category_id (str): Внешний ключ на категорию вакансии.
+        category (Category): Связанная категория вакансии.
+    """
     __tablename__ = 'vacancies'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(300), nullable=False)

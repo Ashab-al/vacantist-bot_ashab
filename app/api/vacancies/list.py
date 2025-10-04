@@ -31,7 +31,17 @@ async def list_vacancies(
     session: Annotated[AsyncSession, Depends(get_async_session)]
 ):
     """
-    Вернуть список вакансий
+    Получить список всех вакансий из базы данных.
+
+    Эндпоинт извлекает все вакансии, преобразует их в схемы `VacancySchema` 
+    и возвращает клиенту.
+
+    Args:
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
+
+    Returns:
+        list[VacancySchema]: Список вакансий с основными данными 
+        (`id`, `title`, `description`, `contact_information`, `source`, `platform_id`, `category_title`).
     """
     vacancies_to_schema: list[VacancySchema] = await vacancies_list(session)
     return vacancies_to_schema
