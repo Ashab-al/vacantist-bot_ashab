@@ -15,10 +15,16 @@ from services.tg.user.current_user import current_user
 from services.tg.advertisement import advertisement
 
 
-router = Router(name="Обработчик главного меню")
-router.message.filter(F.chat.type == "private")
+router = Router(
+    name="Обработчик главного меню"
+)
+router.message.filter(
+    F.chat.type == "private"
+)
 
-@router.message(CommandStart())
+@router.message(
+    CommandStart()
+)
 @with_session
 async def cmd_start(
     message: Message,
@@ -26,6 +32,15 @@ async def cmd_start(
 ) -> None:
     """
     Обрабатывает команду /start.
+
+    Args:
+        message (Message): Объект сообщения от пользователя.
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
+
+    Notes:
+        - Создает или обновляет пользователя через `current_user`.
+        - Отправляет приветственное сообщение с инструкциями.
+        - Прикрепляет основное меню с кнопками.
     """
     await current_user(session, message=message)
     
@@ -37,12 +52,24 @@ async def cmd_start(
     )
 
 
-@router.message(AdvertisementButtonFilter())
+@router.message(
+    AdvertisementButtonFilter()
+)
 @with_session
 async def reaction_btn_advertisement( 
     message: Message,
     session: AsyncSession
 ) -> None:
+    """
+    Обрабатывает нажатие на кнопку "Реклама" в главном меню.
+
+    Args:
+        message (Message): Объект сообщения от пользователя.
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
+
+    Notes:
+        - Получает список категорий с количеством подписчиков на эти категории через `advertisement`.
+    """
     await message.answer(
         await jinja_render(
             'menu/advertisement', 
@@ -50,8 +77,20 @@ async def reaction_btn_advertisement(
         )
     )
 
-@router.message(HelpButtonFilter())
-async def reaction_btn_help(message: Message) -> None:
-    await message.answer(await jinja_render('menu/instructions'))
+@router.message(
+    HelpButtonFilter()
+)
+async def reaction_btn_help(
+    message: Message
+) -> None:
+    """
+    Обрабатывает нажатие на кнопку "Помощь" в главном меню.
 
+    Args:
+        message (Message): Объект сообщения от пользователя.
+
+    Notes:
+        - Отправляет пользователю инструкцию по использованию бота.
+    """
+    await message.answer(await jinja_render('menu/instructions'))
 
