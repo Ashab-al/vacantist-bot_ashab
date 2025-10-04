@@ -1,7 +1,9 @@
 # Вакантист: Telegram-бот для получения вакансий
 
 Вакантист — это Telegram-бот, который позволяет пользователям подписываться на вакансии по интересующим категориям и получать уведомления о новых предложениях.
-<img width="597" height="979" alt="image" src="https://github.com/user-attachments/assets/98fa79ea-f887-4405-ac8e-ab75c5a034bd" />
+
+<img width="397" height="779" alt="image" src="https://github.com/user-attachments/assets/98fa79ea-f887-4405-ac8e-ab75c5a034bd" />
+
 ## Как работает бот?
 1. Пользователь заходит в бота: [Перейти к рабочему боту](https://t.me/infobizaa_bot).
 2. Нажимает на кнопку «Категории».
