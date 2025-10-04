@@ -16,7 +16,7 @@ class SetStatusResponse(CamelModel):
     phone: str | None = Field(None, description='Телефон пользователя', examples=['79999999999'])
     point: int = Field(..., description='Количество поинтов у пользователя', examples=[10])
     bonus: int = Field(..., description='Количество бонусных поинтов у пользователя', examples=[10])
-    bot_status: BotStatusEnum = Field(..., description='Статус пользователя в системе', examples=['works'])
+    bot_status: BotStatusEnum = Field(..., description='Статус пользователя в системе', examples=[BotStatusEnum.WORKS, BotStatusEnum.BOT_BLOCKED])
     created_at: datetime = Field(..., description='Дата создания пользователя')
     updated_at: datetime = Field(..., description='Дата последнего обновления пользователя')
 
