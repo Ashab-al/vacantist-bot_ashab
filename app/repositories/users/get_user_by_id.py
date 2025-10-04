@@ -8,7 +8,16 @@ async def get_user_by_id(
     db: AsyncSession,
     user_id: int
 ) -> User | None:
-    """Вернуть пользователя по id"""
+    """
+    Получить пользователя по его ID с предзагруженными категориями.
+
+    Args:
+        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
+        user_id (int): ID пользователя.
+
+    Returns:
+        User | None: Пользователь с предзагруженными категориями или None, если не найден.
+    """
     return (
         await db.execute(
             select(User).where(User.id==user_id).options(joinedload(User.categories))
