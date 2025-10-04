@@ -1,13 +1,6 @@
-from aiogram.types import ReplyKeyboardMarkup, WebAppInfo, InlineKeyboardMarkup, KeyboardButton
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
-import asyncio
-from config import settings, i18n
+from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
+from config import i18n
 from lib.tg.common import jinja_render
-from repositories.categories.get_all_categories import get_all_categories
-from models.category import Category
-from sqlalchemy.ext.asyncio import AsyncSession
-from repositories.categories.get_all_categories import get_all_categories
-from bot.filters.callback.category_callback import CategoryCallback 
 from models.vacancy import Vacancy
 from models.user import User
 from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
@@ -18,7 +11,23 @@ MAX_COUNT_BUTTON_IN_LINE = 1
 async def vacancy_keyboard(
     user: User,
     vacancy: Vacancy
-):
+) -> InlineKeyboardMarkup:
+    """
+    Создает inline-клавиатуру для взаимодействия с вакансией.
+
+    Args:
+        user (User): Пользователь, для которого строится клавиатура.
+        vacancy (Vacancy): Вакансия, к которой относится клавиатура.
+
+    Returns:
+        InlineKeyboardMarkup: Клавиатура с кнопками:
+            - Получить контактные данные вакансии.
+            - Пополнить очки пользователя.
+            - Пожаловаться на вакансию (спам).
+
+    Notes:
+        Кнопки выстраиваются в одну колонку (по одной в строке).
+    """
     kb = InlineKeyboardBuilder()
 
     kb.button(
