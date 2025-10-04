@@ -4,10 +4,36 @@ from datetime import datetime
 
 
 class ShowCategoryResponse(CamelModel):
-    """Схема для возврата категории"""
+    """
+    Схема ответа API для возврата информации о категории.
+
+    Используется для передачи клиенту данных о категории, включая
+    её идентификатор, название и временные метки создания и обновления.
+    """
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(..., description="id категории", example=1)
-    name: str = Field(..., description='Название категории', examples=['Тех-спец'])
-    created_at: datetime = Field(..., description='Дата создания категории')
-    updated_at: datetime = Field(..., description='Дата последнего обновления категории')
+    id: int = Field(
+        ...,
+        description="Уникальный идентификатор категории.",
+        example=1
+    )
+    """ID категории."""
+
+    name: str = Field(
+        ...,
+        description="Название категории.",
+        examples=["Тех-спец"]
+    )
+    """Название категории."""
+
+    created_at: datetime = Field(
+        ...,
+        description="Дата и время создания категории."
+    )
+    """Временная метка создания категории."""
+
+    updated_at: datetime = Field(
+        ...,
+        description="Дата и время последнего обновления категории."
+    )
+    """Временная метка последнего обновления категории."""

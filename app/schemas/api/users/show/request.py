@@ -1,6 +1,17 @@
 from fastapi_camelcase import CamelModel
 from pydantic import Field
 
+
 class ShowUserRequest(CamelModel):
-    """Схема для поиска пользователя"""    
-    id: int = Field(..., description='id пользователя', examples=[1])
+    """
+    Схема запроса API для получения информации о пользователе.
+
+    Используется для передачи идентификатора пользователя,
+    информацию о котором необходимо вернуть.
+    """
+    id: int = Field(
+        ...,
+        description="Уникальный идентификатор пользователя.",
+        examples=[1]
+    )
+    """ID пользователя, информацию о котором необходимо получить."""

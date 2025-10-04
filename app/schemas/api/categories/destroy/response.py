@@ -4,10 +4,37 @@ from datetime import datetime
 
 
 class DestroyCategoryResponse(CamelModel):
-    """Схема для возврата успешного ответа после удаления категории"""
+    """
+    Схема ответа API после успешного удаления категории.
+
+    Используется для возврата клиенту информации о категории,
+    которая была удалена, включая её идентификатор, название
+    и временные метки создания и обновления.
+    """
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(..., description="id категории", example=1)
-    name: str = Field(..., description='Название категории', examples=['Тех-спец'])
-    created_at: datetime = Field(..., description='Дата создания категории')
-    updated_at: datetime = Field(..., description='Дата последнего обновления категории')
+    id: int = Field(
+        ..., 
+        description="Уникальный идентификатор категории.", 
+        example=1
+    )
+    """ID категории, удалённой из системы."""
+
+    name: str = Field(
+        ..., 
+        description="Название категории.", 
+        examples=["Тех-спец"]
+    )
+    """Название удалённой категории."""
+
+    created_at: datetime = Field(
+        ..., 
+        description="Дата и время создания категории."
+    )
+    """Метка времени, когда категория была создана."""
+
+    updated_at: datetime = Field(
+        ..., 
+        description="Дата и время последнего обновления категории."
+    )
+    """Метка времени последнего обновления перед удалением."""
