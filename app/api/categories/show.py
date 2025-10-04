@@ -19,6 +19,19 @@ async def show_category(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     category_id: Annotated[ShowCategoryRequest, Path()]
 ):
+    """
+    Возвращает категорию по её ID.
+
+    Args:
+        session (AsyncSession): Асинхронная сессия SQLAlchemy.
+        id (int): ID категории для получения информации.
+
+    Returns:
+        ShowCategoryResponse: Информация о найденной категории.
+
+    Raises:
+        HTTPException: Если категория с указанным ID не найдена.
+    """
     try:
         category = await find_category_by_id(
             session,
