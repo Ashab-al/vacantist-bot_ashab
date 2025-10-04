@@ -1,8 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import (
-    select,
-    or_
-)
+from sqlalchemy import select,or_
 from models.blacklist import BlackList
 
 
@@ -11,7 +8,20 @@ async def black_list_check_by_platform_id_or_contact_information(
     platform_id: str | None = None,
     contact_information: str | None = None
 ) -> BlackList | None:
-    """Вернуть информацию есть ли вакансия в черном списке"""
+    """
+    Проверить, есть ли запись о вакансии в черном списке по platform_id или contact_information.
+
+    Args:
+        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
+        platform_id (str | None): ID пользователя/отправителя вакансии.
+        contact_information (str | None): Контактная информация из вакансии.
+
+    Returns:
+        BlackList | None: Объект BlackList, если найден, иначе None.
+
+    Raises:
+        ValueError: Если не передан ни один из аргументов.
+    """
     
     conditions = []
     if platform_id:
@@ -23,7 +33,7 @@ async def black_list_check_by_platform_id_or_contact_information(
     if not conditions:
         raise ValueError("Не передан ни один аргумент")
     result = await db.scalars(
-            select(BlackList).where(or_(*conditions))
-        )
-    print()
+        select(BlackList).where(or_(*conditions))
+    )
+    
     return result.one_or_none()
