@@ -8,5 +8,5 @@ class SetStatusUserIdRequest(CamelModel):
     id: int = Field(..., description='id пользователя', examples=[1])
 
 class SetStatusRequest(CamelModel):
-    """Схема для поиска пользователя"""    
+    """Схема для обновления `bot_status` у пользователя"""    
     bot_status: BotStatusEnum = Field(..., description='Статус пользователя в системе', examples=['works'])
