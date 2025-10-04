@@ -1,20 +1,35 @@
-from sqlalchemy import (
-    String, 
-    BigInteger, 
-    Integer, 
-    Date, 
-    Time, 
-    ForeignKey, 
-    Enum,
-    Column
-)
+from sqlalchemy import String, BigInteger, Integer, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 from enums.bot_status_enum import BotStatusEnum
 from models.subscription import subscription
 from typing import List
 
+
 class User(Base):
+    """
+    Модель пользователя.
+
+    Таблица `users` хранит информацию о пользователях Telegram и их активности
+    в системе, включая количество поинтов, бонусов, статус и подписки на категории.
+
+    Константы:
+        DEFAULT_POINT (int): Начальное количество поинтов пользователя.
+        DEFAULT_BONUS (int): Начальное количество бонусов пользователя.
+        COUNT_FOR_FULL_BATTERY (int): Количество поинтов для полной «зарядки» поинтов (учитывается при выборе смайлика).
+
+    Attributes:
+        id (int): Уникальный идентификатор пользователя.
+        platform_id (int): ID пользователя в Telegram (уникальный).
+        first_name (str): Имя пользователя.
+        username (str | None): Username пользователя в Telegram.
+        email (str | None): Почта пользователя.
+        phone (str | None): Телефон пользователя.
+        point (int): Количество поинтов у пользователя.
+        bonus (int): Количество бонусных поинтов у пользователя.
+        bot_status (BotStatusEnum): Статус пользователя в системе.
+        categories (List[Category]): Список категорий, на которые подписан пользователь.
+    """
     __tablename__ = 'users'
 
     DEFAULT_POINT=0
