@@ -1,10 +1,19 @@
+"""
+Конфигурация приложения и инициализация глобальных объектов.
+
+- Настройки приложения через Pydantic Settings
+- Настройка Jinja2 Environment для шаблонов
+- Загрузка локализации i18n
+- Глобальная очередь для вакансий
+"""
+
+
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import PostgresDsn
 from typing import Optional
 import logging
 import requests
-from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
+from jinja2 import Environment, select_autoescape, FileSystemLoader
 import json
 from lib.tg.pluralize import pluralize
 import asyncio
@@ -13,6 +22,19 @@ import asyncio
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Settings(BaseSettings):
+    """
+    Настройки приложения, загружаются из .env файла.
+
+    Attributes:
+        bot_token (str): Токен Telegram бота
+        admin_id (int): ID администратора
+        admin_chat_id (str): ID чата администратора
+        ngrok_api (str): URL локального ngrok API для получения публичного HTTPS URL
+        database_dsn (str): DSN для подключения к базе данных
+        echo_db_engine (Optional[bool]): Флаг логирования SQLAlchemy
+        db_host (str), db_port (int), db_user (str), db_pass (str), db_name (str): параметры БД
+        ngrok_authtoken (Optional[str]): токен для ngrok (если нужен)
+    """
     bot_token: str
     admin_id: int
     admin_chat_id: str
@@ -33,7 +55,12 @@ class Settings(BaseSettings):
     ngrok_authtoken: Optional[str] = None
 
     def ngrok_url(self):
-        """Получает публичный HTTPS URL от локального API ngrok."""
+        """
+        Получает публичный HTTPS URL от локального ngrok API.
+
+        Returns:
+            str: Публичный URL для вебхука
+        """
         logging.info(f"Поиск Ngrok URL")
         response = requests.get(self.ngrok_api)
         response.raise_for_status()
@@ -45,23 +72,31 @@ class Settings(BaseSettings):
                 return public_url
 
     def get_webhook_url(self) -> str:
-        """Возвращает URL вебхука с кодированием специальных символов."""
+        """
+        Формирует URL вебхука для Telegram бота.
+
+        Returns:
+            str: URL вебхука
+        """
         return f"{self.ngrok_url()}/api/v1/webhook"
 
-
 settings = Settings()
+"""Экземпляр настроек"""
 
 jinja_env = Environment(
     loader=FileSystemLoader(os.path.join(BASE_DIR, "templates")),
     autoescape=select_autoescape(),
     enable_async=True
 )
+"""Инициализация Jinja2 Environment для рендеринга шаблонов"""
 
+# Загрузка локализации
 with open("locales/ru-RU/bot.json") as f:
     i18n: dict[str, str] = json.load(f)['ru']
-    """json с текстами"""
+    """JSON с текстами для бота"""
 
 jinja_env.globals['i18n'] = i18n
 jinja_env.globals['pluralize'] = pluralize
 
 vacancy_queue: asyncio.Queue = asyncio.Queue(maxsize=0)
+"""Глобальная очередь вакансий"""

@@ -1,3 +1,13 @@
+"""
+Главный файл запуска FastAPI-приложения с интеграцией Telegram-бота.
+
+- Настройка webhook Telegram
+- Запуск и остановка бота
+- Подключение API и обработчиков
+- Управление жизненным циклом приложения через lifespan
+"""
+
+
 import logging
 from contextlib import asynccontextmanager
 from bot.create_bot import bot, dp, stop_bot, start_bot
@@ -15,6 +25,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """
+    Управляет жизненным циклом приложения FastAPI с Telegram-ботом.
+
+    Подключает маршруты бота, устанавливает webhook, запускает воркер отправки
+    вакансий (TODO), и корректно завершает работу бота при остановке приложения.
+
+    Args:
+        app (FastAPI): Экземпляр FastAPI приложения.
+    """
     logging.info("Starting bot setup...")
     dp.include_router(main_router)
 
@@ -64,6 +83,18 @@ app.include_router(api_router, prefix="/api/v1")
 async def webhook(
     request: Request
 ) -> None:
+    """
+    Обрабатывает входящие обновления от Telegram через webhook.
+
+    Args:
+        request (Request): Объект запроса FastAPI с данными Telegram.
+
+    Raises:
+        HTTPException: Если происходит ошибка при обработке обновления.
+    
+    Notes:
+        Обновление валидируется и передается в диспетчер dp.feed_update для обработки.
+    """
     logging.info("Received webhook request")
     update = Update.model_validate(await request.json(), context={"bot": bot})
     logging.info("ВЕБХУК")
