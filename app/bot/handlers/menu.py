@@ -1,16 +1,11 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters.command import CommandStart
-
 from lib.tg.common import jinja_render
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import with_session
 from bot.keyboards.kbs import menu_keyboard
-from bot.filters.button import (
-    AdvertisementButtonFilter,
-    HelpButtonFilter,
-)
-
+from bot.filters.button import AdvertisementButtonFilter, HelpButtonFilter
 from services.tg.user.current_user import current_user
 from services.tg.advertisement import advertisement
 
