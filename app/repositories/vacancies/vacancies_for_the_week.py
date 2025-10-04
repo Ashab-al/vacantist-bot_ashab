@@ -3,8 +3,6 @@ from models.vacancy import Vacancy
 from models.category import Category
 from models.blacklist import BlackList
 from sqlalchemy.ext.asyncio import AsyncSession
-from services.tg.category.find_subscribe import find_subscribe
-from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
 from sqlalchemy import func, select, Select
 from datetime import datetime, timedelta, time
 
@@ -13,6 +11,11 @@ QUANTITY_DAYS = 7
 
 
 class VacancyForTheWeekRepository:
+    """
+    Репозиторий для получения вакансий за последнюю неделю
+    для пользователя с учетом его подписок на категории.
+    """
+
     def __init__(
         self, 
         db: AsyncSession,
@@ -25,11 +28,12 @@ class VacancyForTheWeekRepository:
         Args:
             db (AsyncSession): Асинхронная сессия
             subscribed_categories (list[Category] | list): Список объектов `Category` на которые подписан пользователь
+            user (User): Пользователь, для которого ищем вакансии.
             stmt (Select): Исходный запрос (Select).
             page (int): Номер страницы (начиная с 1).
             page_size (int): Количество элементов на странице.
-        
         """
+
         self.db: AsyncSession = db
         self.subscribed_categories: list[Category] | list = subscribed_categories
         self.user: User = user
@@ -40,18 +44,17 @@ class VacancyForTheWeekRepository:
         self
     ) -> list[Vacancy] | list:
         """
-        Вернуть список вакансий с примененной пагинацией
+        Получить список вакансий за последнюю неделю с учетом пагинации.
 
         Notes:
-            self.vacancies_stmt: Сохраняет в экземпляре `VacancyForTheWeekRepository` базовый запрос, 
-                                 чтобы потом получить общее количество найденных объектов
+            self.vacancies_stmt: сохраняет базовый запрос для последующего подсчета общего количества записей.
+
+        Returns:
+            list[Vacancy]: Список вакансий для текущей страницы.
         """
 
         self.vacancies_stmt: Select = await self._base_stmt()
-
-        stmt: Select = await self._apply_pagination(
-            self.vacancies_stmt
-        )
+        stmt: Select = await self._apply_pagination(self.vacancies_stmt)
         result = await self.db.execute(stmt)
         return result.scalars().all()
     
@@ -59,10 +62,10 @@ class VacancyForTheWeekRepository:
         self 
     ) -> int:
         """
-        Считает записи, вошедшие в запрос.
-        
+        Посчитать общее количество вакансий, подходящих под условия поиска.
+
         Returns:
-            Общее количество записей.
+            int: Общее количество найденных вакансий.
         """
 
         count_stmt = self.vacancies_stmt.with_only_columns(func.count()).order_by(None)
@@ -71,9 +74,13 @@ class VacancyForTheWeekRepository:
 
     async def _base_stmt(self) -> Select:
         """
-        Вернуть базовый Select запрос для поиска вакансий по категориям
+        Построить базовый Select-запрос для вакансий пользователя.
+
+        Returns:
+            Select: SQLAlchemy Select-запрос с фильтрацией по категориям,
+                    blacklist и дате создания.
         """
-        
+
         category_ids: set[int] = {
             category.id 
             for category in self.subscribed_categories
@@ -87,16 +94,11 @@ class VacancyForTheWeekRepository:
 
         stmt: Select = (
             select(Vacancy)
-            .where(
-                Vacancy.category_id.in_(category_ids)
-            )
+            .where(Vacancy.category_id.in_(category_ids))
             .where(Vacancy.platform_id.not_in(
-                    select(BlackList.contact_information)    
-                )
-            )
-            .where(
-                Vacancy.created_at.between(low_datetime, now_datetime)
-            )
+                select(BlackList.contact_information)    
+            ))
+            .where(Vacancy.created_at.between(low_datetime, now_datetime))
             .order_by(Vacancy.created_at.desc())
         )
         
@@ -107,14 +109,14 @@ class VacancyForTheWeekRepository:
         stmt: Select    
     ) -> Select:
         """
-        Применяет пагинацию к запросу.
+        Применить пагинацию к запросу.
 
         Args:
-            stmt (Select): Запрос-Select
-        
+            stmt (Select): Исходный Select-запрос.
+
         Returns:
-            Запрос с установленными limit и offset.
-        
+            Select: Запрос с установленными `limit` и `offset`.
         """
+        
         offset = (self.page - 1) * self.page_size
         return stmt.limit(self.page_size).offset(offset)
