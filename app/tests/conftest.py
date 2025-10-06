@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
@@ -60,7 +61,7 @@ def pytest_collection_modifyitems(
 
 
 @pytest_asyncio.fixture
-async def session_factory() -> async_sessionmaker[AsyncSession]:
+async def session_factory() -> AsyncGenerator[async_sessionmaker[AsyncSession], None]:
     """Provide a new in-memory SQLite session factory."""
 
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
