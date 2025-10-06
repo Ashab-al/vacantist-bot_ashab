@@ -28,3 +28,17 @@ async def test_delete_category(
     assert result_delete.id == category.id
     assert result_delete.name == category.name
     
+@pytest.mark.asyncio
+async def test_delete_not_exist_category(
+    session_factory
+):
+    """Проверяет удаление не существующей категории"""
+    category_id: int = random.randint(1, 1000)
+    destroy_category_request: DestroyCategoryRequest = DestroyCategoryRequest(id=category_id)
+
+    with pytest.raises(ValueError) as excinfo:
+        async with session_factory() as session:
+            await delete_category(session, destroy_category_request)
+    
+    assert excinfo.type is ValueError
+    assert "Категории не существует" in str(excinfo.value)

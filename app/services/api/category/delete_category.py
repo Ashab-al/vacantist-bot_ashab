@@ -24,7 +24,7 @@ async def delete_category(
         await db.execute(
             select(Category).where(Category.id == category_id.id)
         )
-    ).scalar_one_or_none()
+    ).scalar_one_or_none() # TODO Перенести в репозиторий либо вызывать сервис
 
     if category is None:
         raise ValueError('Категории не существует')
