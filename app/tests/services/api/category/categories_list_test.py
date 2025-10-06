@@ -28,7 +28,7 @@ async def test_categories_list(
 async def test_categories_list_empty(
     session_factory
 ):
-    """Проверяет, возвращаются ли пустой список."""
+    """Проверяет, возвращается ли пустой список."""
     empty_list_size: int = 0
     async with session_factory() as session:
         result: list[Category] = await categories_list(session)

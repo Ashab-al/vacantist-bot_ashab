@@ -1,18 +1,18 @@
 from models.category import Category
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-
+from schemas.api.categories.destroy import DestroyCategoryRequest
 
 async def delete_category(
     db: AsyncSession,
-    category_id: int
+    category_id: DestroyCategoryRequest
 ) -> Category:
     """
     Удалить категорию по `id` категории
 
     Args:
         db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных
-        category_id (int): id категории
+        category_id (DestroyCategoryRequest): схема для удаления категории
     
     Returns:
         category (Category): Категория, которая была удалена.
