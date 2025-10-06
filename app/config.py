@@ -43,14 +43,15 @@ class Settings(BaseSettings):
     )
     ngrok_api: str
 
+    # БД
     database_dsn: str
     echo_db_engine: Optional[bool] = True
     db_host: str
     db_port: int
     db_user: str
-    db_user: str
     db_pass: str
     db_name: str
+
 
     ngrok_authtoken: Optional[str] = None
 
