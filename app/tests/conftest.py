@@ -77,9 +77,10 @@ async def session_factory() -> AsyncGenerator[async_sessionmaker[AsyncSession], 
 
 
 @pytest_asyncio.fixture
-async def new_tg_user(
-    session_factory
-) -> User:
+async def new_tg_user(session_factory) -> User:
+    return await create_tg_user(session_factory)
+
+async def create_tg_user(session_factory):
     """Возвращает нового пользователя для тестов"""
     user_data: dict[str, str | int] = {
         "id": random.randint(1000, 100000000),
