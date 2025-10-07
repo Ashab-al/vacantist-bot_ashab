@@ -1,13 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.category import Category
-from schemas.api.categories.create import CreateCategoryResponse, CreateCategoryRequest
+from schemas.api.categories.create import CreateCategoryRequest
 from repositories.categories.get_category_by_name import get_category_by_name
 
 
 async def create_category(
     db: AsyncSession,
     category_data: CreateCategoryRequest
-) -> CreateCategoryResponse:
+) -> Category:
     """
     Создает новую категорию
 
@@ -16,7 +16,7 @@ async def create_category(
         category_data (CreateCategoryRequest): Схема для создания категории
     
     Returns:
-        category (CreateCategoryResponse): Схема для возврата успешного ответа после создании категории
+        category (Category): Объект категории
     
     Raises:
         ValueError: Такая категория уже существует
