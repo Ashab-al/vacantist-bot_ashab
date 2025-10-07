@@ -1,6 +1,6 @@
 from fastapi_camelcase import CamelModel
 from pydantic import Field
-
+from lib.tg.constants import SOURCE
 
 class CreateVacancyRequest(CamelModel):
     """
@@ -23,7 +23,7 @@ class CreateVacancyRequest(CamelModel):
         example="Тех-спец",
         description="Название категории, к которой относится вакансия."
     )
-    """Категория вакансии."""
+    """Категория вакансии.""" #TODO Потом удалить. Посмотреть нужен ли на самом деле такой атрибут
 
     description: str = Field(
         ...,
@@ -41,7 +41,7 @@ class CreateVacancyRequest(CamelModel):
 
     source: str = Field(
         ...,
-        example="telegram chat",
+        example=SOURCE,
         description="Источник, откуда поступила вакансия."
     )
     """Источник вакансии."""
