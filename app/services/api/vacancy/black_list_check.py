@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.blacklist import BlackList
 from repositories.blacklist.black_list_check_by_platform_id_and_contact_information import black_list_check_by_platform_id_or_contact_information
-from config import i18n
 
 
 async def black_list_check(
@@ -27,5 +26,5 @@ async def black_list_check(
     )
     
     if blacklist:
-        raise ValueError(i18n['error']['messages']['error_validate_vacancy'])
+        raise ValueError('Вакансия в черном списке')
     

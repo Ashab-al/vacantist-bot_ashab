@@ -11,9 +11,17 @@ from sqlalchemy.ext.asyncio import (  # noqa: E501
     create_async_engine,
 )
 
+from lib.tg.constants import SOURCE
+from models.category import Category
+from models.vacancy import Vacancy
+from schemas.api.categories.create.request import CreateCategoryRequest
+from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.tg.user.tg_user import TgUser
 from models.user import User
 import random
+
+from services.api.category.create_category import create_category
+from services.api.vacancy.create_vacancy import create_vacancy
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from models.base import Base  # noqa: E402
@@ -104,3 +112,31 @@ async def create_tg_user(session_factory):
         await session.refresh(user)
 
     return user
+
+async def create_vacancy_and_category(
+    session_factory
+) -> tuple[Vacancy, Category]:
+    """Создать и вернуть новую вакансию с рандомной категорией"""
+    category_name: str = f"Category {random.randint(1, 100)}"
+    vacancy_data: dict[str, str] = {
+        "title": "Технический специалист",
+        "categoryTitle": category_name,
+        "description": f"Описание вакансии{random.randint(100, 1000000)}",
+        "contactInformation": f"ТГ - @username{random.randint(100, 1000000)}",
+        "source": SOURCE,
+        "platformId": f"{random.randint(100, 1000000)}"
+    }
+    create_vacancy_request: CreateVacancyRequest = CreateVacancyRequest(**vacancy_data)
+    
+    async with session_factory() as session:
+        category: Category = await create_category(
+            session, 
+            CreateCategoryRequest(name = category_name)
+        )
+        vacancy: Vacancy = await create_vacancy(
+            session,
+            create_vacancy_request,
+            category
+        )
+    
+    return vacancy, category
