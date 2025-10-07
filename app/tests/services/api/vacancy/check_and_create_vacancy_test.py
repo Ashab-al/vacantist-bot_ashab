@@ -2,7 +2,6 @@ import pytest
 from models.blacklist import BlackList
 import random
 from models.vacancy import Vacancy
-from services.api.vacancy.black_list_check import black_list_check
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.conftest import create_vacancy_and_category
 from schemas.api.vacancies.create.request import CreateVacancyRequest
