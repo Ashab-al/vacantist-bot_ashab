@@ -1,11 +1,8 @@
 import pytest
-from models.category import Category
-from models.vacancy import Vacancy
 from models.blacklist import BlackList
 import random
 from services.api.vacancy.black_list_check import black_list_check
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from tests.conftest import create_vacancy_and_category
 
 
@@ -14,7 +11,6 @@ async def test_black_list_check_when_vacancy_is_not_blacklist(
     session_factory
 ):
     """Проверяет нахождение вакансии в черном списке Когда вакансия не находится в черном списке"""
-    
     vacancy, _category = await create_vacancy_and_category(session_factory)
     
     async with session_factory() as session:
@@ -31,7 +27,6 @@ async def test_black_list_check_when_vacancy_is_blacklist(
     session_factory: AsyncSession
 ):
     """Проверяет нахождение вакансии в черном списке Когда вакансия находится в черном списке"""
-    
     vacancy, _category = await create_vacancy_and_category(session_factory)
     complaint_counter: int = random.randint(2, 10)
     
