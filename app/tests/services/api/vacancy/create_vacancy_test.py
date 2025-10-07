@@ -6,8 +6,8 @@ from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.api.categories.create import CreateCategoryRequest
 from services.api.vacancy.create_vacancy import create_vacancy
 from services.api.category.create_category import create_category
-
 from lib.tg.constants import SOURCE
+
 
 @pytest.mark.asyncio
 async def test_create_vacancy(
