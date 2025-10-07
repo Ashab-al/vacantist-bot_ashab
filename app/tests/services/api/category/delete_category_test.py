@@ -1,5 +1,4 @@
 import pytest
-from sqlalchemy import select
 from models.category import Category
 from services.api.category.delete_category import delete_category
 import random
