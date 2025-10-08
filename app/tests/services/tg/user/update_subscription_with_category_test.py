@@ -1,8 +1,6 @@
 import pytest
-from aiogram.types import User as AiogramTgUser
 import random
 from models.user import User
-from enums.bot_status_enum import BotStatusEnum
 from repositories.users.get_user_by_id import get_user_by_id
 from services.tg.user.update_subscription_with_category import update_subscription_with_category
 from bot.filters.callback.category_callback import CategoryCallback

@@ -131,7 +131,7 @@ async def create_vacancy_and_category_with_session(
     """Создать и вернуть новую вакансию с рандомной категорией"""
     category_name: str = f"Category {random.randint(1, 10000000000)}"
     vacancy_data: dict[str, str] = {
-        "title": "Технический специалист",
+        "title": category_name,
         "categoryTitle": category_name,
         "description": f"Описание вакансии{random.randint(100, 1000000)}",
         "contactInformation": f"ТГ - @username{random.randint(100, 1000000)}",
