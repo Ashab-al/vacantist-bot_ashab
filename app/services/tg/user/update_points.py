@@ -26,7 +26,7 @@ async def update_points(
     user: User = await get_user_by_platform_id(db, aiogram_user.id)
     
     if user is None:
-        raise ValueError(f"Пользователь с platform_id {user.platform_id} не найден")
+        raise ValueError(f"Пользователь с platform_id {aiogram_user.id} не найден")
 
     user.point = user.point + points
 
