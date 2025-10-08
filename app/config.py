@@ -92,7 +92,7 @@ jinja_env = Environment(
 """Инициализация Jinja2 Environment для рендеринга шаблонов"""
 
 # Загрузка локализации
-with open("locales/ru-RU/bot.json") as f:
+with open(f"{BASE_DIR}/locales/ru-RU/bot.json") as f:
     i18n: dict[str, str] = json.load(f)['ru']
     """JSON с текстами для бота"""
 

@@ -129,7 +129,7 @@ async def create_vacancy_and_category_with_session(
     session: AsyncSession
 ) -> tuple[Vacancy, Category]:
     """Создать и вернуть новую вакансию с рандомной категорией"""
-    category_name: str = f"Category {random.randint(1, 100)}"
+    category_name: str = f"Category {random.randint(1, 10000000000)}"
     vacancy_data: dict[str, str] = {
         "title": "Технический специалист",
         "categoryTitle": category_name,
