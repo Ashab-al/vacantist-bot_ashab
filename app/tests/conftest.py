@@ -90,31 +90,43 @@ async def new_tg_user(session_factory) -> User:
 
 async def create_tg_user(session_factory):
     """Возвращает нового пользователя для тестов"""
+    async with session_factory() as session:
+        return await create_tg_user_with_session(session)
+
+async def create_tg_user_with_session(session) -> User:
+    """Возвращает нового пользователя для тестов"""
     user_data: dict[str, str | int] = {
         "id": random.randint(1000, 100000000),
         "first_name": f"Имя {random.randint(1, 1000)}",
         "username": f"asd{random.randint(1, 1000)}"
     }
     new_user_schema: TgUser = TgUser.model_validate(user_data)
-    async with session_factory() as session:
-        user: User = User(
-            platform_id=new_user_schema.id,
-            first_name=new_user_schema.first_name,
-            username=new_user_schema.username,
-            email=new_user_schema.email,
-            phone=new_user_schema.phone,
-            point=new_user_schema.point,
-            bonus=new_user_schema.bonus,
-            bot_status=new_user_schema.bot_status
-        )
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
+    user: User = User(
+        platform_id=new_user_schema.id,
+        first_name=new_user_schema.first_name,
+        username=new_user_schema.username,
+        email=new_user_schema.email,
+        phone=new_user_schema.phone,
+        point=new_user_schema.point,
+        bonus=new_user_schema.bonus,
+        bot_status=new_user_schema.bot_status
+    )
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
 
     return user
 
 async def create_vacancy_and_category(
     session_factory
+) -> tuple[Vacancy, Category]:
+    """Создать и вернуть новую вакансию с рандомной категорией"""
+    async with session_factory() as session:
+        return await create_vacancy_and_category_with_session(session)
+
+
+async def create_vacancy_and_category_with_session(
+    session: AsyncSession
 ) -> tuple[Vacancy, Category]:
     """Создать и вернуть новую вакансию с рандомной категорией"""
     category_name: str = f"Category {random.randint(1, 100)}"
@@ -128,15 +140,14 @@ async def create_vacancy_and_category(
     }
     create_vacancy_request: CreateVacancyRequest = CreateVacancyRequest(**vacancy_data)
     
-    async with session_factory() as session:
-        category: Category = await create_category(
-            session, 
-            CreateCategoryRequest(name = category_name)
-        )
-        vacancy: Vacancy = await create_vacancy(
-            session,
-            create_vacancy_request,
-            category
-        )
+    category: Category = await create_category(
+        session, 
+        CreateCategoryRequest(name = category_name)
+    )
+    vacancy: Vacancy = await create_vacancy(
+        session,
+        create_vacancy_request,
+        category
+    )
     
     return vacancy, category
