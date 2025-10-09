@@ -3,10 +3,12 @@ import pytest_asyncio
 import os
 import sys
 from pathlib import Path
+from fastapi import FastAPI
+from httpx import AsyncClient, ASGITransport
 from typing import AsyncGenerator
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch
-from main import app
+from main import app as main_app
 from database import get_async_session
 from sqlalchemy.ext.asyncio import (  # noqa: E501
     AsyncSession,
@@ -31,7 +33,6 @@ from models.base import Base  # noqa: E402
 
 
 
-
 def _load_env(path: str) -> None:
     """Load key=value pairs from *path* if file exists."""
 
@@ -46,51 +47,6 @@ def _load_env(path: str) -> None:
 
 
 _load_env(".env.test")
-
-
-def pytest_addoption(parser: pytest.Parser) -> None:
-    parser.addoption(
-        "--run-integration",
-        action="store_true",
-        default=False,
-        help="run integration tests",
-    )
-
-
-def pytest_configure(config: pytest.Config) -> None:
-    config.addinivalue_line(
-        "markers",
-        "integration: mark test as requiring --run-integration to run",
-    )
-
-
-def pytest_collection_modifyitems(
-    config: pytest.Config, items: list[pytest.Item]
-) -> None:
-    if config.getoption("--run-integration"):
-        return
-    skip_integration = pytest.mark.skip(
-        reason="need --run-integration option to run",
-    )
-    for item in items:
-        if "integration" in item.keywords:
-            item.add_marker(skip_integration)
-
-
-@pytest.fixture
-def client() -> TestClient:
-    """Создает тестовый клиент для FastAPI приложения."""
-    return TestClient(app)
-
-@pytest.fixture
-def mock_session():
-    """Мок асинхронной сессии SQLAlchemy."""
-    return AsyncMock(spec=AsyncSession)
-
-@pytest.fixture
-def mock_create_category():
-    with patch('services.api.category.create_category.create_category', new_callable=AsyncMock) as mock_func:
-        yield mock_func
 
 
 @pytest_asyncio.fixture
@@ -108,6 +64,25 @@ async def session_factory() -> AsyncGenerator[async_sessionmaker[AsyncSession], 
 async def session(session_factory):
     async with session_factory() as session:
         yield session
+
+@pytest_asyncio.fixture
+async def app(
+    session_factory: AsyncGenerator[async_sessionmaker[AsyncSession], None]
+) -> FastAPI:
+    async def _override_get_async_session():
+        async with session_factory() as session:
+            yield session
+    
+    main_app.dependency_overrides[get_async_session] = _override_get_async_session
+    
+    return main_app
+
+@pytest_asyncio.fixture
+async def client(app: FastAPI):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
+
 
 @pytest_asyncio.fixture
 async def new_tg_user(session_factory) -> User:
