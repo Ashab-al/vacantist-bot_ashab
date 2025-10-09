@@ -41,6 +41,6 @@ async def update_status(
     try:
         user = await set_status(session, user_id, bot_status)
     except ValueError as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(404, str(e))
     
     return user
