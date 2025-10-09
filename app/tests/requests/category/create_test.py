@@ -1,17 +1,49 @@
 import random
-from httpx import AsyncClient
 import pytest
+from sqlalchemy import select
 from models.category import Category
-from models.user import User
-from repositories.users.get_user_by_id import get_user_by_id
-from schemas.api.categories.create.request import CreateCategoryRequest
-from services.api.category.create_category import create_category
-from tests.conftest import create_tg_user_with_session
-from services.tg.advertisement import advertisement
-import pytest_asyncio
 
 
 @pytest.mark.asyncio
-async def test_create_category(client):
-    response = await client.post("/api/v1/categories/", json={"name": "Test"})
+async def test_create_category(
+    client, 
+    session
+):
+    """Тестирует эндпоинт создания новой категории."""
+    category_name: str = f"Category {random.randint(1, 100)}"
+    data: dict[str, str] = {"name": category_name}
+    first_id: int = 1
+    
+    response = await client.post(
+        "/categories/", 
+        json=data
+    )
+    category: Category = (await session.execute(
+        select(Category)
+        .where(Category.name == category_name)
+    )).scalars().one_or_none()
+
     assert response.status_code == 200
+    assert response.json().get('id') == first_id
+    assert response.json().get('name') == category_name
+    assert category.name == response.json().get('name')
+    assert category.id == response.json().get('id')
+
+@pytest.mark.asyncio
+async def test_create_category_when_category_is_exist(
+    client, 
+    session
+):
+    """Тестирует эндпоинт создания категории когда такая категория уже существует."""
+    category_name: str = f"Category {random.randint(1, 100)}"
+    data: dict[str, str] = {"name": category_name}
+    category = Category(name=category_name)
+    session.add(category)
+    await session.commit()
+    
+    response = await client.post(
+        "/categories/", 
+        json=data
+    )
+    assert response.status_code == 400
+    assert response.json().get('detail') == 'Такая категория уже существует'
