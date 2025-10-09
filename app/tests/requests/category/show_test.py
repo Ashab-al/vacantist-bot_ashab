@@ -29,7 +29,7 @@ async def test_show_category(
 async def test_show_category_when_category_is_not_exist(
     client
 ):
-    """Тестирует эндпоинт возврата категории по id категории"""
+    """Тестирует эндпоинт возврата категории по id категории когда категории не существует"""
 
     category_id: int = random.randint(1, 10)
     
