@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, Path
+from fastapi import Depends, APIRouter, Path, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session
 from typing import Annotated
@@ -27,10 +27,21 @@ async def destroy_category(
 
     Returns:
         DestroyCategoryResponse: Информация об удалённой категории.
+
+    Raises:
+        ValueError: Категории не существует
     """
-    category = await delete_category(
-        session,
-        category_id
-    )
+    try:
+        category = await delete_category(
+            session,
+            category_id
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            detail=f"InternalServerError {str(e)}",
+            status_code=500
+        )
 
     return category
