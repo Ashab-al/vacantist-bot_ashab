@@ -1,10 +1,13 @@
+import pytest
+import pytest_asyncio
 import os
 import sys
 from pathlib import Path
 from typing import AsyncGenerator
-
-import pytest
-import pytest_asyncio
+from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, patch
+from main import app
+from database import get_async_session
 from sqlalchemy.ext.asyncio import (  # noqa: E501
     AsyncSession,
     async_sessionmaker,
@@ -25,6 +28,8 @@ from services.api.vacancy.create_vacancy import create_vacancy
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from models.base import Base  # noqa: E402
+
+
 
 
 def _load_env(path: str) -> None:
@@ -70,6 +75,22 @@ def pytest_collection_modifyitems(
     for item in items:
         if "integration" in item.keywords:
             item.add_marker(skip_integration)
+
+
+@pytest.fixture
+def client() -> TestClient:
+    """Создает тестовый клиент для FastAPI приложения."""
+    return TestClient(app)
+
+@pytest.fixture
+def mock_session():
+    """Мок асинхронной сессии SQLAlchemy."""
+    return AsyncMock(spec=AsyncSession)
+
+@pytest.fixture
+def mock_create_category():
+    with patch('services.api.category.create_category.create_category', new_callable=AsyncMock) as mock_func:
+        yield mock_func
 
 
 @pytest_asyncio.fixture

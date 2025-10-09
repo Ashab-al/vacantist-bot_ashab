@@ -9,7 +9,23 @@ from services.tg.send_analytics import send_analytics, settings
 
 @pytest.mark.asyncio
 async def test_send_analytics():
-    """Проверяем метод send_analytics"""
+    """
+    Тестирует корректность работы функции `send_analytics`.
+
+    Основная цель:
+    - Проверить, что аналитика пользователей формируется верно.
+    - Убедиться, что шаблон рендерится с правильными данными.
+    - Проверить вызов метода отправки сообщения в админский чат.
+
+    Используемые моки:
+    - База данных (`AsyncMock`) имитирует запросы к реальной БД.
+    - `jinja_render` и `bot.send_message` заменены на асинхронные моки для изоляции теста.
+
+    Проверяемые условия:
+    1. Корректное группирование пользователей по статусам.
+    2. Рендер шаблона с правильным контекстом.
+    3. Вызов `bot.send_message` с текстом сообщения и ID чата.
+    """
     jinja_text: str = 'rendered_text'
     user_works_count: int = random.randint(3, 10)
     user_bot_blocked_count: int = random.randint(3, 10)
