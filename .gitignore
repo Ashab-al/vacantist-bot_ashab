@@ -1,6 +1,17 @@
 .env
 .pytest_cache
-*/__pycache__/
-__pycache__/
+**/__pycache__/**
 .vscode
 venv/
+.env.test
+# Временные файлы
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.coverage
+__pycache__/
+*.py[cod]
+*$py.class

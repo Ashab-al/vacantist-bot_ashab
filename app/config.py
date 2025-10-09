@@ -43,14 +43,15 @@ class Settings(BaseSettings):
     )
     ngrok_api: str
 
+    # БД
     database_dsn: str
     echo_db_engine: Optional[bool] = True
     db_host: str
     db_port: int
     db_user: str
-    db_user: str
     db_pass: str
     db_name: str
+
 
     ngrok_authtoken: Optional[str] = None
 
@@ -91,7 +92,7 @@ jinja_env = Environment(
 """Инициализация Jinja2 Environment для рендеринга шаблонов"""
 
 # Загрузка локализации
-with open("locales/ru-RU/bot.json") as f:
+with open(f"{BASE_DIR}/locales/ru-RU/bot.json") as f:
     i18n: dict[str, str] = json.load(f)['ru']
     """JSON с текстами для бота"""
 

@@ -41,6 +41,6 @@ async def show(
             user_id
         )
     except ValueError as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(404, str(e))
 
     return user

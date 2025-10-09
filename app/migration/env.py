@@ -12,7 +12,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from database import Base, database_url
+from database import database_url
+from models.base import Base
 from models.user import User
 from models.blacklist import BlackList
 from models.category import Category

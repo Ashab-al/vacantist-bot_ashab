@@ -30,7 +30,7 @@ async def update_bonus(
             которому нужно изменить бонусы.
 
     Raises:
-        HTTPException: Возвращает ошибку 400, если пользователь не найден или обновление невозможно.
+        HTTPException: Возвращает ошибку 404, если пользователь не найден или обновление невозможно.
 
     Returns:
         SetBonusResponse: Обновлённые данные пользователя с новым количеством бонусов.
@@ -38,6 +38,6 @@ async def update_bonus(
     try:
         user = await set_bonus(session, user_id, bonus)
     except ValueError as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(404, str(e))
 
     return user
