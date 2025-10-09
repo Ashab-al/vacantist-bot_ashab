@@ -1,7 +1,5 @@
 import random
 import pytest
-from sqlalchemy import select
-from models.category import Category
 from models.vacancy import Vacancy
 from tests.conftest import create_vacancy_and_category
 

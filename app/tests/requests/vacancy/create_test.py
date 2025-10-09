@@ -1,12 +1,10 @@
 
 import random
 import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, patch
 from lib.tg.constants import SOURCE
 from models.category import Category
 from models.vacancy import Vacancy
-from schemas.api.categories.create import CreateCategoryRequest, CreateCategoryResponse
+from schemas.api.categories.create import CreateCategoryRequest
 from services.api.category.create_category import create_category
 
 
