@@ -104,15 +104,19 @@ async def session_factory() -> AsyncGenerator[async_sessionmaker[AsyncSession], 
     yield factory
     await engine.dispose()
 
+@pytest_asyncio.fixture
+async def session(session_factory):
+    async with session_factory() as session:
+        yield session
 
 @pytest_asyncio.fixture
 async def new_tg_user(session_factory) -> User:
-    return await create_tg_user(session_factory)
-
-async def create_tg_user(session_factory):
-    """Возвращает нового пользователя для тестов"""
     async with session_factory() as session:
-        return await create_tg_user_with_session(session)
+        return await create_tg_user(session)
+
+async def create_tg_user(session):
+    """Возвращает нового пользователя для тестов"""
+    return await create_tg_user_with_session(session)
 
 async def create_tg_user_with_session(session) -> User:
     """Возвращает нового пользователя для тестов"""
@@ -139,11 +143,10 @@ async def create_tg_user_with_session(session) -> User:
     return user
 
 async def create_vacancy_and_category(
-    session_factory
+    session
 ) -> tuple[Vacancy, Category]:
     """Создать и вернуть новую вакансию с рандомной категорией"""
-    async with session_factory() as session:
-        return await create_vacancy_and_category_with_session(session)
+    return await create_vacancy_and_category_with_session(session)
 
 
 async def create_vacancy_and_category_with_session(

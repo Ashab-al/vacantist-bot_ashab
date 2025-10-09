@@ -6,18 +6,17 @@ import random
 
 @pytest.mark.asyncio
 async def test_categories_list(
-    session_factory
+    session
 ):
     """Проверяет, возвращаются ли корректно список категорий."""
-    category_names: list[str] = [
-        f"Category {random.randint(1, 1000)}" 
-        for _ in range(4)
-    ]
-    async with session_factory() as session:
-        for name in category_names:
-            session.add(Category(name=name))
-        await session.commit()
-        result: list[Category] = await categories_list(session)
+    category_names: list[str] = {
+        f"Category {random.randint(1, 10000000000)}" 
+        for _ in range(random.randint(4, 7))
+    }
+    for name in category_names:
+        session.add(Category(name=name))
+    await session.commit()
+    result: list[Category] = await categories_list(session)
 
     assert len(result) == len(category_names)
     assert sorted([c.name for c in result]) == sorted(category_names)
@@ -26,11 +25,10 @@ async def test_categories_list(
 
 @pytest.mark.asyncio
 async def test_categories_list_empty(
-    session_factory
+    session
 ):
     """Проверяет, возвращается ли пустой список."""
     empty_list_size: int = 0
-    async with session_factory() as session:
-        result: list[Category] = await categories_list(session)
+    result: list[Category] = await categories_list(session)
 
     assert len(result) == empty_list_size

@@ -8,7 +8,7 @@ from services.tg.user.update_points import update_points
 
 @pytest.mark.asyncio
 async def test_update_points(
-    session_factory, 
+    session, 
     new_tg_user
 ):
     """Проверяет обновление количества поинтов"""
@@ -20,12 +20,11 @@ async def test_update_points(
         first_name=new_tg_user.first_name,
         username=new_tg_user.username
     )
-    async with session_factory() as session:
-        user: User = await update_points(
-            session,
-            aiogram_user,
-            count_points
-        )
+    user: User = await update_points(
+        session,
+        aiogram_user,
+        count_points
+    )
 
     assert user.point == count_points
     assert user.bot_status == BotStatusEnum.WORKS
@@ -35,7 +34,7 @@ async def test_update_points(
 
 @pytest.mark.asyncio
 async def test_update_points_when_user_is_not_exist(
-    session_factory
+    session
 ):
     """Проверяет обновление количества поинтов у несуществующего пользователя"""
     user_id = random.randint(1, 1000)
@@ -53,9 +52,8 @@ async def test_update_points_when_user_is_not_exist(
         ValueError, 
         match=f"Пользователь с platform_id {user_id} не найден"
     ):
-        async with session_factory() as session:
-            await update_points(
-                session,
-                aiogram_user,
-                count_points
-            )
+        await update_points(
+            session,
+            aiogram_user,
+            count_points
+        )

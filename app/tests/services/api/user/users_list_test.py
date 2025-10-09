@@ -6,15 +6,14 @@ from tests.conftest import create_tg_user
 
 
 @pytest.mark.asyncio
-async def test_users_list(session_factory):
+async def test_users_list(session):
     """Проверяет получение списка пользователей"""
     user_count = random.randint(3, 10)
 
     for _ in range(user_count):
-        await create_tg_user(session_factory)
+        await create_tg_user(session)
 
-    async with session_factory() as session:
-        user_list: list[User] = await users_list(session)
+    user_list: list[User] = await users_list(session)
 
     assert len(user_list) == user_count
     assert all(isinstance(user, User) for user in user_list)

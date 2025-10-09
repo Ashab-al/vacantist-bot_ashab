@@ -11,7 +11,7 @@ from services.tg.spam_vacancy import COMPLAINT_COUNTER, spam_vacancy, BLACKLISTE
 
 
 @pytest.mark.asyncio
-async def test_spam_vacancy_creates_blacklist_entry(session_factory):
+async def test_spam_vacancy_creates_blacklist_entry(session):
     """Проверяет, что при первом обращении создаётся запись в BlackList и счётчик = 1"""
 
     category_name = "IT"
@@ -19,45 +19,44 @@ async def test_spam_vacancy_creates_blacklist_entry(session_factory):
     description = "Описание"
     contact_information = "@dev"
 
-    async with session_factory() as session:
-        # создаём категорию и вакансию
-        category = await create_category(
-            session, 
-            CreateCategoryRequest(name=category_name)
-        )
-        vacancy = await create_vacancy(
-            session,
-            category=category,
-            vacancy_data=CreateVacancyRequest(
-                title=vacancy_title,
-                category_title=category_name,
-                description=description,
-                contact_information=contact_information,
-                source=SOURCE,
-                platform_id=str(random.randint(1, 1000)),
-            ),
-        )
+    # создаём категорию и вакансию
+    category = await create_category(
+        session, 
+        CreateCategoryRequest(name=category_name)
+    )
+    vacancy = await create_vacancy(
+        session,
+        category=category,
+        vacancy_data=CreateVacancyRequest(
+            title=vacancy_title,
+            category_title=category_name,
+            description=description,
+            contact_information=contact_information,
+            source=SOURCE,
+            platform_id=str(random.randint(1, 1000)),
+        ),
+    )
 
-        result = await spam_vacancy(
-            session, 
-            vacancy.id
+    result = await spam_vacancy(
+        session, 
+        vacancy.id
+    )
+
+    # проверяем, что запись создана
+    black_list: BlackList = (
+        await session.scalars(
+            select(BlackList).filter_by(contact_information=vacancy.platform_id)
         )
+    ).one_or_none()
 
-        # проверяем, что запись создана
-        black_list: BlackList = (
-            await session.scalars(
-                select(BlackList).filter_by(contact_information=vacancy.platform_id)
-            )
-        ).one_or_none()
-
-        assert result is None
-        assert black_list is not None
-        assert black_list.contact_information == vacancy.platform_id
-        assert black_list.complaint_counter == 1
+    assert result is None
+    assert black_list is not None
+    assert black_list.contact_information == vacancy.platform_id
+    assert black_list.complaint_counter == 1
 
 
 @pytest.mark.asyncio
-async def test_spam_vacancy_reaches_blacklisted_state(session_factory):
+async def test_spam_vacancy_reaches_blacklisted_state(session):
     """Проверяет, что после превышения порога возвращается статус BLACKLISTED"""
     platform_id: str = str(random.randint(1, 1000))
     category_name = "IT"
@@ -65,32 +64,31 @@ async def test_spam_vacancy_reaches_blacklisted_state(session_factory):
     description = "Описание"
     contact_information = "@dev"
 
-    async with session_factory() as session:
-        category = await create_category(
-            session, 
-            CreateCategoryRequest(name=category_name)
-        )
-        vacancy = await create_vacancy(
-            session,
-            category=category,
-            vacancy_data=CreateVacancyRequest(
-                title=vacancy_title,
-                category_title=category_name,
-                description=description,
-                contact_information=contact_information,
-                source=SOURCE,
-                platform_id=platform_id,
-            ),
-        )
+    category = await create_category(
+        session, 
+        CreateCategoryRequest(name=category_name)
+    )
+    vacancy = await create_vacancy(
+        session,
+        category=category,
+        vacancy_data=CreateVacancyRequest(
+            title=vacancy_title,
+            category_title=category_name,
+            description=description,
+            contact_information=contact_information,
+            source=SOURCE,
+            platform_id=platform_id,
+        ),
+    )
 
-        # создаём запись в BlackList заранее с complaint_counter = порог
-        blacklisted = BlackList(
-            contact_information=platform_id, 
-            complaint_counter=COMPLAINT_COUNTER
-        )
-        session.add(blacklisted)
-        await session.commit()
+    # создаём запись в BlackList заранее с complaint_counter = порог
+    blacklisted = BlackList(
+        contact_information=platform_id, 
+        complaint_counter=COMPLAINT_COUNTER
+    )
+    session.add(blacklisted)
+    await session.commit()
 
-        result = await spam_vacancy(session, vacancy.id)
+    result = await spam_vacancy(session, vacancy.id)
 
-        assert result == BLACKLISTED
+    assert result == BLACKLISTED

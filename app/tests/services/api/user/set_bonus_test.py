@@ -7,18 +7,17 @@ from schemas.api.users.set_bonus.request import SetBonusUserIdRequest, SetBonusR
 
 @pytest.mark.asyncio
 async def test_set_bonus(
-    session_factory,
+    session,
     new_tg_user: User
 ):
     """Проверяет обновление количества бонусов у пользователя"""
     bonus_count = random.randint(10, 100)
 
-    async with session_factory() as session:
-        user: User = await set_bonus(
-            session,
-            SetBonusUserIdRequest(id=new_tg_user.id),
-            SetBonusRequest(count=bonus_count)
-        )
+    user: User = await set_bonus(
+        session,
+        SetBonusUserIdRequest(id=new_tg_user.id),
+        SetBonusRequest(count=bonus_count)
+    )
     
     assert isinstance(user, User)
     assert user.bonus == bonus_count
@@ -29,7 +28,7 @@ async def test_set_bonus(
 
 @pytest.mark.asyncio
 async def test_set_bonus_when_user_not_exist(
-    session_factory
+    session
 ):
     """Проверяет обновление количества бонусов у не существующего пользователя"""
     user_id: int = random.randint(1, 100)
@@ -39,10 +38,9 @@ async def test_set_bonus_when_user_not_exist(
         ValueError, 
         match=f"Пользователя по id - {user_id} нет в базе"
     ):
-        async with session_factory() as session:
-            await set_bonus(
-                session,
-                SetBonusUserIdRequest(id=user_id),
-                SetBonusRequest(count=bonus_count)
-            )
+        await set_bonus(
+            session,
+            SetBonusUserIdRequest(id=user_id),
+            SetBonusRequest(count=bonus_count)
+        )
     

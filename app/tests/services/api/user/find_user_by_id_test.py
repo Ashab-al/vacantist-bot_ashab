@@ -7,16 +7,15 @@ from schemas.api.users.show.request import ShowUserRequest
 
 @pytest.mark.asyncio
 async def test_find_user_by_id(
-    session_factory,
+    session,
     new_tg_user: User
 ):
     """Проверяет поиск пользователя по id"""
     
-    async with session_factory() as session:
-        user: User = await find_user_by_id(
-            session, 
-            ShowUserRequest(id=new_tg_user.id)
-        )
+    user: User = await find_user_by_id(
+        session, 
+        ShowUserRequest(id=new_tg_user.id)
+    )
     
     assert isinstance(user, User)
     assert user.id == new_tg_user.id
@@ -25,7 +24,7 @@ async def test_find_user_by_id(
 
 @pytest.mark.asyncio
 async def test_find_user_by_id_when_user_not_exist(
-    session_factory
+    session
 ):
     """Проверяет поиск не существующего пользователя по id"""
     user_id: int = random.randint(1, 100)
@@ -34,9 +33,8 @@ async def test_find_user_by_id_when_user_not_exist(
         ValueError, 
         match=f"Пользователя по id - {user_id} нет в базе"
     ):
-        async with session_factory() as session:
-            await find_user_by_id(
-                session,
-                ShowUserRequest(id=user_id)
-            )
+        await find_user_by_id(
+            session,
+            ShowUserRequest(id=user_id)
+        )
     

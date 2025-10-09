@@ -7,28 +7,27 @@ from schemas.api.categories.update.request import UpdateCategoryRequest
 
 @pytest.mark.asyncio
 async def test_update_category(
-    session_factory
+    session
 ):
     """Проверяет обновление названия категории"""
     category_name: str = f"Category {random.randint(1, 100)}"
     new_category_name: str = f"Category {random.randint(101, 200)}"
     
-    async with session_factory() as session:
-        category = Category(name = category_name)
-        session.add(category)
-        await session.commit()
-        await session.refresh(category)
+    category = Category(name = category_name)
+    session.add(category)
+    await session.commit()
+    await session.refresh(category)
 
-        update_category_name: Category = await update_category(
-            session, 
-            category.id,
-            UpdateCategoryRequest(name=new_category_name)
-        )
+    update_category_name: Category = await update_category(
+        session, 
+        category.id,
+        UpdateCategoryRequest(name=new_category_name)
+    )
 
-        find_category: Category = await session.get(
-            Category, 
-            category.id
-        )
+    find_category: Category = await session.get(
+        Category, 
+        category.id
+    )
 
     assert isinstance(update_category_name, Category)
     assert update_category_name.id == category.id
@@ -39,19 +38,18 @@ async def test_update_category(
 
 @pytest.mark.asyncio
 async def test_update_category_when_category_is_not_exist(
-    session_factory
+    session
 ):
     """Проверяет обновления названия не существующей категории"""
     category_id: int = random.randint(1, 1000)
     new_category_name: str = f"Category {random.randint(1, 200)}"
 
     with pytest.raises(ValueError) as excinfo:
-        async with session_factory() as session:
-            await update_category(
-                session, 
-                category_id,
-                UpdateCategoryRequest(name=new_category_name)
-            )
+        await update_category(
+            session, 
+            category_id,
+            UpdateCategoryRequest(name=new_category_name)
+        )
     
     assert excinfo.type is ValueError
     assert f"Категории по id - {category_id} нет в базе" in str(excinfo.value)

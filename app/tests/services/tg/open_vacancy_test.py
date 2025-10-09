@@ -8,16 +8,15 @@ from enums.check_vacancy_enum import CheckVacancyEnum
 from tests.conftest import create_tg_user_with_session, create_vacancy_and_category_with_session
 
 @pytest.mark.asyncio
-async def test_open_vacancy(session_factory):
+async def test_open_vacancy(session):
     """Проверяет открытие вакансии"""
-    async with session_factory() as session:
-        vacancy, _category = await create_vacancy_and_category_with_session(session)
-        user: User = await create_tg_user_with_session(session)
-        result_open_vacancy: dict = await open_vacancy(
-            session, 
-            user, 
-            vacancy.id
-        )
+    vacancy, _category = await create_vacancy_and_category_with_session(session)
+    user: User = await create_tg_user_with_session(session)
+    result_open_vacancy: dict = await open_vacancy(
+        session, 
+        user, 
+        vacancy.id
+    )
 
     assert result_open_vacancy.get('status') == CheckVacancyEnum.OPEN_VACANCY
     assert result_open_vacancy.get('vacancy') == vacancy
@@ -25,7 +24,7 @@ async def test_open_vacancy(session_factory):
     assert result_open_vacancy.get('low_points') == True
         
 @pytest.mark.asyncio
-async def test_open_vacancy_when_vacancy_is_not_exist(session_factory):
+async def test_open_vacancy_when_vacancy_is_not_exist(session):
     """Проверяет открытие вакансии когда вакансии не существует"""
     vacancy_id: int = random.randint(1, 1000)
     
@@ -33,57 +32,54 @@ async def test_open_vacancy_when_vacancy_is_not_exist(session_factory):
         ValueError, 
         match=f"{vacancy_id} - такой вакансии нет в базе данных"
     ):
-        async with session_factory() as session:
-            user: User = await create_tg_user_with_session(session)
-            
-            await open_vacancy(
-                session, 
-                user, 
-                vacancy_id
-            )
+        user: User = await create_tg_user_with_session(session)
+        
+        await open_vacancy(
+            session, 
+            user, 
+            vacancy_id
+        )
 
 @pytest.mark.asyncio
-async def test_open_vacancy_when_user_balance_zero(session_factory):
+async def test_open_vacancy_when_user_balance_zero(session):
     """Проверяет открытие вакансии когда баланс пользователя нулевой"""
-    async with session_factory() as session:
-        vacancy, _category = await create_vacancy_and_category_with_session(session)
-        user: User = await create_tg_user_with_session(session)
-        user.bonus = ZERO_BALANCE
-        user.point = ZERO_BALANCE
+    vacancy, _category = await create_vacancy_and_category_with_session(session)
+    user: User = await create_tg_user_with_session(session)
+    user.bonus = ZERO_BALANCE
+    user.point = ZERO_BALANCE
 
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
 
-        result_open_vacancy: dict = await open_vacancy(
-            session,
-            user,
-            vacancy.id    
-        )
+    result_open_vacancy: dict = await open_vacancy(
+        session,
+        user,
+        vacancy.id    
+    )
     
     assert result_open_vacancy.get('status') == CheckVacancyEnum.WARNING
     assert result_open_vacancy.get('path_view') in 'callback_query/out_of_points'
 
 @pytest.mark.asyncio
-async def test_open_vacancy_when_vacancy_in_blacklist(session_factory):
+async def test_open_vacancy_when_vacancy_in_blacklist(session):
     """Проверяет открытие вакансии когда вакансия находится в черном списке"""
-    async with session_factory() as session:
-        vacancy, _category = await create_vacancy_and_category_with_session(session)
-        user: User = await create_tg_user_with_session(session)
-       
-        blacklisted = BlackList(
-            contact_information=vacancy.platform_id, 
-            complaint_counter=COMPLAINT_COUNTER
-        )
-        
-        session.add(blacklisted)
-        await session.commit()
+    vacancy, _category = await create_vacancy_and_category_with_session(session)
+    user: User = await create_tg_user_with_session(session)
+    
+    blacklisted = BlackList(
+        contact_information=vacancy.platform_id, 
+        complaint_counter=COMPLAINT_COUNTER
+    )
+    
+    session.add(blacklisted)
+    await session.commit()
 
-        result_open_vacancy: dict = await open_vacancy(
-            session,
-            user,
-            vacancy.id    
-        )
+    result_open_vacancy: dict = await open_vacancy(
+        session,
+        user,
+        vacancy.id    
+    )
     assert result_open_vacancy.get('status') == CheckVacancyEnum.WARNING
     assert result_open_vacancy.get('vacancy') == vacancy
     assert result_open_vacancy.get('path_view') in 'callback_query/add_to_blacklist'

@@ -8,7 +8,7 @@ from services.tg.user.status_changes_for_block import status_changes_for_block
 
 @pytest.mark.asyncio
 async def test_status_changes_for_block(
-    session_factory, 
+    session, 
     new_tg_user
 ):
     """Проверяет изменение статуса пользователя на `BOT_BLOCKED`"""
@@ -19,11 +19,10 @@ async def test_status_changes_for_block(
         first_name=new_tg_user.first_name,
         username=new_tg_user.username
     )
-    async with session_factory() as session:
-        user: User = await status_changes_for_block(
-            session,
-            aiogram_user
-        )
+    user: User = await status_changes_for_block(
+        session,
+        aiogram_user
+    )
 
     assert user.bot_status == BotStatusEnum.BOT_BLOCKED
     assert user.platform_id == new_tg_user.platform_id
@@ -31,7 +30,7 @@ async def test_status_changes_for_block(
 
 @pytest.mark.asyncio
 async def test_status_changes_for_block_when_user_is_not_exist(
-    session_factory
+    session
 ):
     """Проверяет изменение статуса не существующего пользователя на `BOT_BLOCKED`"""
     user_id = random.randint(1, 1000)
@@ -49,10 +48,9 @@ async def test_status_changes_for_block_when_user_is_not_exist(
         ValueError, 
         match=f"Пользователь не найден в базе {aiogram_user}"
     ):
-        async with session_factory() as session:
-            await status_changes_for_block(
-                session,
-                aiogram_user
-            )
+        await status_changes_for_block(
+            session,
+            aiogram_user
+        )
 
     

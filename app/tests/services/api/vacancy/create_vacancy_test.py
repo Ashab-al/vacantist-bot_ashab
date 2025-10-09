@@ -11,7 +11,7 @@ from lib.tg.constants import SOURCE
 
 @pytest.mark.asyncio
 async def test_create_vacancy(
-    session_factory
+    session
 ):
     """Проверяет создание вакансии"""
     category_name: str = f"Category {random.randint(1, 100)}"
@@ -25,16 +25,15 @@ async def test_create_vacancy(
     }
     create_vacancy_request: CreateVacancyRequest = CreateVacancyRequest(**vacancy_data)
     
-    async with session_factory() as session:
-        category: Category = await create_category(
-            session, 
-            CreateCategoryRequest(name = category_name)
-        )
-        vacancy: Vacancy = await create_vacancy(
-            session,
-            create_vacancy_request,
-            category
-        )
+    category: Category = await create_category(
+        session, 
+        CreateCategoryRequest(name = category_name)
+    )
+    vacancy: Vacancy = await create_vacancy(
+        session,
+        create_vacancy_request,
+        category
+    )
 
     assert isinstance(vacancy, Vacancy)
     assert vacancy.title == create_vacancy_request.title

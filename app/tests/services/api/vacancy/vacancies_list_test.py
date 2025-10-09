@@ -13,33 +13,32 @@ from services.api.vacancy.create_vacancy import create_vacancy
 
 @pytest.mark.asyncio
 async def test_vacancies_list(
-    session_factory: AsyncSession
+    session
 ):
     """Проверяет возврат списка вакансий"""
 
     count_vacancy = random.randint(3, 10)    
     category_name: str = f"Category {random.randint(1, 100)}"
     
-    async with session_factory() as session:
-        category: Category = await create_category(
-            session, 
-            CreateCategoryRequest(name = category_name)
-        )
-        for i in range(count_vacancy):
-            await create_vacancy(
-                session,
-                category=category,
-                vacancy_data=CreateVacancyRequest(
-                    title="Технический специалист",
-                    category_title=category_name,
-                    description=f"Описание вакансии{i}",
-                    contact_information=f"ТГ - @username{i}",
-                    source=SOURCE,
-                    platform_id=f"{i}"  
-                )
+    category: Category = await create_category(
+        session, 
+        CreateCategoryRequest(name = category_name)
+    )
+    for i in range(count_vacancy):
+        await create_vacancy(
+            session,
+            category=category,
+            vacancy_data=CreateVacancyRequest(
+                title="Технический специалист",
+                category_title=category_name,
+                description=f"Описание вакансии{i}",
+                contact_information=f"ТГ - @username{i}",
+                source=SOURCE,
+                platform_id=f"{i}"  
             )
-        
-        vacancies: list[VacancySchema] = await vacancies_list(session)
+        )
+    
+    vacancies: list[VacancySchema] = await vacancies_list(session)
 
     assert len(vacancies) == count_vacancy
     assert all(isinstance(vacancy, VacancySchema) for vacancy in vacancies)

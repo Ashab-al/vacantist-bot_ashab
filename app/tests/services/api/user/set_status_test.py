@@ -8,17 +8,16 @@ from enums.bot_status_enum import BotStatusEnum
 
 @pytest.mark.asyncio
 async def test_set_status(
-    session_factory,
+    session,
     new_tg_user: User
 ):
     """Проверяет обновление статуса у пользователя"""
 
-    async with session_factory() as session:
-        user: User = await set_status(
-            session,
-            SetStatusUserIdRequest(id=new_tg_user.id),
-            SetStatusRequest(bot_status=BotStatusEnum.BOT_BLOCKED)
-        )
+    user: User = await set_status(
+        session,
+        SetStatusUserIdRequest(id=new_tg_user.id),
+        SetStatusRequest(bot_status=BotStatusEnum.BOT_BLOCKED)
+    )
     
     assert isinstance(user, User)
     assert user.bot_status == BotStatusEnum.BOT_BLOCKED
@@ -29,7 +28,7 @@ async def test_set_status(
 
 @pytest.mark.asyncio
 async def test_set_status_when_user_not_exist(
-    session_factory
+    session
 ):
     """Проверяет обновление статуса у не существующего пользователя"""
     user_id: int = random.randint(1, 100)
@@ -38,10 +37,9 @@ async def test_set_status_when_user_not_exist(
         ValueError, 
         match=f"Пользователя по id - {user_id} нет в базе"
     ):
-        async with session_factory() as session:
-            await set_status(
-                session,
-                SetStatusUserIdRequest(id=user_id),
-                SetStatusRequest(bot_status=BotStatusEnum.BOT_BLOCKED)
-            )
+        await set_status(
+            session,
+            SetStatusUserIdRequest(id=user_id),
+            SetStatusRequest(bot_status=BotStatusEnum.BOT_BLOCKED)
+        )
     
