@@ -5,3 +5,6 @@ isort
 mypy
 pytest
 pytest-cov
+flake8-bugbear 
+pep8-naming
+pylint

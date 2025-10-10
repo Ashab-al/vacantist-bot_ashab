@@ -1,3 +1,4 @@
+"""Модуль работы с Telegram-ботом через aiogram."""
 from aiogram import F, Router
 from bot.handlers.block_and_unblock import router as block_and_unblock_router
 from bot.handlers.category import router as category_router

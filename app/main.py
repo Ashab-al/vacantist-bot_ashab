@@ -6,8 +6,8 @@
 - Подключение API и обработчиков
 - Управление жизненным циклом приложения через lifespan
 """
-
-import asyncio
+# pylint: disable=broad-except
+import asyncio 
 import logging
 from contextlib import asynccontextmanager
 
@@ -17,15 +17,15 @@ from bot.create_bot import bot, dp, start_bot, stop_bot
 from bot.handlers import main_router
 from config import settings, vacancy_queue
 from fastapi import FastAPI, Request
-from services.tg.vacancy.sender_worker import sender_worker
-
+from services.tg.vacancy.sender_worker import sender_worker 
+# pylint: enable=broad-except
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     """
     Управляет жизненным циклом приложения FastAPI с Telegram-ботом.
 
@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI):
     )
     # worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))#TODO потом включить
 
-    logging.info(f"Webhook set to {webhook_url}")
+    logging.info("Webhook set to %s", webhook_url)
 
     yield
 

@@ -1,3 +1,4 @@
+"""Модуль работы с Telegram-ботом через aiogram."""
 from aiogram import F, Router
 from aiogram.types import CallbackQuery, Message
 from bot.filters.button import CategoryButtonFilter
@@ -28,7 +29,8 @@ async def reaction_btn_categories(message: Message, session: AsyncSession) -> No
 
     Notes:
         - Получает список категорий в виде inline кнопок.
-        - Отправляет сообщение с клавиатурой, где пользователь может выбрать или изменить подписки на категории.
+        - Отправляет сообщение с клавиатурой, 
+        где пользователь может выбрать или изменить подписки на категории.
     """
     subscribed_categories = await find_subscribe(session, message.from_user)
     await message.answer(
@@ -51,7 +53,8 @@ async def reaction_btn_choice_category(
         session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
 
     Notes:
-        - Обновляет подписку пользователя на выбранную категорию через `update_subscription_with_category`.
+        - Обновляет подписку пользователя на выбранную категорию 
+        через `update_subscription_with_category`.
         - Обновляет клавиатуру сообщений с категориями.
         - Отправляет пользователю уведомление (show_alert) с результатом действия.
     """

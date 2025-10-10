@@ -21,8 +21,8 @@ from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.tg.user.tg_user import TgUser
 from services.api.category.create_category import create_category
 from services.api.vacancy.create_vacancy import create_vacancy
-from sqlalchemy.ext.asyncio import (AsyncSession,  # noqa: E501
-                                    async_sessionmaker, create_async_engine)
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E501
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from models.base import Base  # noqa: E402

@@ -62,14 +62,14 @@ class Settings(BaseSettings):
         Returns:
             str: Публичный URL для вебхука
         """
-        logging.info(f"Поиск Ngrok URL")
-        response = requests.get(self.ngrok_api)
+        logging.info("Поиск Ngrok URL")
+        response = requests.get(self.ngrok_api, timeout=10)
         response.raise_for_status()
 
         for tunnel in response.json().get("tunnels", []):
             if tunnel.get("proto") == "https":
                 public_url = tunnel.get("public_url")
-                logging.info(f"✅ Ngrok URL найден: {public_url}")
+                logging.info("✅ Ngrok URL найден: %s", public_url)
                 return public_url
 
     def get_webhook_url(self) -> str:
@@ -93,7 +93,7 @@ jinja_env = Environment(
 """Инициализация Jinja2 Environment для рендеринга шаблонов"""
 
 # Загрузка локализации
-with open(f"{BASE_DIR}/locales/ru-RU/bot.json") as f:
+with open(f"{BASE_DIR}/locales/ru-RU/bot.json", encoding="utf-8") as f:
     i18n: dict[str, str] = json.load(f)["ru"]
     """JSON с текстами для бота"""
 

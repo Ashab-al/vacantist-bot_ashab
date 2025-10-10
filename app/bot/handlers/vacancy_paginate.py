@@ -1,3 +1,4 @@
+"""Модуль для работы с асинхронной задержкой (sleep) с использованием asyncio."""
 import asyncio
 
 from aiogram import Bot, F, Router
@@ -50,6 +51,7 @@ async def reaction_get_vacancies(
     vacancies_for_the_week = await fetch_vacancies_for_the_week(
         session, user, callback_data.page, callback_data.page_size
     )
+    next_page: int = 0
     if vacancies_for_the_week.get("status") != VacanciesForTheWeekStatusEnum.OK:
         await callback.answer(
             text=await jinja_render(

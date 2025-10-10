@@ -1,3 +1,4 @@
+"""Модуль работы с Telegram-ботом через aiogram."""
 from aiogram import F, Router
 from aiogram.filters.chat_member_updated import (KICKED, MEMBER,
                                                  ChatMemberUpdatedFilter)

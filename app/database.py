@@ -1,13 +1,10 @@
 from contextlib import asynccontextmanager
-from datetime import datetime
 from functools import wraps
 from typing import AsyncGenerator
 
 from config import settings
-from sqlalchemy import func
-from sqlalchemy.ext.asyncio import (AsyncAttrs, AsyncSession,
+from sqlalchemy.ext.asyncio import (AsyncSession,
                                     async_sessionmaker, create_async_engine)
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 database_url: str = settings.database_dsn
 """URL базы данных"""
