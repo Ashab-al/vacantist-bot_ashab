@@ -1,6 +1,6 @@
+from enums.bot_status_enum import BotStatusEnum
 from fastapi_camelcase import CamelModel
 from pydantic import Field
-from enums.bot_status_enum import BotStatusEnum
 
 
 class SetStatusUserIdRequest(CamelModel):

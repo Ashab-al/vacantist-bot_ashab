@@ -1,8 +1,8 @@
 from aiogram import Bot
-from bot.filters.callback.tariff_callback import TariffCallback
-from lib.tg.common import jinja_render
 from aiogram.types.user import User as AiogramTgUser
+from bot.filters.callback.tariff_callback import TariffCallback
 from config import settings
+from lib.tg.common import jinja_render
 
 
 async def send_info_about_new_payment(

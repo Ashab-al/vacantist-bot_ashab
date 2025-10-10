@@ -1,6 +1,6 @@
 from models.category import Category
-from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.api.categories.show.request import ShowCategoryRequest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def find_category_by_id(

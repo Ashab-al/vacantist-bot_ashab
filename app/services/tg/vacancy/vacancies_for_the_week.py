@@ -1,11 +1,13 @@
+from math import ceil
+
+from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
+from models.category import Category
 from models.user import User
 from models.vacancy import Vacancy
-from models.category import Category
-from sqlalchemy.ext.asyncio import AsyncSession
-from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
-from repositories.vacancies.vacancies_for_the_week import VacancyForTheWeekRepository
+from repositories.vacancies.vacancies_for_the_week import \
+    VacancyForTheWeekRepository
 from services.tg.category.find_subscribe import find_subscribe
-from math import ceil
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def fetch_vacancies_for_the_week(

@@ -1,10 +1,10 @@
-from models.user import User
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select
-from enums.bot_status_enum import BotStatusEnum
-from config import settings
-from lib.tg.common import jinja_render
 from bot.create_bot import bot
+from config import settings
+from enums.bot_status_enum import BotStatusEnum
+from lib.tg.common import jinja_render
+from models.user import User
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def send_analytics(db: AsyncSession, user: User) -> None:

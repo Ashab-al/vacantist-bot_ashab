@@ -1,19 +1,18 @@
-from aiogram import Bot
-from models.user import User
-from sqlalchemy import update
-from repositories.users.find_users_where_have_subscribe_to_category import (
-    find_users_where_have_subscribe_to_category,
-)
-from models.vacancy import Vacancy
-from bot.keyboards.vacancy_keyboard import vacancy_keyboard
-from lib.tg.common import jinja_render
-from aiogram.exceptions import TelegramForbiddenError
 import asyncio
+
+from aiogram import Bot
+from aiogram.exceptions import TelegramForbiddenError
+from bot.keyboards.vacancy_keyboard import vacancy_keyboard
+from config import settings
 from database import get_async_session_for_bot
 from enums.bot_status_enum import BotStatusEnum
-from config import settings
+from lib.tg.common import jinja_render
+from models.user import User
+from models.vacancy import Vacancy
+from repositories.users.find_users_where_have_subscribe_to_category import \
+    find_users_where_have_subscribe_to_category
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
-
 
 DELAY = 0.4
 

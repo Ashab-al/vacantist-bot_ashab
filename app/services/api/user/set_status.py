@@ -1,10 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.api.users.set_status.request import (
-    SetStatusUserIdRequest,
-    SetStatusRequest,
-)
 from models.user import User
+from schemas.api.users.set_status.request import (SetStatusRequest,
+                                                  SetStatusUserIdRequest)
 from services.api.user.find_user_by_id import find_user_by_id
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def set_status(

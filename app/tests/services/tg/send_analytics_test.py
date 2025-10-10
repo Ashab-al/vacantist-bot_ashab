@@ -1,10 +1,11 @@
 import random
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-from unittest.mock import AsyncMock, patch, Mock
-from sqlalchemy.ext.asyncio import AsyncSession
-from models.user import User
 from enums.bot_status_enum import BotStatusEnum
+from models.user import User
 from services.tg.send_analytics import send_analytics, settings
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio

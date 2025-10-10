@@ -1,9 +1,10 @@
-from sqlalchemy import String, BigInteger, Integer, Enum
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from models.base import Base
-from enums.bot_status_enum import BotStatusEnum
-from models.subscription import subscription
 from typing import List
+
+from enums.bot_status_enum import BotStatusEnum
+from models.base import Base
+from models.subscription import subscription
+from sqlalchemy import BigInteger, Enum, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class User(Base):

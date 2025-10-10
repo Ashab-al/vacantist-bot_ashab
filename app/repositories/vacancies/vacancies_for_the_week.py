@@ -1,11 +1,11 @@
+from datetime import datetime, time, timedelta
+
+from models.blacklist import BlackList
+from models.category import Category
 from models.user import User
 from models.vacancy import Vacancy
-from models.category import Category
-from models.blacklist import BlackList
+from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, select, Select
-from datetime import datetime, timedelta, time
-
 
 QUANTITY_DAYS = 7
 

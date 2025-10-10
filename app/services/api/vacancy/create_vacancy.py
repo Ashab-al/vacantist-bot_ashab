@@ -1,7 +1,7 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from models.vacancy import Vacancy
 from models.category import Category
+from models.vacancy import Vacancy
 from schemas.api.vacancies.create.request import CreateVacancyRequest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_vacancy(

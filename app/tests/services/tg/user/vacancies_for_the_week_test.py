@@ -1,18 +1,18 @@
-import pytest
 import random
+from math import ceil
+
+import pytest
+from bot.keyboards.get_vacancies_button import PAGE, PAGE_SIZE
 from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
 from models.category import Category
 from models.user import User
 from repositories.users.get_user_by_id import get_user_by_id
 from schemas.api.categories.create.request import CreateCategoryRequest
 from services.api.category.create_category import create_category
-from services.tg.vacancy.vacancies_for_the_week import fetch_vacancies_for_the_week
-from tests.conftest import (
-    create_tg_user_with_session,
-    create_vacancy_and_category_with_session,
-)
-from bot.keyboards.get_vacancies_button import PAGE, PAGE_SIZE
-from math import ceil
+from services.tg.vacancy.vacancies_for_the_week import \
+    fetch_vacancies_for_the_week
+from tests.conftest import (create_tg_user_with_session,
+                            create_vacancy_and_category_with_session)
 
 
 @pytest.mark.asyncio

@@ -1,12 +1,12 @@
+import random
+
 import pytest
 from aiogram.types import User as AiogramTgUser
-from sqlalchemy import select
-import random
-from models.user import User
 from enums.bot_status_enum import BotStatusEnum
-from services.tg.user.find_or_create_with_update_by_platform_id import (
-    find_or_create_with_update_by_platform_id,
-)
+from models.user import User
+from services.tg.user.find_or_create_with_update_by_platform_id import \
+    find_or_create_with_update_by_platform_id
+from sqlalchemy import select
 
 
 @pytest.mark.asyncio

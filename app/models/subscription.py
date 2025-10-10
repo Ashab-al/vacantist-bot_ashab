@@ -1,5 +1,5 @@
-from sqlalchemy import ForeignKey, Column, Table
 from models.base import Base
+from sqlalchemy import Column, ForeignKey, Table
 
 subscription = Table(
     "subscriptions",

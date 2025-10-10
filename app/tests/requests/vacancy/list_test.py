@@ -1,4 +1,5 @@
 import random
+
 import pytest
 from models.vacancy import Vacancy
 from tests.conftest import create_vacancy_and_category

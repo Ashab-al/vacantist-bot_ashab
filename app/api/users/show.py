@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_async_session
-from schemas.api.users.show.response import ShowUserResponse
-from schemas.api.users.show.request import ShowUserRequest
 from typing import Annotated
-from services.api.user.find_user_by_id import find_user_by_id
 
+from database import get_async_session
+from fastapi import APIRouter, Depends, HTTPException, Path
+from schemas.api.users.show.request import ShowUserRequest
+from schemas.api.users.show.response import ShowUserResponse
+from services.api.user.find_user_by_id import find_user_by_id
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

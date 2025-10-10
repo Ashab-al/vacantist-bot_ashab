@@ -1,7 +1,8 @@
+import random
+
 import pytest
 from models.category import Category
 from services.api.category.categories_list import categories_list
-import random
 
 
 @pytest.mark.asyncio

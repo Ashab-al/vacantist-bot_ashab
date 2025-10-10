@@ -1,8 +1,8 @@
-from models.user import User
-from sqlalchemy.ext.asyncio import AsyncSession
-from repositories.users.get_user_by_platform_id import get_user_by_platform_id
 from aiogram.types.user import User as AiogramTgUser
 from enums.bot_status_enum import BotStatusEnum
+from models.user import User
+from repositories.users.get_user_by_platform_id import get_user_by_platform_id
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def status_changes_for_block(db: AsyncSession, user_data: AiogramTgUser) -> User:

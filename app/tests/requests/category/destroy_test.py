@@ -1,7 +1,8 @@
 import random
+
 import pytest
-from sqlalchemy import select
 from models.category import Category
+from sqlalchemy import select
 
 
 @pytest.mark.asyncio

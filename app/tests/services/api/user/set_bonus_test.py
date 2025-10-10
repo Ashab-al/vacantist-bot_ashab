@@ -1,8 +1,10 @@
+import random
+
 import pytest
 from models.user import User
+from schemas.api.users.set_bonus.request import (SetBonusRequest,
+                                                 SetBonusUserIdRequest)
 from services.api.user.set_bonus import set_bonus
-import random
-from schemas.api.users.set_bonus.request import SetBonusUserIdRequest, SetBonusRequest
 
 
 @pytest.mark.asyncio

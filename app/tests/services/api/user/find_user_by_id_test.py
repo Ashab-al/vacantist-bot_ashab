@@ -1,8 +1,9 @@
+import random
+
 import pytest
 from models.user import User
-from services.api.user.find_user_by_id import find_user_by_id
-import random
 from schemas.api.users.show.request import ShowUserRequest
+from services.api.user.find_user_by_id import find_user_by_id
 
 
 @pytest.mark.asyncio

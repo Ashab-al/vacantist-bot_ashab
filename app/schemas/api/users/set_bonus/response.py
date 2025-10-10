@@ -1,7 +1,8 @@
-from fastapi_camelcase import CamelModel
-from pydantic import Field, ConfigDict
 from datetime import datetime
+
 from enums.bot_status_enum import BotStatusEnum
+from fastapi_camelcase import CamelModel
+from pydantic import ConfigDict, Field
 from schemas.api.categories.list.response import CategoryResponse
 
 

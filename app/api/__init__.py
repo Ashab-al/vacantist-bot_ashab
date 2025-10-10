@@ -1,7 +1,7 @@
-from fastapi import APIRouter
-from api.vacancies import vacancies_router
 from api.categories import categories_router
 from api.users import users_router
+from api.vacancies import vacancies_router
+from fastapi import APIRouter
 
 api_router = APIRouter()
 

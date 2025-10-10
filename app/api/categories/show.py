@@ -1,11 +1,11 @@
-from fastapi import Depends, APIRouter, Path, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_async_session
 from typing import Annotated
-from schemas.api.categories.show.response import ShowCategoryResponse
-from schemas.api.categories.show.request import ShowCategoryRequest
-from services.api.category.find_category_by_id import find_category_by_id
 
+from database import get_async_session
+from fastapi import APIRouter, Depends, HTTPException, Path
+from schemas.api.categories.show.request import ShowCategoryRequest
+from schemas.api.categories.show.response import ShowCategoryResponse
+from services.api.category.find_category_by_id import find_category_by_id
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

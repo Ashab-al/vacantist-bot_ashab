@@ -1,8 +1,8 @@
-from aiogram import Router, F
-from bot.handlers.menu import router as menu_router
-from bot.handlers.payment import router as payment_router
+from aiogram import F, Router
 from bot.handlers.block_and_unblock import router as block_and_unblock_router
 from bot.handlers.category import router as category_router
+from bot.handlers.menu import router as menu_router
+from bot.handlers.payment import router as payment_router
 from bot.handlers.vacancy import router as vacancy_router
 from bot.handlers.vacancy_paginate import router as vacancy_paginate_router
 

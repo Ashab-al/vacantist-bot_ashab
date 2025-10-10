@@ -1,32 +1,28 @@
-import pytest
-import pytest_asyncio
 import os
+import random
 import sys
 from pathlib import Path
-from fastapi import FastAPI
-from httpx import AsyncClient, ASGITransport
 from typing import AsyncGenerator
-from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch
-from main import app as main_app
-from database import get_async_session
-from sqlalchemy.ext.asyncio import (  # noqa: E501
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
 
+import pytest
+import pytest_asyncio
+from database import get_async_session
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 from lib.tg.constants import SOURCE
+from main import app as main_app
 from models.category import Category
+from models.user import User
 from models.vacancy import Vacancy
 from schemas.api.categories.create.request import CreateCategoryRequest
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.tg.user.tg_user import TgUser
-from models.user import User
-import random
-
 from services.api.category.create_category import create_category
 from services.api.vacancy.create_vacancy import create_vacancy
+from sqlalchemy.ext.asyncio import (AsyncSession,  # noqa: E501
+                                    async_sessionmaker, create_async_engine)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from models.base import Base  # noqa: E402

@@ -1,9 +1,10 @@
-import pytest
-from sqlalchemy import select
-from models.category import Category
-from services.api.category.create_category import create_category
-from schemas.api.categories.create import CreateCategoryRequest
 import random
+
+import pytest
+from models.category import Category
+from schemas.api.categories.create import CreateCategoryRequest
+from services.api.category.create_category import create_category
+from sqlalchemy import select
 
 
 @pytest.mark.asyncio

@@ -1,7 +1,7 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from models.category import Category
-from schemas.api.categories.create import CreateCategoryRequest
 from repositories.categories.get_category_by_name import get_category_by_name
+from schemas.api.categories.create import CreateCategoryRequest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_category(

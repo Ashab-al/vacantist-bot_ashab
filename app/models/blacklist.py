@@ -1,6 +1,6 @@
-from sqlalchemy import String, Integer
-from sqlalchemy.orm import Mapped, mapped_column
 from models.base import Base
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class BlackList(Base):

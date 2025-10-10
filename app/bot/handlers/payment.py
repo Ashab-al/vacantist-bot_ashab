@@ -1,22 +1,16 @@
-from aiogram import Router, F, Bot
-from aiogram.types import (
-    Message,
-    CallbackQuery,
-    LabeledPrice,
-    PreCheckoutQuery,
-    ContentType,
-)
-from lib.tg.common import jinja_render
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import with_session
-from config import i18n, settings
+from aiogram import Bot, F, Router
+from aiogram.types import (CallbackQuery, ContentType, LabeledPrice, Message,
+                           PreCheckoutQuery)
 from bot.filters.button import PointsButtonFilter
-from services.tg.user.current_user import current_user
-from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
 from bot.filters.callback.tariff_callback import TariffCallback
-from services.tg.user.update_points import update_points
+from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
+from config import i18n, settings
+from database import with_session
+from lib.tg.common import jinja_render
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
-
+from services.tg.user.current_user import current_user
+from services.tg.user.update_points import update_points
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик тарифов и платежей")
 router.message.filter(F.chat.type == "private")

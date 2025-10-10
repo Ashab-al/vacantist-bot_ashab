@@ -1,13 +1,11 @@
-from fastapi import Depends, APIRouter, Path, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_async_session
 from typing import Annotated
-from services.api.category.delete_category import delete_category
-from schemas.api.categories.destroy import (
-    DestroyCategoryRequest,
-    DestroyCategoryResponse,
-)
 
+from database import get_async_session
+from fastapi import APIRouter, Depends, HTTPException, Path
+from schemas.api.categories.destroy import (DestroyCategoryRequest,
+                                            DestroyCategoryResponse)
+from services.api.category.delete_category import delete_category
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

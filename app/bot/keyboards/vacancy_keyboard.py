@@ -1,10 +1,10 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
-from config import i18n
-from lib.tg.common import jinja_render
-from models.vacancy import Vacancy
-from models.user import User
 from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
 from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallback
+from config import i18n
+from lib.tg.common import jinja_render
+from models.user import User
+from models.vacancy import Vacancy
 
 MAX_COUNT_BUTTON_IN_LINE = 1
 

@@ -1,12 +1,13 @@
+import random
+
 import pytest
+from lib.tg.constants import SOURCE
 from models.category import Category
 from models.vacancy import Vacancy
-import random
-from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.api.categories.create import CreateCategoryRequest
-from services.api.vacancy.create_vacancy import create_vacancy
+from schemas.api.vacancies.create.request import CreateVacancyRequest
 from services.api.category.create_category import create_category
-from lib.tg.constants import SOURCE
+from services.api.vacancy.create_vacancy import create_vacancy
 
 
 @pytest.mark.asyncio

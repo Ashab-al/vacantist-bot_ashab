@@ -1,6 +1,6 @@
 from fastapi_camelcase import CamelModel
-from pydantic import Field
 from lib.tg.constants import SOURCE
+from pydantic import Field
 
 
 class CreateVacancyRequest(CamelModel):

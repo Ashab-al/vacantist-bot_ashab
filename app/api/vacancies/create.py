@@ -1,13 +1,14 @@
-from fastapi import Depends, APIRouter, Body, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_async_session
 from typing import Annotated
-from schemas.api.vacancies.create.response import CreateVacancyResponse
+
+from database import get_async_session
+from fastapi import APIRouter, Body, Depends, HTTPException
 from schemas.api.vacancies.create.request import CreateVacancyRequest
-from services.api.vacancy.check_and_create_vacancy import check_and_create_vacancy
-from services.tg.vacancy.add_vacancy_to_sending_queue import (
-    add_vacancy_to_sending_queue,
-)
+from schemas.api.vacancies.create.response import CreateVacancyResponse
+from services.api.vacancy.check_and_create_vacancy import \
+    check_and_create_vacancy
+from services.tg.vacancy.add_vacancy_to_sending_queue import \
+    add_vacancy_to_sending_queue
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

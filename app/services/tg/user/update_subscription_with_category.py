@@ -1,9 +1,9 @@
 from bot.filters.callback.category_callback import CategoryCallback
-from repositories.categories.get_category_by_id import get_category_by_id
-from sqlalchemy.ext.asyncio import AsyncSession
+from enums.category_subscription_enum import CategorySubscriptionEnum
 from models.category import Category
 from models.user import User
-from enums.category_subscription_enum import CategorySubscriptionEnum
+from repositories.categories.get_category_by_id import get_category_by_id
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def update_subscription_with_category(

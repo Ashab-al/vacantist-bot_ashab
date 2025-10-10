@@ -1,8 +1,9 @@
+import random
+
 import pytest
 from models.category import Category
-from services.api.category.delete_category import delete_category
-import random
 from schemas.api.categories.destroy import DestroyCategoryRequest
+from services.api.category.delete_category import delete_category
 
 
 @pytest.mark.asyncio

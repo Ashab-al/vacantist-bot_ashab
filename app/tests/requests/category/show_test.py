@@ -1,4 +1,5 @@
 import random
+
 import pytest
 from models.category import Category
 

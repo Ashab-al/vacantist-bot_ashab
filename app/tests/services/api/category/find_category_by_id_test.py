@@ -1,8 +1,9 @@
+import random
+
 import pytest
 from models.category import Category
-from services.api.category.find_category_by_id import find_category_by_id
-import random
 from schemas.api.categories.show.request import ShowCategoryRequest
+from services.api.category.find_category_by_id import find_category_by_id
 
 
 @pytest.mark.asyncio

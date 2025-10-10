@@ -1,11 +1,11 @@
-from aiogram import Router, F
+from aiogram import F, Router
+from aiogram.filters.chat_member_updated import (KICKED, MEMBER,
+                                                 ChatMemberUpdatedFilter)
 from aiogram.types import ChatMemberUpdated
-from aiogram.filters.chat_member_updated import ChatMemberUpdatedFilter, MEMBER, KICKED
-from sqlalchemy.ext.asyncio import AsyncSession
 from database import with_session
 from services.tg.user.current_user import current_user
 from services.tg.user.status_changes_for_block import status_changes_for_block
-
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик блокировки и разблокировки бота")
 router.my_chat_member.filter(F.chat.type == "private")

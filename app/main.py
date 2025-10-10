@@ -7,17 +7,17 @@
 - Управление жизненным циклом приложения через lifespan
 """
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
-from bot.create_bot import bot, dp, stop_bot, start_bot
-from bot.handlers import main_router
-from config import settings
+
 from aiogram.types import Update
-from fastapi import FastAPI, Request
 from api import api_router
-import asyncio
+from bot.create_bot import bot, dp, start_bot, stop_bot
+from bot.handlers import main_router
+from config import settings, vacancy_queue
+from fastapi import FastAPI, Request
 from services.tg.vacancy.sender_worker import sender_worker
-from config import vacancy_queue
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

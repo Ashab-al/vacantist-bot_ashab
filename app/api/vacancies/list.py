@@ -1,12 +1,12 @@
-from fastapi import Depends, APIRouter, Body, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_async_session
 from typing import Annotated
-from repositories.vacancies.get_all_vacancies import get_all_vacancies
+
+from database import get_async_session
+from fastapi import APIRouter, Body, Depends, HTTPException
 from models.vacancy import Vacancy
+from repositories.vacancies.get_all_vacancies import get_all_vacancies
 from schemas.api.vacancies.vacancy import VacancySchema
 from services.api.vacancy.vacancies_list import vacancies_list
-
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

@@ -1,16 +1,15 @@
-from aiogram import Router, Bot
+from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
-from lib.tg.common import jinja_render
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import with_session
-from services.tg.user.current_user import current_user
 from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
 from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallback
-from services.tg.open_vacancy import open_vacancy
 from bot.keyboards.open_vacancy_keyboard import open_vacancy_keyboard
-from services.tg.spam_vacancy import spam_vacancy, BLACKLISTED
+from database import with_session
 from enums.check_vacancy_enum import CheckVacancyEnum
-
+from lib.tg.common import jinja_render
+from services.tg.open_vacancy import open_vacancy
+from services.tg.spam_vacancy import BLACKLISTED, spam_vacancy
+from services.tg.user.current_user import current_user
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик вакансий")
 

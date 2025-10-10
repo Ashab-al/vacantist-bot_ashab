@@ -1,8 +1,9 @@
+import random
+
 import pytest
 from aiogram.types import User as AiogramTgUser
-import random
-from models.user import User
 from enums.bot_status_enum import BotStatusEnum
+from models.user import User
 from services.tg.user.status_changes_for_block import status_changes_for_block
 
 

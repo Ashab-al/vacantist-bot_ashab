@@ -1,8 +1,8 @@
-from models.user import User
-from models.subscription import subscription
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from enums.bot_status_enum import BotStatusEnum
+from models.subscription import subscription
+from models.user import User
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def find_users_where_have_subscribe_to_category(

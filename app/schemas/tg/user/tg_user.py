@@ -1,7 +1,7 @@
-from fastapi_camelcase import CamelModel
-from pydantic import Field, ConfigDict
 from enums.bot_status_enum import BotStatusEnum
+from fastapi_camelcase import CamelModel
 from models.user import User
+from pydantic import ConfigDict, Field
 
 
 class TgUser(CamelModel):

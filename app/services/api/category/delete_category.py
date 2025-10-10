@@ -1,7 +1,7 @@
 from models.category import Category
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from schemas.api.categories.destroy import DestroyCategoryRequest
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def delete_category(

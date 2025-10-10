@@ -1,12 +1,11 @@
-import pytest
-from models.user import User
-from services.api.user.set_status import set_status
 import random
-from schemas.api.users.set_status.request import (
-    SetStatusUserIdRequest,
-    SetStatusRequest,
-)
+
+import pytest
 from enums.bot_status_enum import BotStatusEnum
+from models.user import User
+from schemas.api.users.set_status.request import (SetStatusRequest,
+                                                  SetStatusUserIdRequest)
+from services.api.user.set_status import set_status
 
 
 @pytest.mark.asyncio

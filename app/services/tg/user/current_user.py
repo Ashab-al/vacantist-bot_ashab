@@ -1,9 +1,8 @@
-from services.tg.user.find_or_create_with_update_by_platform_id import (
-    find_or_create_with_update_by_platform_id,
-)
+from aiogram.types import CallbackQuery, ChatMemberUpdated, Message
 from models.user import User
+from services.tg.user.find_or_create_with_update_by_platform_id import \
+    find_or_create_with_update_by_platform_id
 from sqlalchemy.ext.asyncio import AsyncSession
-from aiogram.types import Message, CallbackQuery, ChatMemberUpdated
 
 
 async def current_user(

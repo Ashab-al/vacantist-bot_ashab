@@ -1,7 +1,8 @@
+import random
+
 import pytest
 from models.user import User
 from services.api.user.users_list import users_list
-import random
 from tests.conftest import create_tg_user
 
 

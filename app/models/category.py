@@ -1,10 +1,10 @@
-from sqlalchemy import String, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
+
 from models.base import Base
 from models.subscription import subscription
 from models.user import User
-from typing import List
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Category(Base):

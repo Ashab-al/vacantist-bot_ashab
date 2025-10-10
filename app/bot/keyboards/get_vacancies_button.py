@@ -1,7 +1,6 @@
 from aiogram.types import InlineKeyboardButton
-from lib.tg.common import jinja_render
 from bot.filters.callback.get_vacancies_callback import GetVacanciesCallback
-
+from lib.tg.common import jinja_render
 
 PAGE = 1
 PAGE_SIZE = 3

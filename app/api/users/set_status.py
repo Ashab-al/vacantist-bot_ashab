@@ -1,13 +1,12 @@
-from fastapi import APIRouter, Depends, Path, Body, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_async_session
 from typing import Annotated
-from schemas.api.users.set_status.request import (
-    SetStatusUserIdRequest,
-    SetStatusRequest,
-)
-from services.api.user.set_status import set_status
+
+from database import get_async_session
+from fastapi import APIRouter, Body, Depends, HTTPException, Path
+from schemas.api.users.set_status.request import (SetStatusRequest,
+                                                  SetStatusUserIdRequest)
 from schemas.api.users.set_status.response import SetStatusResponse
+from services.api.user.set_status import set_status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

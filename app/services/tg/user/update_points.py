@@ -1,7 +1,7 @@
-from models.user import User
-from sqlalchemy.ext.asyncio import AsyncSession
-from repositories.users.get_user_by_platform_id import get_user_by_platform_id
 from aiogram.types.user import User as AiogramTgUser
+from models.user import User
+from repositories.users.get_user_by_platform_id import get_user_by_platform_id
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def update_points(

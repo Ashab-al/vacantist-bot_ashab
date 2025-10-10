@@ -1,6 +1,7 @@
+import random
+
 import pytest
 from models.blacklist import BlackList
-import random
 from services.api.vacancy.black_list_check import black_list_check
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.conftest import create_vacancy_and_category

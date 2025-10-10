@@ -1,14 +1,13 @@
-from aiogram import Router, F
-from aiogram.types import Message
+from aiogram import F, Router
 from aiogram.filters.command import CommandStart
-from lib.tg.common import jinja_render
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import with_session
-from bot.keyboards.kbs import menu_keyboard
+from aiogram.types import Message
 from bot.filters.button import AdvertisementButtonFilter, HelpButtonFilter
-from services.tg.user.current_user import current_user
+from bot.keyboards.kbs import menu_keyboard
+from database import with_session
+from lib.tg.common import jinja_render
 from services.tg.advertisement import advertisement
-
+from services.tg.user.current_user import current_user
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик главного меню")
 router.message.filter(F.chat.type == "private")

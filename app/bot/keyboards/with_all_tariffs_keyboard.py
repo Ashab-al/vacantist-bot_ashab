@@ -1,7 +1,6 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
-from lib.tg.common import jinja_render
 from bot.filters.callback.tariff_callback import TariffCallback
-
+from lib.tg.common import jinja_render
 
 CURRENCY = "XTR"
 TARIFFS_PRICES = {10: 31, 30: 85, 50: 135, 100: 255, 150: 362, 200: 450}

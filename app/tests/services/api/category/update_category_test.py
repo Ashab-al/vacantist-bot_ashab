@@ -1,8 +1,9 @@
+import random
+
 import pytest
 from models.category import Category
-from services.api.category.update_category import update_category
-import random
 from schemas.api.categories.update.request import UpdateCategoryRequest
+from services.api.category.update_category import update_category
 
 
 @pytest.mark.asyncio

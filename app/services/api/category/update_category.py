@@ -1,6 +1,6 @@
 from models.category import Category
-from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.api.categories.update.request import UpdateCategoryRequest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def update_category(

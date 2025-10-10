@@ -1,7 +1,6 @@
-from fastapi import APIRouter
-
 from api.vacancies.create import router as create_router
 from api.vacancies.list import router as list_router
+from fastapi import APIRouter
 
 vacancies_router = APIRouter()
 

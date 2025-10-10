@@ -1,4 +1,5 @@
 import random
+
 import pytest
 from lib.tg.constants import SOURCE
 from models.category import Category

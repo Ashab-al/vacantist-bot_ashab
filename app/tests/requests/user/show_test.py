@@ -1,8 +1,9 @@
 import random
+
 import pytest
-from tests.conftest import create_tg_user
-from models.user import User
 from enums.bot_status_enum import BotStatusEnum
+from models.user import User
+from tests.conftest import create_tg_user
 
 
 @pytest.mark.asyncio

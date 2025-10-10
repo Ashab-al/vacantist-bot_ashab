@@ -7,16 +7,16 @@
 - Глобальная очередь для вакансий
 """
 
-import os
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
-import logging
-import requests
-from jinja2 import Environment, select_autoescape, FileSystemLoader
-import json
-from lib.tg.pluralize import pluralize
 import asyncio
+import json
+import logging
+import os
+from typing import Optional
 
+import requests
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from lib.tg.pluralize import pluralize
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

@@ -1,6 +1,7 @@
+import asyncio
+
 from aiogram.types import InlineKeyboardMarkup, KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-import asyncio
 from lib.tg.common import jinja_render
 
 

@@ -1,11 +1,13 @@
+import random
+
 import pytest
 from models.blacklist import BlackList
-import random
 from models.vacancy import Vacancy
+from schemas.api.vacancies.create.request import CreateVacancyRequest
+from services.api.vacancy.check_and_create_vacancy import \
+    check_and_create_vacancy
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.conftest import create_vacancy_and_category
-from schemas.api.vacancies.create.request import CreateVacancyRequest
-from services.api.vacancy.check_and_create_vacancy import check_and_create_vacancy
 
 
 @pytest.mark.asyncio

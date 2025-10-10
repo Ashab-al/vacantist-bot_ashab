@@ -1,5 +1,5 @@
 from fastapi_camelcase import CamelModel
-from pydantic import Field, ConfigDict
+from pydantic import ConfigDict, Field
 
 
 class CreateCategoryResponse(CamelModel):
