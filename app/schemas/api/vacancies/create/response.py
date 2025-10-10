@@ -12,42 +12,42 @@ class CreateVacancyResponse(CamelModel):
     """
 
     id: int = Field(
-        ..., example=1, description="Уникальный идентификатор созданной вакансии."
+        ..., examples=[1], description="Уникальный идентификатор созданной вакансии."
     )
     """ID созданной вакансии."""
 
     title: str = Field(
         ...,
-        example="Технический специалист",
+        examples=["Технический специалист"],
         description="Заголовок созданной вакансии.",
     )
     """Заголовок вакансии."""
 
     description: str = Field(
-        ..., example="Описание вакансии", description="Подробное описание вакансии."
+        ..., examples=["Описание вакансии"], description="Подробное описание вакансии."
     )
     """Описание вакансии."""
 
     contact_information: str = Field(
         ...,
-        example="ТГ - @username",
+        examples=["ТГ - @username"],
         description="Контактные данные для связи с отправителем вакансии.",
     )
     """Контактная информация."""
 
     source: str = Field(
-        ..., example="telegram chat", description="Источник, откуда поступила вакансия."
+        ..., examples=["telegram chat"], description="Источник, откуда поступила вакансия."
     )
     """Источник вакансии."""
 
     platform_id: str = Field(
-        ..., example="123123123", description="Идентификатор отправителя вакансии."
+        ..., examples=["123123123"], description="Идентификатор отправителя вакансии."
     )
     """ID платформы отправителя."""
 
     category_title: str = Field(
         ...,
-        example="Тех-спец",
+        examples=["Тех-спец"],
         description="Название категории, к которой относится вакансия.",
     )
     """Категория вакансии."""

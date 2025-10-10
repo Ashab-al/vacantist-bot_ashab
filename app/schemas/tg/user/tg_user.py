@@ -18,7 +18,7 @@ class TgUser(CamelModel):
     id: int = Field(
         ...,
         description="Уникальный идентификатор пользователя в Telegram.",
-        example=1,
+        examples=[1],
         alias="platform_id",
     )
     """ID пользователя в Telegram."""

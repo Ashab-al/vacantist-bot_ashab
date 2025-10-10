@@ -13,35 +13,35 @@ class CreateVacancyRequest(CamelModel):
     """
 
     title: str = Field(
-        ..., example="Технический специалист", description="Заголовок вакансии."
+        ..., examples=["Технический специалист"], description="Заголовок вакансии."
     )
     """Заголовок вакансии."""
 
     category_title: str = Field(
         ...,
-        example="Тех-спец",
+        examples=["Тех-спец"],
         description="Название категории, к которой относится вакансия.",
     )
     """Категория вакансии."""  # TODO Потом удалить. Посмотреть нужен ли на самом деле такой атрибут
 
     description: str = Field(
-        ..., example="Описание вакансии", description="Подробное описание вакансии."
+        ..., examples=["Описание вакансии"], description="Подробное описание вакансии."
     )
     """Описание вакансии."""
 
     contact_information: str = Field(
         ...,
-        example="ТГ - @username",
+        examples=["ТГ - @username"],
         description="Контактные данные для связи с отправителем вакансии.",
     )
     """Контактная информация."""
 
     source: str = Field(
-        ..., example=SOURCE, description="Источник, откуда поступила вакансия."
+        ..., examples=[SOURCE], description="Источник, откуда поступила вакансия."
     )
     """Источник вакансии."""
 
     platform_id: str = Field(
-        ..., example="123123123", description="Идентификатор отправителя вакансии."
+        ..., examples=["123123123"], description="Идентификатор отправителя вакансии."
     )
     """ID платформы отправителя."""

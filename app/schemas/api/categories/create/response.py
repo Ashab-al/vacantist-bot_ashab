@@ -14,7 +14,7 @@ class CreateCategoryResponse(CamelModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int = Field(
-        ..., example=1, description="Уникальный идентификатор созданной категории."
+        ..., examples=[1], description="Уникальный идентификатор созданной категории."
     )
     """ID категории, сгенерированный базой данных."""
 

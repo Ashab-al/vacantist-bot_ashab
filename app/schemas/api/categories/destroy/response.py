@@ -15,7 +15,7 @@ class DestroyCategoryResponse(CamelModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(..., description="Уникальный идентификатор категории.", example=1)
+    id: int = Field(..., description="Уникальный идентификатор категории.", examples=[1])
     """ID категории, удалённой из системы."""
 
     name: str = Field(..., description="Название категории.", examples=["Тех-спец"])

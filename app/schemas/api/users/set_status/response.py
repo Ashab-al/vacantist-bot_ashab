@@ -18,7 +18,7 @@ class SetStatusResponse(CamelModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int = Field(
-        ..., description="Уникальный идентификатор пользователя.", example=1
+        ..., description="Уникальный идентификатор пользователя.", examples=[1]
     )
     """ID пользователя в системе."""
 
