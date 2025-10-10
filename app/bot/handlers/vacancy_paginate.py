@@ -1,4 +1,4 @@
-"""Модуль для работы с асинхронной задержкой (sleep) с использованием asyncio."""
+"""Модуль работы с Telegram-ботом через aiogram."""
 import asyncio
 
 from aiogram import Bot, F, Router

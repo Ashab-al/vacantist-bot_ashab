@@ -1,9 +1,7 @@
 from typing import Annotated
 
 from database import get_async_session
-from fastapi import APIRouter, Body, Depends, HTTPException
-from models.vacancy import Vacancy
-from repositories.vacancies.get_all_vacancies import get_all_vacancies
+from fastapi import APIRouter, Depends
 from schemas.api.vacancies.vacancy import VacancySchema
 from services.api.vacancy.vacancies_list import vacancies_list
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,7 +38,8 @@ async def list_vacancies(session: Annotated[AsyncSession, Depends(get_async_sess
 
     Returns:
         list[VacancySchema]: Список вакансий с основными данными
-        (`id`, `title`, `description`, `contact_information`, `source`, `platform_id`, `category_title`).
+        (`id`, `title`, `description`, `contact_information`, 
+        `source`, `platform_id`, `category_title`).
     """
     vacancies_to_schema: list[VacancySchema] = await vacancies_list(session)
     return vacancies_to_schema

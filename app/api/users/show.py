@@ -39,6 +39,6 @@ async def show(
     try:
         user = await find_user_by_id(session, user_id)
     except ValueError as e:
-        raise HTTPException(404, str(e))
+        raise HTTPException(404, str(e)) from e
 
     return user

@@ -1,11 +1,10 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
 from bot.filters.callback.category_callback import CategoryCallback
+from bot.keyboards.get_vacancies_button import get_vacancies_button
 from lib.tg.common import jinja_render
 from models.category import Category
 from repositories.categories.get_all_categories import get_all_categories
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from .get_vacancies_button import get_vacancies_button
 
 MAX_COUNT_BUTTON_IN_LINE = 2
 

@@ -12,7 +12,7 @@ router = APIRouter()
     summary="Массовая отправка сообщения по базе",
     description="Отправляем всем пользователям сообщение",
 )
-async def mail_all(session: Annotated[AsyncSession, Depends(get_async_session)]):
+async def mail_all(_session: Annotated[AsyncSession, Depends(get_async_session)]):
     """
     Массовая рассылка сообщений всем пользователям.
 
@@ -27,4 +27,3 @@ async def mail_all(session: Annotated[AsyncSession, Depends(get_async_session)])
         После реализации может возвращать объект с результатом рассылки.
     """
     # TO DO
-    ...

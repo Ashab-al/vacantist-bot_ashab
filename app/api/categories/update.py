@@ -43,6 +43,6 @@ async def update(
     try:
         category = await update_category(session, category_id, category_data)
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
     return category

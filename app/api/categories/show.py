@@ -36,6 +36,6 @@ async def show_category(
     try:
         category = await find_category_by_id(session, category_id)
     except ValueError as e:
-        raise HTTPException(404, str(e))
+        raise HTTPException(404, str(e)) from e
 
     return category

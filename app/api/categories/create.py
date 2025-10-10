@@ -36,6 +36,6 @@ async def create_new_category(
     try:
         category: CreateCategoryResponse = await create_category(session, category_data)
     except Exception as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(400, str(e)) from e
 
     return category

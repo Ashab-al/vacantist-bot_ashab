@@ -40,6 +40,6 @@ async def update_bonus(
     try:
         user = await set_bonus(session, user_id, bonus)
     except ValueError as e:
-        raise HTTPException(404, str(e))
+        raise HTTPException(404, str(e)) from e
 
     return user

@@ -1,9 +1,10 @@
 from datetime import datetime
 
 from sqlalchemy import func
-from sqlalchemy.ext.asyncio import (AsyncAttrs, AsyncSession,
-                                    create_async_engine)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+# pylint: disable=too-few-public-methods, not-callable
 
 
 class Base(DeclarativeBase):

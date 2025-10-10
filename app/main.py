@@ -6,19 +6,18 @@
 - Подключение API и обработчиков
 - Управление жизненным циклом приложения через lifespan
 """
-# pylint: disable=broad-except
-import asyncio 
+# pylint: disable=broad-except, unused-import
+import asyncio
 import logging
 from contextlib import asynccontextmanager
-
 from aiogram.types import Update
 from api import api_router
 from bot.create_bot import bot, dp, start_bot, stop_bot
 from bot.handlers import main_router
 from config import settings, vacancy_queue
 from fastapi import FastAPI, Request
-from services.tg.vacancy.sender_worker import sender_worker 
-# pylint: enable=broad-except
+from services.tg.vacancy.sender_worker import sender_worker
+# pylint: enable=broad-except, unused-import
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -45,16 +44,16 @@ async def lifespan(_app: FastAPI):
         allowed_updates=dp.resolve_used_update_types(),
         drop_pending_updates=True,
     )
-    # worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))#TODO потом включить
+    # worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))#TODO потом включить # pylint: disable=fixme
 
     logging.info("Webhook set to %s", webhook_url)
 
     yield
 
     logging.info("Sending shutdown signal to sender_worker...")
-    # await vacancy_queue.put(None)#TODO потом включить
-    # await vacancy_queue.join()#TODO потом включить
-    # worker_task.cancel() #TODO потом включить
+    # await vacancy_queue.put(None)#TODO потом включить # pylint: disable=fixme
+    # await vacancy_queue.join()#TODO потом включить # pylint: disable=fixme
+    # worker_task.cancel() #TODO потом включить # pylint: disable=fixme
     logging.info("Sender_worker finished successfully.")
 
     logging.info("Shutting down bot...")
