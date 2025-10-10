@@ -5,7 +5,7 @@ subscription = Table(
     "subscriptions",
     Base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("category_id", ForeignKey("categories.id"), primary_key=True)
+    Column("category_id", ForeignKey("categories.id"), primary_key=True),
 )
 """
 Промежуточная таблица для связи многие-ко-многим между пользователями и категориями.

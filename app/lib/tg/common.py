@@ -1,9 +1,7 @@
 from config import jinja_env
 
-async def jinja_render(
-    action, 
-    hash = {}
-) -> str:
+
+async def jinja_render(action, hash={}) -> str:
     """
     Асинхронно рендерит HTML-шаблон Jinja.
 
@@ -14,4 +12,4 @@ async def jinja_render(
     Returns:
         str: Отрендеренный HTML-код.
     """
-    return await (jinja_env.get_template(f"/bot/{action}.jinja")).render_async(**hash)
+    return await jinja_env.get_template(f"/bot/{action}.jinja").render_async(**hash)

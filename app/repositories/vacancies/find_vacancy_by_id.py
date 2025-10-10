@@ -3,10 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-async def find_vacancy_by_id(
-    db: AsyncSession,
-    vacancy_id: int
-) -> Vacancy | None:
+
+async def find_vacancy_by_id(db: AsyncSession, vacancy_id: int) -> Vacancy | None:
     """
     Получить вакансию по её ID с предзагруженной категорией.
 
@@ -18,7 +16,14 @@ async def find_vacancy_by_id(
         Vacancy | None: Вакансия с предзагруженной категорией или None, если не найдена.
     """
     return (
-        await db.execute(
-            select(Vacancy).options(joinedload(Vacancy.category)).where(Vacancy.id==vacancy_id)
+        (
+            await db.execute(
+                select(Vacancy)
+                .options(joinedload(Vacancy.category))
+                .where(Vacancy.id == vacancy_id)
+            )
         )
-    ).unique().scalars().first()
+        .unique()
+        .scalars()
+        .first()
+    )

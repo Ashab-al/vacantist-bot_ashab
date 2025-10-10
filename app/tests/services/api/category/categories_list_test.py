@@ -5,12 +5,10 @@ import random
 
 
 @pytest.mark.asyncio
-async def test_categories_list(
-    session
-):
+async def test_categories_list(session):
     """Проверяет, возвращаются ли корректно список категорий."""
     category_names: list[str] = {
-        f"Category {random.randint(1, 10000000000)}" 
+        f"Category {random.randint(1, 10000000000)}"
         for _ in range(random.randint(4, 7))
     }
     for name in category_names:
@@ -24,9 +22,7 @@ async def test_categories_list(
 
 
 @pytest.mark.asyncio
-async def test_categories_list_empty(
-    session
-):
+async def test_categories_list_empty(session):
     """Проверяет, возвращается ли пустой список."""
     empty_list_size: int = 0
     result: list[Category] = await categories_list(session)

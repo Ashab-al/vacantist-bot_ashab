@@ -7,15 +7,14 @@ from services.api.user.users_list import users_list
 
 router = APIRouter()
 
+
 @router.get(
-    '/',
-    summary='Получить всех пользователей',
-    description='Возвращает список всех пользователей',
-    response_model=ListUsersResponse
+    "/",
+    summary="Получить всех пользователей",
+    description="Возвращает список всех пользователей",
+    response_model=ListUsersResponse,
 )
-async def list_users(
-    session: Annotated[AsyncSession, Depends(get_async_session)]
-):
+async def list_users(session: Annotated[AsyncSession, Depends(get_async_session)]):
     """
     Получить список всех пользователей.
 

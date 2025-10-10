@@ -7,7 +7,6 @@
 - Управление жизненным циклом приложения через lifespan
 """
 
-
 import logging
 from contextlib import asynccontextmanager
 from bot.create_bot import bot, dp, stop_bot, start_bot
@@ -20,7 +19,9 @@ import asyncio
 from services.tg.vacancy.sender_worker import sender_worker
 from config import vacancy_queue
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 @asynccontextmanager
@@ -42,23 +43,23 @@ async def lifespan(app: FastAPI):
     await bot.set_webhook(
         url=webhook_url,
         allowed_updates=dp.resolve_used_update_types(),
-        drop_pending_updates=True
+        drop_pending_updates=True,
     )
     # worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))#TODO потом включить
 
     logging.info(f"Webhook set to {webhook_url}")
 
     yield
-    
+
     logging.info("Sending shutdown signal to sender_worker...")
     # await vacancy_queue.put(None)#TODO потом включить
     # await vacancy_queue.join()#TODO потом включить
     # worker_task.cancel() #TODO потом включить
     logging.info("Sender_worker finished successfully.")
-    
+
     logging.info("Shutting down bot...")
     await bot.delete_webhook()
-    
+
     await stop_bot()
     logging.info("Webhook deleted")
 
@@ -67,22 +68,15 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(api_router, prefix="/api/v1")
 
+
 @app.post(
-    "/api/v1/webhook", 
+    "/api/v1/webhook",
     tags=["Telegram API"],
     summary="Эндпоинт для получения обновлений от Telegram",
     description="Телеграм присылает все обновления на этот экшен",
-    responses={
-        200: {
-            "content": {
-                "application/json": None
-            }
-        }
-    }
+    responses={200: {"content": {"application/json": None}}},
 )
-async def webhook(
-    request: Request
-) -> None:
+async def webhook(request: Request) -> None:
     """
     Обрабатывает входящие обновления от Telegram через webhook.
 
@@ -91,7 +85,7 @@ async def webhook(
 
     Raises:
         HTTPException: Если происходит ошибка при обработке обновления.
-    
+
     Notes:
         Обновление валидируется и передается в диспетчер dp.feed_update для обработки.
     """

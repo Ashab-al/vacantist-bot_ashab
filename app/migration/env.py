@@ -19,14 +19,14 @@ from models.blacklist import BlackList
 from models.category import Category
 from models.vacancy import Vacancy
 from models.subscription import subscription
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 if not config.get_main_option("sqlalchemy.url"):
     config.set_main_option(
         "sqlalchemy.url",
-        database_url
-        + "?async_fallback=True",  
+        database_url + "?async_fallback=True",
     )
 
 

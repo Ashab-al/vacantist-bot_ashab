@@ -4,10 +4,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy import select
 
 
-async def get_user_by_platform_id(
-    db: AsyncSession,
-    platform_id: int
-) -> User | None:
+async def get_user_by_platform_id(db: AsyncSession, platform_id: int) -> User | None:
     """
     Получить пользователя по его platform_id с предзагруженными категориями.
 
@@ -19,7 +16,14 @@ async def get_user_by_platform_id(
         User | None: Пользователь с предзагруженными категориями или None, если не найден.
     """
     return (
-        await db.execute(
-            select(User).where(User.platform_id==platform_id).options(joinedload(User.categories))
+        (
+            await db.execute(
+                select(User)
+                .where(User.platform_id == platform_id)
+                .options(joinedload(User.categories))
+            )
         )
-    ).unique().scalars().first()
+        .unique()
+        .scalars()
+        .first()
+    )

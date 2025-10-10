@@ -26,17 +26,17 @@ async def test_send_analytics():
     2. Рендер шаблона с правильным контекстом.
     3. Вызов `bot.send_message` с текстом сообщения и ID чата.
     """
-    jinja_text: str = 'rendered_text'
+    jinja_text: str = "rendered_text"
     user_works_count: int = random.randint(3, 10)
     user_bot_blocked_count: int = random.randint(3, 10)
     all_user_count = user_works_count + user_bot_blocked_count
-    username: str = 'test_user'
+    username: str = "test_user"
     mock_db = AsyncMock(spec=AsyncSession)
 
     mock_result_group = Mock()
     mock_result_group.all.return_value = [
         (BotStatusEnum.WORKS, user_works_count),
-        (BotStatusEnum.BOT_BLOCKED, user_bot_blocked_count)
+        (BotStatusEnum.BOT_BLOCKED, user_bot_blocked_count),
     ]
 
     mock_result_count = Mock()
@@ -48,28 +48,30 @@ async def test_send_analytics():
     mock_user.username = username
 
     # Мок jinja_render и bot.send_message
-    with patch("services.tg.send_analytics.jinja_render", new_callable=AsyncMock) as mock_render, \
-         patch("services.tg.send_analytics.bot.send_message", new_callable=AsyncMock) as mock_send:
+    with patch(
+        "services.tg.send_analytics.jinja_render", new_callable=AsyncMock
+    ) as mock_render, patch(
+        "services.tg.send_analytics.bot.send_message", new_callable=AsyncMock
+    ) as mock_send:
 
         mock_render.return_value = jinja_text
 
         await send_analytics(mock_db, mock_user)
 
         mock_render.assert_awaited_once_with(
-            'analytics',
+            "analytics",
             {
-                "user": mock_user, 
+                "user": mock_user,
                 "analytics": {
                     BotStatusEnum.WORKS: user_works_count,
                     BotStatusEnum.BOT_BLOCKED: user_bot_blocked_count,
-                    'users_count': all_user_count
+                    "users_count": all_user_count,
                 },
-                "bot_status": BotStatusEnum
-            }
+                "bot_status": BotStatusEnum,
+            },
         )
 
         # Проверяем вызов bot.send_message
         mock_send.assert_awaited_once_with(
-            chat_id=settings.admin_chat_id,
-            text=jinja_text
+            chat_id=settings.admin_chat_id, text=jinja_text
         )

@@ -10,11 +10,11 @@ main_router = Router(name="Главный обработчик")
 main_router.message.filter(F.chat.type == "private")
 
 for router in [
-    menu_router, 
-    payment_router, 
+    menu_router,
+    payment_router,
     block_and_unblock_router,
     category_router,
     vacancy_router,
-    vacancy_paginate_router
+    vacancy_paginate_router,
 ]:
     main_router.include_router(router)

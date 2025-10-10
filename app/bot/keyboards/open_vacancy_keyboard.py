@@ -7,10 +7,8 @@ from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallback
 
 MAX_COUNT_BUTTON_IN_LINE = 1
 
-async def open_vacancy_keyboard(
-    user: User,
-    vacancy: Vacancy
-) -> InlineKeyboardMarkup:
+
+async def open_vacancy_keyboard(user: User, vacancy: Vacancy) -> InlineKeyboardMarkup:
     """
     Создает клавиатуру для открытой вакансии.
 
@@ -28,20 +26,15 @@ async def open_vacancy_keyboard(
 
     kb.button(
         text=await jinja_render(
-            'button/by_points', 
-            {
-                "user": user, 
-                "COUNT_FOR_FULL_BATTERY": User.COUNT_FOR_FULL_BATTERY
-            }
+            "button/by_points",
+            {"user": user, "COUNT_FOR_FULL_BATTERY": User.COUNT_FOR_FULL_BATTERY},
         ),
-        callback_data=i18n['buttons']['points']
+        callback_data=i18n["buttons"]["points"],
     )
     kb.button(
-        text=i18n['buttons']['for_vacancy_message']['spam'],
-        callback_data=SpamVacancyCallback(
-            vacancy_id=vacancy.id
-        ).pack()
+        text=i18n["buttons"]["for_vacancy_message"]["spam"],
+        callback_data=SpamVacancyCallback(vacancy_id=vacancy.id).pack(),
     )
     kb.adjust(MAX_COUNT_BUTTON_IN_LINE, repeat=True)
-    
+
     return kb.as_markup()

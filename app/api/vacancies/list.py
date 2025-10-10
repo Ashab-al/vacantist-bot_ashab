@@ -10,6 +10,7 @@ from services.api.vacancy.vacancies_list import vacancies_list
 
 router = APIRouter()
 
+
 @router.get(
     "/",
     summary="Получить все вакансии.",
@@ -25,22 +26,20 @@ router = APIRouter()
         "- `category_title` — название категории вакансии\n\n"
     ),
     response_model=list[VacancySchema],
-    response_description="Список вакансий в формате JSON"
+    response_description="Список вакансий в формате JSON",
 )
-async def list_vacancies(
-    session: Annotated[AsyncSession, Depends(get_async_session)]
-):
+async def list_vacancies(session: Annotated[AsyncSession, Depends(get_async_session)]):
     """
     Получить список всех вакансий из базы данных.
 
-    Эндпоинт извлекает все вакансии, преобразует их в схемы `VacancySchema` 
+    Эндпоинт извлекает все вакансии, преобразует их в схемы `VacancySchema`
     и возвращает клиенту.
 
     Args:
         session (AsyncSession): Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
 
     Returns:
-        list[VacancySchema]: Список вакансий с основными данными 
+        list[VacancySchema]: Список вакансий с основными данными
         (`id`, `title`, `description`, `contact_information`, `source`, `platform_id`, `category_title`).
     """
     vacancies_to_schema: list[VacancySchema] = await vacancies_list(session)

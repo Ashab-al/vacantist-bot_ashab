@@ -17,12 +17,12 @@ class VacancyForTheWeekRepository:
     """
 
     def __init__(
-        self, 
+        self,
         db: AsyncSession,
         subscribed_categories: list[Category] | list,
         user: User,
         page: int,
-        page_size: int
+        page_size: int,
     ):
         """
         Args:
@@ -40,9 +40,7 @@ class VacancyForTheWeekRepository:
         self.page: int = page
         self.page_size: int = page_size
 
-    async def build_vacancies_for_the_week(
-        self
-    ) -> list[Vacancy] | list:
+    async def build_vacancies_for_the_week(self) -> list[Vacancy] | list:
         """
         Получить список вакансий за последнюю неделю с учетом пагинации.
 
@@ -57,10 +55,8 @@ class VacancyForTheWeekRepository:
         stmt: Select = await self._apply_pagination(self.vacancies_stmt)
         result = await self.db.execute(stmt)
         return result.scalars().all()
-    
-    async def total_count(
-        self 
-    ) -> int:
+
+    async def total_count(self) -> int:
         """
         Посчитать общее количество вакансий, подходящих под условия поиска.
 
@@ -82,32 +78,26 @@ class VacancyForTheWeekRepository:
         """
 
         category_ids: set[int] = {
-            category.id 
-            for category in self.subscribed_categories
+            category.id for category in self.subscribed_categories
         }
         now_datetime: datetime = datetime.now()
         low_datetime: datetime = datetime.combine(
-            now_datetime - timedelta(days=QUANTITY_DAYS), 
-            time(hour=0, minute=0, second=0), 
-            tzinfo=None
+            now_datetime - timedelta(days=QUANTITY_DAYS),
+            time(hour=0, minute=0, second=0),
+            tzinfo=None,
         )
 
         stmt: Select = (
             select(Vacancy)
             .where(Vacancy.category_id.in_(category_ids))
-            .where(Vacancy.platform_id.not_in(
-                select(BlackList.contact_information)    
-            ))
+            .where(Vacancy.platform_id.not_in(select(BlackList.contact_information)))
             .where(Vacancy.created_at.between(low_datetime, now_datetime))
             .order_by(Vacancy.created_at.desc())
         )
-        
+
         return stmt
-    
-    async def _apply_pagination(
-        self,
-        stmt: Select    
-    ) -> Select:
+
+    async def _apply_pagination(self, stmt: Select) -> Select:
         """
         Применить пагинацию к запросу.
 
@@ -117,6 +107,6 @@ class VacancyForTheWeekRepository:
         Returns:
             Select: Запрос с установленными `limit` и `offset`.
         """
-        
+
         offset = (self.page - 1) * self.page_size
         return stmt.limit(self.page_size).offset(offset)

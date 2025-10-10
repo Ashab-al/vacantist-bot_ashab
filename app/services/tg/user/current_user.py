@@ -1,4 +1,6 @@
-from services.tg.user.find_or_create_with_update_by_platform_id import find_or_create_with_update_by_platform_id
+from services.tg.user.find_or_create_with_update_by_platform_id import (
+    find_or_create_with_update_by_platform_id,
+)
 from models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.types import Message, CallbackQuery, ChatMemberUpdated
@@ -8,13 +10,13 @@ async def current_user(
     session: AsyncSession,
     message: Message = None,
     query: CallbackQuery = None,
-    event: ChatMemberUpdated = None
+    event: ChatMemberUpdated = None,
 ) -> User:
     """
     Получает или создаёт пользователя в базе данных по данным из Telegram-объекта.
 
-    Функция принимает один из объектов Telegram (Message, CallbackQuery или ChatMemberUpdated), 
-    извлекает из него данные о пользователе (`from_user`), и затем выполняет поиск 
+    Функция принимает один из объектов Telegram (Message, CallbackQuery или ChatMemberUpdated),
+    извлекает из него данные о пользователе (`from_user`), и затем выполняет поиск
     или создание записи в базе данных, обновляя данные пользователя при необходимости.
 
     Args:
@@ -27,10 +29,8 @@ async def current_user(
         User: Объект пользователя, найденный или созданный в базе данных.
     """
     source = message or query or event
-    
+
     user: User = await find_or_create_with_update_by_platform_id(
-        db=session,
-        user_data=source.from_user    
+        db=session, user_data=source.from_user
     )
     return user
-

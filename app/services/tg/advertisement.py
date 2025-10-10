@@ -4,9 +4,7 @@ from models.category import Category
 from models.subscription import subscription
 
 
-async def advertisement(
-    db: AsyncSession        
-) -> list[tuple[str, int]]:
+async def advertisement(db: AsyncSession) -> list[tuple[str, int]]:
     """
     Получает количество подписчиков для каждой категории.
 

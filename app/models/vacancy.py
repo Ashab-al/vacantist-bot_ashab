@@ -4,7 +4,6 @@ from models.base import Base
 from models.category import Category
 
 
-
 class Vacancy(Base):
     """
     Модель вакансии.
@@ -22,13 +21,14 @@ class Vacancy(Base):
         category_id (str): Внешний ключ на категорию вакансии.
         category (Category): Связанная категория вакансии.
     """
-    __tablename__ = 'vacancies'
+
+    __tablename__ = "vacancies"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
     contact_information: Mapped[str] = mapped_column(String, nullable=False)
     source: Mapped[str] = mapped_column(String, nullable=False)
     platform_id: Mapped[str] = mapped_column(String, nullable=False)
-    
+
     category_id: Mapped[str] = mapped_column(ForeignKey("categories.id"))
     category: Mapped["Category"] = relationship(back_populates="vacancies")

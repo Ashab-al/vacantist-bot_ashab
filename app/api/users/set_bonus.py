@@ -9,16 +9,17 @@ from services.api.user.set_bonus import set_bonus
 
 router = APIRouter()
 
+
 @router.post(
     "/{id}/set_bonus",
-    summary='Обновить количество бонусов у пользователя',
-    description='Обновляет количество бонусов у пользователя',
-    response_model=SetBonusResponse
+    summary="Обновить количество бонусов у пользователя",
+    description="Обновляет количество бонусов у пользователя",
+    response_model=SetBonusResponse,
 )
 async def update_bonus(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     bonus: Annotated[SetBonusRequest, Body()],
-    user_id: Annotated[SetBonusUserIdRequest, Path()]
+    user_id: Annotated[SetBonusUserIdRequest, Path()],
 ):
     """
     Обновить количество бонусов у пользователя.
@@ -26,7 +27,7 @@ async def update_bonus(
     Args:
         session (AsyncSession): Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
         bonus (SetBonusRequest): Тело запроса с новым количеством бонусов.
-        user_id (SetBonusUserIdRequest): Идентификатор пользователя, 
+        user_id (SetBonusUserIdRequest): Идентификатор пользователя,
             которому нужно изменить бонусы.
 
     Raises:

@@ -1,4 +1,4 @@
 """Константы для Telegram-бота"""
 
-SOURCE="tg_chat"
+SOURCE = "tg_chat"
 """Источник вакансий"""

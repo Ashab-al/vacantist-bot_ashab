@@ -5,9 +5,7 @@ from services.api.user.find_user_by_id import find_user_by_id
 
 
 async def set_bonus(
-    db: AsyncSession,
-    user_id: SetBonusUserIdRequest,
-    bonus: SetBonusRequest
+    db: AsyncSession, user_id: SetBonusUserIdRequest, bonus: SetBonusRequest
 ) -> User:
     """
     Обновляет количество бонусов у пользователя
@@ -16,16 +14,16 @@ async def set_bonus(
         db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных
         user_id (SetBonusUserIdRequest): Схема для поиска пользователя
         bonus (SetBonusRequest): Схема для обновления количество бонусов у пользователя
-    
+
     Returns:
         User: Объект пользователя
     """
     user: User = await find_user_by_id(db, user_id)
-    
+
     user.bonus = bonus.count
 
     db.add(user)
     await db.commit()
     await db.refresh(user)
-    
+
     return user

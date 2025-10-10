@@ -6,8 +6,7 @@ from enums.bot_status_enum import BotStatusEnum
 
 
 async def find_users_where_have_subscribe_to_category(
-    db: AsyncSession,
-    category_id: int
+    db: AsyncSession, category_id: int
 ) -> list[User]:
     """
     Найти пользователей, которые подписаны на указанную категорию и находятся в статусе `WORKS`.
@@ -20,13 +19,16 @@ async def find_users_where_have_subscribe_to_category(
         list[User]: Список пользователей, подписанных на категорию и активных в системе.
     """
     result = (
-        await db.execute(
-            select(User)
-            .distinct()
-            .join(subscription, subscription.c.user_id == User.id)
-            .where(subscription.c.category_id == category_id)
-            .where(User.bot_status == BotStatusEnum.WORKS)
+        (
+            await db.execute(
+                select(User)
+                .distinct()
+                .join(subscription, subscription.c.user_id == User.id)
+                .where(subscription.c.category_id == category_id)
+                .where(User.bot_status == BotStatusEnum.WORKS)
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     return result
-    

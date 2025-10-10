@@ -8,15 +8,14 @@ from schemas.api.categories.list.response import ListCategoryResponse
 
 router = APIRouter()
 
+
 @router.get(
     "/",
-    summary='Получить все категории',
-    description='Возвращает все категории которые есть',
-    response_model=ListCategoryResponse
+    summary="Получить все категории",
+    description="Возвращает все категории которые есть",
+    response_model=ListCategoryResponse,
 )
-async def list_categories(
-    session: Annotated[AsyncSession, Depends(get_async_session)]
-):
+async def list_categories(session: Annotated[AsyncSession, Depends(get_async_session)]):
     """
     Возвращает список всех категорий.
 
