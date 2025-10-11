@@ -1,4 +1,5 @@
 """Модуль работы с Telegram-ботом через aiogram."""
+
 from aiogram import F, Router
 from aiogram.filters.command import CommandStart
 from aiogram.types import Message
@@ -50,7 +51,7 @@ async def reaction_btn_advertisement(message: Message, session: AsyncSession) ->
         session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
 
     Notes:
-        - Получает список категорий с количеством 
+        - Получает список категорий с количеством
         подписчиков на эти категории через `advertisement`.
     """
     await message.answer(

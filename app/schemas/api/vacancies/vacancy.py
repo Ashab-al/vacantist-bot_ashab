@@ -33,7 +33,9 @@ class VacancySchema(CamelModel):
     )
     """Контактная информация."""
 
-    source: str = Field(..., examples=["telegram chat"], description="Источник вакансии.")
+    source: str = Field(
+        ..., examples=["telegram chat"], description="Источник вакансии."
+    )
     """Источник вакансии."""
 
     platform_id: str = Field(

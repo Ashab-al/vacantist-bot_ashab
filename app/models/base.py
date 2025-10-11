@@ -3,7 +3,6 @@ from datetime import datetime
 from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-
 # pylint: disable=too-few-public-methods, not-callable
 
 

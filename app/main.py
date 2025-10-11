@@ -6,10 +6,12 @@
 - Подключение API и обработчиков
 - Управление жизненным циклом приложения через lifespan
 """
+
 # pylint: disable=broad-except, unused-import
 import asyncio
 import logging
 from contextlib import asynccontextmanager
+
 from aiogram.types import Update
 from api import api_router
 from bot.create_bot import bot, dp, start_bot, stop_bot
@@ -17,6 +19,7 @@ from bot.handlers import main_router
 from config import settings, vacancy_queue
 from fastapi import FastAPI, Request
 from services.tg.vacancy.sender_worker import sender_worker
+
 # pylint: enable=broad-except, unused-import
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

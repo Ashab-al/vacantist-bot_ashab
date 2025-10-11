@@ -98,8 +98,8 @@ async def create_tg_user_with_session(session) -> User:
     """Возвращает нового пользователя для тестов"""
     user_data: dict[str, str | int] = {
         "id": random.randint(1000, 100000000),
-        "first_name": f"Имя {random.randint(1, 1000)}",
-        "username": f"asd{random.randint(1, 1000)}",
+        "first_name": f"Имя {random.randint(1, 100000000)}",
+        "username": f"asd{random.randint(1, 100000000)}",
     }
     new_user_schema: TgUser = TgUser.model_validate(user_data)
     user: User = User(

@@ -14,7 +14,9 @@ class UpdateCategoryResponse(CamelModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(..., description="Уникальный идентификатор категории.", examples=[1])
+    id: int = Field(
+        ..., description="Уникальный идентификатор категории.", examples=[1]
+    )
     """ID категории."""
 
     name: str = Field(..., description="Название категории.", examples=["Тех-спец"])

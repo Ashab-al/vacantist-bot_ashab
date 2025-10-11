@@ -7,7 +7,7 @@ async def jinja_render(action, context: dict | None = None) -> str:
 
     Args:
         action (str): Название действия, соответствующее имени шаблона.
-        context (dict, optional): Словарь с переменными для подстановки в шаблон. 
+        context (dict, optional): Словарь с переменными для подстановки в шаблон.
             По умолчанию пустой.
 
     Returns:

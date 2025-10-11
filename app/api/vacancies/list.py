@@ -38,7 +38,7 @@ async def list_vacancies(session: Annotated[AsyncSession, Depends(get_async_sess
 
     Returns:
         list[VacancySchema]: Список вакансий с основными данными
-        (`id`, `title`, `description`, `contact_information`, 
+        (`id`, `title`, `description`, `contact_information`,
         `source`, `platform_id`, `category_title`).
     """
     vacancies_to_schema: list[VacancySchema] = await vacancies_list(session)

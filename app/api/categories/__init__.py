@@ -11,9 +11,10 @@
 
 Назначение модуля:
 - Создаёт единый `categories_router`, который агрегирует все роутеры категорий.
-- Используется для подключения к основному приложению FastAPI 
+- Используется для подключения к основному приложению FastAPI
 через `app.include_router(categories_router)`.
 """
+
 from api.categories.create import router as create_router
 from api.categories.destroy import router as destroy_router
 from api.categories.list import router as list_router

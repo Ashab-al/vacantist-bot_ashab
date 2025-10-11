@@ -36,7 +36,9 @@ class CreateVacancyResponse(CamelModel):
     """Контактная информация."""
 
     source: str = Field(
-        ..., examples=["telegram chat"], description="Источник, откуда поступила вакансия."
+        ...,
+        examples=["telegram chat"],
+        description="Источник, откуда поступила вакансия.",
     )
     """Источник вакансии."""
 

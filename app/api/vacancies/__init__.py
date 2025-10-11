@@ -8,9 +8,10 @@
 
 Назначение модуля:
 - Создаёт единый `vacancies_router`, который агрегирует все роутеры вакансий.
-- Используется для подключения к основному приложению FastAPI 
+- Используется для подключения к основному приложению FastAPI
 через `app.include_router(vacancies_router)`.
 """
+
 from api.vacancies.create import router as create_router
 from api.vacancies.list import router as list_router
 from fastapi import APIRouter

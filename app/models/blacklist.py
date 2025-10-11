@@ -12,7 +12,7 @@ class BlackList(Base):
 
     Attributes:
         id (int): Уникальный идентификатор записи.
-        contact_information (str): Контактные данные (например, Telegram ID или email), 
+        contact_information (str): Контактные данные (например, Telegram ID или email),
             которые находятся в черном списке.
         complaint_counter (int): Количество жалоб на данную контактную информацию.
     """

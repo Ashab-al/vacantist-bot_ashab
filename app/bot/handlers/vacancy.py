@@ -1,4 +1,5 @@
 """Модуль работы с Telegram-ботом через aiogram."""
+
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
 from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
@@ -31,12 +32,12 @@ async def reaction_choice_vacancy(
     - Получает данные о вакансии через сервис `open_vacancy`.
     - В зависимости от статуса вакансии:
         * Если статус `WARNING` — показывает пользователю alert с предупреждением.
-        * Если статус `OPEN_VACANCY` — редактирует сообщение 
+        * Если статус `OPEN_VACANCY` — редактирует сообщение
         и показывает подробности вакансии с кнопками действий.
 
     Args:
         callback (CallbackQuery): Объект колбэка Telegram, вызванного при нажатии кнопки.
-        callback_data (OpenVacancyCallback): Данные, 
+        callback_data (OpenVacancyCallback): Данные,
             переданные вместе с callback (в том числе ID вакансии).
         session (AsyncSession): Асинхронная сессия для работы с базой данных.
         bot (Bot): Экземпляр Telegram-бота для взаимодействия с пользователем.
@@ -79,14 +80,14 @@ async def reaction_choice_spam_vacancy(
 
     Функция:
     - Получает данные о вакансии, на которую пользователь пожаловался.
-    - Вызывает сервис `spam_vacancy` для обработки жалобы 
+    - Вызывает сервис `spam_vacancy` для обработки жалобы
     и возможного добавления вакансии в чёрный список.
-    - Отправляет пользователю alert с результатом действия 
+    - Отправляет пользователю alert с результатом действия
     (например, "вакансия добавлена в список спама").
 
     Args:
         callback (CallbackQuery): Объект Telegram callback-запроса, вызванного при нажатии кнопки.
-        callback_data (SpamVacancyCallback): Данные, переданные вместе с callback 
+        callback_data (SpamVacancyCallback): Данные, переданные вместе с callback
         (включая ID вакансии).
         session (AsyncSession): Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
 

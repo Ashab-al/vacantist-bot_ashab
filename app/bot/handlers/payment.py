@@ -1,4 +1,5 @@
 """Модуль работы с Telegram-ботом через aiogram."""
+
 from aiogram import Bot, F, Router
 from aiogram.types import (CallbackQuery, ContentType, LabeledPrice, Message,
                            PreCheckoutQuery)
@@ -120,7 +121,7 @@ async def process_pre_checkout_query(
             pre_checkout_query.from_user,
             TariffCallback.unpack(pre_checkout_query.invoice_payload).points,
         )
-    except Exception as e: # pylint: disable=broad-except
+    except Exception as e:  # pylint: disable=broad-except
         await bot.send_message(
             chat_id=pre_checkout_query.from_user.id,
             text=await jinja_render("pre_checkout_query/fail_payment"),

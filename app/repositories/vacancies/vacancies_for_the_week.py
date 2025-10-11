@@ -27,7 +27,7 @@ class VacancyForTheWeekRepository:
         """
         Args:
             db (AsyncSession): Асинхронная сессия
-            subscribed_categories (list[Category] | list): Список объектов `Category` 
+            subscribed_categories (list[Category] | list): Список объектов `Category`
                 на которые подписан пользователь
             user (User): Пользователь, для которого ищем вакансии.
             stmt (Select): Исходный запрос (Select).
@@ -47,7 +47,7 @@ class VacancyForTheWeekRepository:
         Получить список вакансий за последнюю неделю с учетом пагинации.
 
         Notes:
-            self.vacancies_stmt: сохраняет базовый запрос для последующего 
+            self.vacancies_stmt: сохраняет базовый запрос для последующего
                 подсчета общего количества записей.
 
         Returns:
@@ -67,7 +67,9 @@ class VacancyForTheWeekRepository:
             int: Общее количество найденных вакансий.
         """
 
-        count_stmt = self.vacancies_stmt.with_only_columns(func.count()).order_by(None) # pylint: disable=not-callable
+        count_stmt = self.vacancies_stmt.with_only_columns(func.count()).order_by(
+            None
+        )  # pylint: disable=not-callable
         result = await self.db.execute(count_stmt)
         return result.scalar_one()
 

@@ -1,5 +1,7 @@
 [MASTER]
-ignore=venv,tests
+ignore=venv,tests,migration
 
 [MESSAGES CONTROL]
 disable=too-few-public-methods, missing-module-docstring
+init-hook='import sys, os; sys.path.append(os.path.abspath("app"))'
+max-line-length=100

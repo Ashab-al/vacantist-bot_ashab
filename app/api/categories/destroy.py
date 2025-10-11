@@ -38,6 +38,8 @@ async def destroy_category(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     except Exception as e:
-        raise HTTPException(detail=f"InternalServerError {str(e)}", status_code=500) from e
+        raise HTTPException(
+            detail=f"InternalServerError {str(e)}", status_code=500
+        ) from e
 
     return category

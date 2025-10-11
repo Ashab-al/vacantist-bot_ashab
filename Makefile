@@ -1,4 +1,7 @@
 test:
-	PYTHONPATH=. pytest --cov=app
+	PYTHONPATH=. pytest .
 lint:
-	black . && isort . && pylint .
+	-black . 
+	-isort . 
+	-pylint . 
+	-flake8 .

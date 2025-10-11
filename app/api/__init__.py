@@ -10,9 +10,10 @@
 Назначение модуля:
 - Создаёт единый `api_router`, который агрегирует все роутеры проекта.
 - Устанавливает префиксы и теги для каждого роутера.
-- Используется для подключения к основному приложению FastAPI 
+- Используется для подключения к основному приложению FastAPI
 через `app.include_router(api_router)`.
 """
+
 from api.categories import categories_router
 from api.users import users_router
 from api.vacancies import vacancies_router

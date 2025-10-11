@@ -71,6 +71,7 @@ class Settings(BaseSettings):
                 public_url = tunnel.get("public_url")
                 logging.info("✅ Ngrok URL найден: %s", public_url)
                 return public_url
+        return None
 
     def get_webhook_url(self) -> str:
         """
