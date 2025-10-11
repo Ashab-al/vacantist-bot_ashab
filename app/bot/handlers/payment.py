@@ -1,32 +1,31 @@
-from aiogram import Router, F, Bot
-from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, ContentType
-from lib.tg.common import jinja_render
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import with_session
-from config import i18n, settings
+"""Модуль работы с Telegram-ботом через aiogram."""
+
+from aiogram import Bot, F, Router
+from aiogram.types import (
+    CallbackQuery,
+    ContentType,
+    LabeledPrice,
+    Message,
+    PreCheckoutQuery,
+)
 from bot.filters.button import PointsButtonFilter
-from services.tg.user.current_user import current_user
-from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
 from bot.filters.callback.tariff_callback import TariffCallback
-from services.tg.user.update_points import update_points
+from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
+from config import i18n, settings
+from database import with_session
+from lib.tg.common import jinja_render
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
+from services.tg.user.current_user import current_user
+from services.tg.user.update_points import update_points
+from sqlalchemy.ext.asyncio import AsyncSession
+
+router = Router(name="Обработчик тарифов и платежей")
+router.message.filter(F.chat.type == "private")
 
 
-router = Router(
-    name="Обработчик тарифов и платежей"
-)
-router.message.filter(
-    F.chat.type == "private"
-)
-
-@router.message(
-    PointsButtonFilter()
-)
+@router.message(PointsButtonFilter())
 @with_session
-async def reaction_btn_points(
-    message: Message,
-    session: AsyncSession
-) -> None:
+async def reaction_btn_points(message: Message, session: AsyncSession) -> None:
     """
     Обрабатывает нажатие кнопки "Поинты" и выводит доступные тарифы пользователю.
 
@@ -38,25 +37,12 @@ async def reaction_btn_points(
         - Получает текущего пользователя через `current_user`.
         - Отправляет сообщение с описанием тарифов и клавиатурой для выбора.
     """
-    await message.answer(
-        await jinja_render(
-            'points/description', 
-            {
-                "user": await current_user(session, message=message)
-            }
-        ),
-        reply_markup=await with_all_tariffs_keyboard()
-    )
+    await btn_points(message, session)
 
-@router.callback_query(
-    F.data == i18n['buttons']['points']
-)
+
+@router.callback_query(F.data == i18n["buttons"]["points"])
 @with_session
-async def choice_btn_points(
-    callback: CallbackQuery, 
-    bot: Bot, 
-    session: AsyncSession
-):
+async def choice_btn_points(callback: CallbackQuery, bot: Bot, session: AsyncSession):
     """
     Обрабатывает нажатие на кнопку "Поинты" через callback_query.
 
@@ -74,24 +60,15 @@ async def choice_btn_points(
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=await jinja_render(
-            'points/description', 
-            {
-                "user": await current_user(
-                        session, 
-                        query=callback
-                    )
-            }
+            "points/description", {"user": await current_user(session, query=callback)}
         ),
-        reply_markup=await with_all_tariffs_keyboard()
+        reply_markup=await with_all_tariffs_keyboard(),
     )
 
-@router.callback_query(
-    TariffCallback.filter()
-)
+
+@router.callback_query(TariffCallback.filter())
 async def reaction_choice_tariff(
-    callback: CallbackQuery, 
-    callback_data: TariffCallback, 
-    bot: Bot
+    callback: CallbackQuery, callback_data: TariffCallback, bot: Bot
 ):
     """
     Обрабатывает выбор тарифа пользователем и отправляет инвойс для оплаты.
@@ -108,33 +85,27 @@ async def reaction_choice_tariff(
     await callback.answer()
     await bot.send_invoice(
         chat_id=callback.from_user.id,
-        title=await jinja_render(
-            'payment/title', 
-            {"tariff": callback_data.points}
-        ),
+        title=await jinja_render("payment/title", {"tariff": callback_data.points}),
         description=await jinja_render(
-            'points/tariff_callback', 
-            {"tariff": callback_data.points}
+            "points/tariff_callback", {"tariff": callback_data.points}
         ),
         payload=callback_data.pack(),
         currency=callback_data.currency,
         prices=[
             LabeledPrice(
                 label=await jinja_render(
-                    'points/tariff_callback', 
-                    {"tariff": callback_data.points}
+                    "points/tariff_callback", {"tariff": callback_data.points}
                 ),
-                amount=callback_data.price
-            )    
-        ]
+                amount=callback_data.price,
+            )
+        ],
     )
+
 
 @router.pre_checkout_query()
 @with_session
 async def process_pre_checkout_query(
-    pre_checkout_query: PreCheckoutQuery, 
-    bot: Bot, 
-    session: AsyncSession
+    pre_checkout_query: PreCheckoutQuery, bot: Bot, session: AsyncSession
 ):
     """
     Обрабатывает pre-checkout запрос от Telegram перед завершением оплаты.
@@ -151,35 +122,27 @@ async def process_pre_checkout_query(
     """
     try:
         await update_points(
-            session, 
-            pre_checkout_query.from_user, 
-            TariffCallback.unpack(
-                pre_checkout_query.invoice_payload
-            ).points
+            session,
+            pre_checkout_query.from_user,
+            TariffCallback.unpack(pre_checkout_query.invoice_payload).points,
         )
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         await bot.send_message(
             chat_id=pre_checkout_query.from_user.id,
-            text=await jinja_render('pre_checkout_query/fail_payment')
-        )
-        
-        await bot.send_message(
-            chat_id=settings.admin_chat_id,
-            text=str(e) + "\n\nМетод process_pre_checkout_query"
-        )
-    else:
-        await bot.answer_pre_checkout_query(
-            pre_checkout_query.id, 
-            ok=True
+            text=await jinja_render("pre_checkout_query/fail_payment"),
         )
 
-@router.message(
-    F.content_type == ContentType.SUCCESSFUL_PAYMENT
-)
-async def successful_payment_handler(
-    message: Message,
-    bot: Bot
-):
+        await bot.send_message(
+            chat_id=settings.admin_chat_id,
+            text=str(e) + "\n\nМетод process_pre_checkout_query",
+        )
+    else:
+        await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+
+
+@router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
+@with_session
+async def successful_payment_handler(message: Message, session: AsyncSession, bot: Bot):
     """
     Обрабатывает успешную оплату пользователем.
 
@@ -197,18 +160,32 @@ async def successful_payment_handler(
         message.successful_payment.invoice_payload
     )
 
-    await send_info_about_new_payment(
-        bot,
-        tariff,
-        message.from_user
-    )
+    await send_info_about_new_payment(bot, tariff, message.from_user)
     await message.answer(
         await jinja_render(
-            'pre_checkout_query/success_payment', 
-            {
-                "points": tariff.points
-            }
+            "pre_checkout_query/success_payment", {"points": tariff.points}
         )
     )
 
-    await reaction_btn_points(message=message)
+    await btn_points(message=message, session=session)
+
+
+async def btn_points(message: Message, session: AsyncSession):
+    """
+    Обрабатывает нажатие кнопки "Поинты" в Telegram-боте.
+
+    Функция:
+    - Получает текущего пользователя из базы данных с помощью `current_user`.
+    - Формирует сообщение с описанием очков пользователя через шаблон Jinja2 (`points/description`).
+    - Отправляет сообщение пользователю с клавиатурой, содержащей все доступные тарифы.
+
+    Args:
+        message (Message): Объект входящего сообщения Telegram.
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
+    """
+    await message.answer(
+        await jinja_render(
+            "points/description", {"user": await current_user(session, message=message)}
+        ),
+        reply_markup=await with_all_tariffs_keyboard(),
+    )

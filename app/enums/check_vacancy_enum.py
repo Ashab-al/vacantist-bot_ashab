@@ -1,7 +1,7 @@
-import enum
+from enum import Enum
 
 
-class CheckVacancyEnum(enum.Enum):
+class CheckVacancyEnum(Enum):
     """
     Перечисление статусов проверки вакансии.
 
@@ -9,5 +9,6 @@ class CheckVacancyEnum(enum.Enum):
         WARNING (str): Вакансия содержит предупреждения.
         OPEN_VACANCY (str): Вакансия открыта и готова к публикации.
     """
-    WARNING = 'warning'
-    OPEN_VACANCY = 'open_vacancy'
+
+    WARNING = "warning"
+    OPEN_VACANCY = "open_vacancy"

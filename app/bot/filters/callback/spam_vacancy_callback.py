@@ -1,5 +1,6 @@
 from aiogram.filters.callback_data import CallbackData
 
+
 class SpamVacancyCallback(CallbackData, prefix="spam_vacancy"):
     """
     Callback-данные для пометки вакансии как спам.
@@ -10,4 +11,5 @@ class SpamVacancyCallback(CallbackData, prefix="spam_vacancy"):
     Этот callback используется для inline-кнопок, чтобы бот мог определить,
     какую именно вакансию пользователь считает спамом и обработать это действие.
     """
+
     vacancy_id: int

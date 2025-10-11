@@ -1,5 +1,6 @@
 from aiogram.filters.callback_data import CallbackData
 
+
 class TariffCallback(CallbackData, prefix="tariff"):
     """
     Callback-данные для выбора тарифа пользователем.
@@ -12,6 +13,7 @@ class TariffCallback(CallbackData, prefix="tariff"):
     Этот callback используется для inline-кнопок, чтобы бот мог определить
     выбранный пользователем тариф и обработать покупку или отображение информации.
     """
+
     points: int
     price: int
     currency: str

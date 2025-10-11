@@ -4,9 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 
-async def get_all_vacancies(
-    db: AsyncSession
-) -> list[Vacancy]:
+async def get_all_vacancies(db: AsyncSession) -> list[Vacancy]:
     """
     Получить список всех вакансий с предзагруженной категорией.
 
@@ -17,5 +15,7 @@ async def get_all_vacancies(
         list[Vacancy]: Список всех вакансий с загруженной категорией.
     """
     return (
-        await db.execute(select(Vacancy).options(joinedload(Vacancy.category)))
-    ).scalars().all()
+        (await db.execute(select(Vacancy).options(joinedload(Vacancy.category))))
+        .scalars()
+        .all()
+    )

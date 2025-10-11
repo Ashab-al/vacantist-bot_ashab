@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 from fastapi_camelcase import CamelModel
 from pydantic import Field
 
@@ -9,10 +10,9 @@ class SetBonusUserIdRequest(CamelModel):
 
     Используется для передачи идентификатора пользователя.
     """
+
     id: int = Field(
-        ...,
-        description="Уникальный идентификатор пользователя.",
-        examples=[1]
+        ..., description="Уникальный идентификатор пользователя.", examples=[1]
     )
     """ID пользователя, для которого будут установлены бонусы."""
 
@@ -23,10 +23,8 @@ class SetBonusRequest(CamelModel):
 
     Используется для передачи нового значения бонусов.
     """
+
     count: int = Field(
-        ...,
-        ge=0,
-        description="Количество бонусов для пользователя.",
-        examples=[10]
+        ..., ge=0, description="Количество бонусов для пользователя.", examples=[10]
     )
     """Новое количество бонусов пользователя (должно быть >= 0)."""

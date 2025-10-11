@@ -1,10 +1,8 @@
-from models.vacancy import Vacancy
 from config import vacancy_queue
+from models.vacancy import Vacancy
 
 
-async def add_vacancy_to_sending_queue(
-    vacancy: Vacancy
-) -> None:
+async def add_vacancy_to_sending_queue(vacancy: Vacancy) -> None:
     """
     Добавляет вакансию в очередь на рассылку
 

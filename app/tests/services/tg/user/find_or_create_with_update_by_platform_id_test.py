@@ -1,31 +1,31 @@
+import random
+
 import pytest
 from aiogram.types import User as AiogramTgUser
-from sqlalchemy import select
-import random
-from models.user import User
 from enums.bot_status_enum import BotStatusEnum
-from services.tg.user.find_or_create_with_update_by_platform_id import find_or_create_with_update_by_platform_id
+from models.user import User
+from services.tg.user.find_or_create_with_update_by_platform_id import (
+    find_or_create_with_update_by_platform_id,
+)
+from sqlalchemy import select
 
 
 @pytest.mark.asyncio
 async def test_find_or_create_creates_new_user(session, mocker):
     """Создает нового пользователя, если его нет в базе"""
-    
+
     user_id = random.randint(1, 1000)
     is_bot = False
     first_name = "Тестовый"
     username = "test_user"
-    
+
     # Мокаем send_analytics, чтобы не дергать реальную отправку
     mock_send_analytics = mocker.patch(
         "services.tg.user.find_or_create_with_update_by_platform_id.send_analytics"
     )
 
     aiogram_user = AiogramTgUser(
-        id=user_id,
-        is_bot=is_bot,
-        first_name=first_name,
-        username=username
+        id=user_id, is_bot=is_bot, first_name=first_name, username=username
     )
 
     user = await find_or_create_with_update_by_platform_id(session, aiogram_user)
@@ -49,7 +49,7 @@ async def test_find_or_create_returns_existing_user(session, mocker):
     is_bot = False
     first_name = "Уже"
     username = "existing"
-    
+
     user = User(
         platform_id=user_id,
         first_name=first_name,
@@ -63,7 +63,9 @@ async def test_find_or_create_returns_existing_user(session, mocker):
         "services.tg.user.find_or_create_with_update_by_platform_id.send_analytics"
     )
 
-    aiogram_user = AiogramTgUser(id=user_id, is_bot=is_bot, first_name=first_name, username=username)
+    aiogram_user = AiogramTgUser(
+        id=user_id, is_bot=is_bot, first_name=first_name, username=username
+    )
 
     result_user = await find_or_create_with_update_by_platform_id(session, aiogram_user)
 
@@ -93,10 +95,7 @@ async def test_find_or_create_unblocks_user(session, mocker):
     )
 
     aiogram_user = AiogramTgUser(
-        id=user_id,
-        is_bot=is_bot,
-        first_name=first_name,
-        username=username
+        id=user_id, is_bot=is_bot, first_name=first_name, username=username
     )
 
     result_user = await find_or_create_with_update_by_platform_id(session, aiogram_user)

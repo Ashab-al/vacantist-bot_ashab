@@ -1,12 +1,10 @@
-from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
 from models.category import Category
 from models.subscription import subscription
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def advertisement(
-    db: AsyncSession        
-) -> list[tuple[str, int]]:
+async def advertisement(db: AsyncSession) -> list[tuple[str, int]]:
     """
     Получает количество подписчиков для каждой категории.
 

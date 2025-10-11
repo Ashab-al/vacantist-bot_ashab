@@ -1,5 +1,5 @@
 import sys
-from os.path import dirname, abspath
+from os.path import abspath, dirname
 
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
@@ -7,26 +7,25 @@ sys.path.insert(0, dirname(dirname(abspath(__file__))))
 import asyncio
 from logging.config import fileConfig
 
+from alembic import context
+from database import database_url
+from models.base import Base
+from models.blacklist import BlackList
+from models.category import Category
+from models.subscription import subscription
+from models.user import User
+from models.vacancy import Vacancy
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from alembic import context
-from database import database_url
-from models.base import Base
-from models.user import User
-from models.blacklist import BlackList
-from models.category import Category
-from models.vacancy import Vacancy
-from models.subscription import subscription
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 if not config.get_main_option("sqlalchemy.url"):
     config.set_main_option(
         "sqlalchemy.url",
-        database_url
-        + "?async_fallback=True",  
+        database_url + "?async_fallback=True",
     )
 
 

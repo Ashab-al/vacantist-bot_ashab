@@ -1,6 +1,8 @@
-from fastapi_camelcase import CamelModel
-from pydantic import Field, ConfigDict
+# pylint: disable=duplicate-code
 from datetime import datetime
+
+from fastapi_camelcase import CamelModel
+from pydantic import ConfigDict, Field
 
 
 class CategoryResponse(CamelModel):
@@ -10,31 +12,22 @@ class CategoryResponse(CamelModel):
     Используется для возврата информации о категории,
     включая её уникальный идентификатор, название и временные метки.
     """
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int = Field(
-        ...,
-        description="Уникальный идентификатор категории.",
-        example=1
+        ..., description="Уникальный идентификатор категории.", examples=[1]
     )
     """ID категории."""
 
-    name: str = Field(
-        ...,
-        description="Название категории.",
-        examples=["Тех-спец"]
-    )
+    name: str = Field(..., description="Название категории.", examples=["Тех-спец"])
     """Название категории."""
 
-    created_at: datetime = Field(
-        ...,
-        description="Дата и время создания категории."
-    )
+    created_at: datetime = Field(..., description="Дата и время создания категории.")
     """Метка времени, когда категория была создана."""
 
     updated_at: datetime = Field(
-        ...,
-        description="Дата и время последнего обновления категории."
+        ..., description="Дата и время последнего обновления категории."
     )
     """Метка времени последнего обновления категории."""
 
@@ -46,8 +39,5 @@ class ListCategoryResponse(CamelModel):
     Содержит коллекцию объектов `CategoryResponse`.
     """
 
-    categories: list[CategoryResponse] = Field(
-        ...,
-        description="Список категорий."
-    )
+    categories: list[CategoryResponse] = Field(..., description="Список категорий.")
     """Список категорий."""

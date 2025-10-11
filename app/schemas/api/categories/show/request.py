@@ -1,5 +1,7 @@
+# pylint: disable=duplicate-code
 from fastapi_camelcase import CamelModel
 from pydantic import Field
+
 
 class ShowCategoryRequest(CamelModel):
     """
@@ -10,8 +12,6 @@ class ShowCategoryRequest(CamelModel):
     """
 
     id: int = Field(
-        ...,
-        description="Уникальный идентификатор категории.",
-        examples=[1]
+        ..., description="Уникальный идентификатор категории.", examples=[1]
     )
     """ID категории, информацию о которой нужно получить."""

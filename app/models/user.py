@@ -1,9 +1,10 @@
-from sqlalchemy import String, BigInteger, Integer, Enum
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from models.base import Base
-from enums.bot_status_enum import BotStatusEnum
-from models.subscription import subscription
 from typing import List
+
+from enums.bot_status_enum import BotStatusEnum
+from models.base import Base
+from models.subscription import subscription
+from sqlalchemy import BigInteger, Enum, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class User(Base):
@@ -16,7 +17,8 @@ class User(Base):
     Константы:
         DEFAULT_POINT (int): Начальное количество поинтов пользователя.
         DEFAULT_BONUS (int): Начальное количество бонусов пользователя.
-        COUNT_FOR_FULL_BATTERY (int): Количество поинтов для полной «зарядки» поинтов (учитывается при выборе смайлика).
+        COUNT_FOR_FULL_BATTERY (int): Количество поинтов для полной «зарядки» поинтов
+            (учитывается при выборе смайлика).
 
     Attributes:
         id (int): Уникальный идентификатор пользователя.
@@ -30,12 +32,13 @@ class User(Base):
         bot_status (BotStatusEnum): Статус пользователя в системе.
         categories (List[Category]): Список категорий, на которые подписан пользователь.
     """
-    __tablename__ = 'users'
 
-    DEFAULT_POINT=0
-    DEFAULT_BONUS=5
+    __tablename__ = "users"
+
+    DEFAULT_POINT = 0
+    DEFAULT_BONUS = 5
     COUNT_FOR_FULL_BATTERY = 5
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     platform_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -44,6 +47,10 @@ class User(Base):
     phone: Mapped[str] = mapped_column(String(100), nullable=True, unique=True)
     point: Mapped[int] = mapped_column(Integer, default=DEFAULT_POINT, nullable=False)
     bonus: Mapped[int] = mapped_column(Integer, default=DEFAULT_BONUS, nullable=False)
-    bot_status: Mapped[BotStatusEnum] = mapped_column(Enum(BotStatusEnum, name='bot_status'), nullable=False)
+    bot_status: Mapped[BotStatusEnum] = mapped_column(
+        Enum(BotStatusEnum, name="bot_status"), nullable=False
+    )
 
-    categories: Mapped[List["Category"]] = relationship("Category", secondary=subscription, back_populates="users")
+    categories: Mapped[List["Category"]] = relationship(  # noqa: F821
+        "Category", secondary=subscription, back_populates="users"
+    )

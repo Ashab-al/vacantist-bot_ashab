@@ -10,5 +10,6 @@ class CategoryButtonFilter(BaseFilter):
     Сравнивает текст сообщения пользователя с отрендеренным текстом кнопки
     из Jinja2 шаблона `menu/button/categories`.
     """
+
     async def __call__(self, message: Message) -> bool:
-       return message.text == await jinja_render('menu/button/categories')
+        return message.text == await jinja_render("menu/button/categories")

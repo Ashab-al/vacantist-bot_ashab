@@ -1,7 +1,8 @@
-import enum
+# pylint: disable=duplicate-code
+from enum import Enum
 
 
-class BotStatusEnum(enum.Enum):
+class BotStatusEnum(Enum):
     """
     Перечисление статусов пользователя в боте.
 
@@ -9,5 +10,6 @@ class BotStatusEnum(enum.Enum):
         WORKS (str): Пользователь активен и взаимодействует с ботом.
         BOT_BLOCKED (str): Пользователь заблокировал бота или недоступен для взаимодействия.
     """
-    WORKS = 'WORKS'
-    BOT_BLOCKED = 'BOT_BLOCKED'
+
+    WORKS = "WORKS"
+    BOT_BLOCKED = "BOT_BLOCKED"

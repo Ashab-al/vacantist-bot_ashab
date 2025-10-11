@@ -10,5 +10,6 @@ class PointsButtonFilter(BaseFilter):
     Сравнивает текст сообщения пользователя с отрендеренным текстом кнопки
     из Jinja2 шаблона `menu/button/points`.
     """
+
     async def __call__(self, message: Message) -> bool:
-       return message.text == await jinja_render('menu/button/points')
+        return message.text == await jinja_render("menu/button/points")

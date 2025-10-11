@@ -1,13 +1,10 @@
 from models.user import User
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
-from sqlalchemy import select
 
 
-async def get_user_by_id(
-    db: AsyncSession,
-    user_id: int
-) -> User | None:
+async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
     """
     Получить пользователя по его ID с предзагруженными категориями.
 
@@ -19,7 +16,14 @@ async def get_user_by_id(
         User | None: Пользователь с предзагруженными категориями или None, если не найден.
     """
     return (
-        await db.execute(
-            select(User).where(User.id==user_id).options(joinedload(User.categories))
+        (
+            await db.execute(
+                select(User)
+                .where(User.id == user_id)
+                .options(joinedload(User.categories))
+            )
         )
-    ).unique().scalars().first()
+        .unique()
+        .scalars()
+        .first()
+    )

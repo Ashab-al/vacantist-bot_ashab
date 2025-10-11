@@ -1,13 +1,14 @@
 import random
+
 import pytest
-from sqlalchemy import select
+from lib.tg.constants import SOURCE
 from models.blacklist import BlackList
 from schemas.api.categories.create.request import CreateCategoryRequest
 from schemas.api.vacancies.create.request import CreateVacancyRequest
-from services.api.vacancy.create_vacancy import create_vacancy
 from services.api.category.create_category import create_category
-from lib.tg.constants import SOURCE
-from services.tg.spam_vacancy import COMPLAINT_COUNTER, spam_vacancy, BLACKLISTED
+from services.api.vacancy.create_vacancy import create_vacancy
+from services.tg.spam_vacancy import BLACKLISTED, COMPLAINT_COUNTER, spam_vacancy
+from sqlalchemy import select
 
 
 @pytest.mark.asyncio
@@ -20,10 +21,7 @@ async def test_spam_vacancy_creates_blacklist_entry(session):
     contact_information = "@dev"
 
     # создаём категорию и вакансию
-    category = await create_category(
-        session, 
-        CreateCategoryRequest(name=category_name)
-    )
+    category = await create_category(session, CreateCategoryRequest(name=category_name))
     vacancy = await create_vacancy(
         session,
         category=category,
@@ -37,10 +35,7 @@ async def test_spam_vacancy_creates_blacklist_entry(session):
         ),
     )
 
-    result = await spam_vacancy(
-        session, 
-        vacancy.id
-    )
+    result = await spam_vacancy(session, vacancy.id)
 
     # проверяем, что запись создана
     black_list: BlackList = (
@@ -64,10 +59,7 @@ async def test_spam_vacancy_reaches_blacklisted_state(session):
     description = "Описание"
     contact_information = "@dev"
 
-    category = await create_category(
-        session, 
-        CreateCategoryRequest(name=category_name)
-    )
+    category = await create_category(session, CreateCategoryRequest(name=category_name))
     vacancy = await create_vacancy(
         session,
         category=category,
@@ -83,8 +75,7 @@ async def test_spam_vacancy_reaches_blacklisted_state(session):
 
     # создаём запись в BlackList заранее с complaint_counter = порог
     blacklisted = BlackList(
-        contact_information=platform_id, 
-        complaint_counter=COMPLAINT_COUNTER
+        contact_information=platform_id, complaint_counter=COMPLAINT_COUNTER
     )
     session.add(blacklisted)
     await session.commit()

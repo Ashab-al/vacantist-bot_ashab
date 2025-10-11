@@ -1,11 +1,10 @@
 from models.category import Category
-from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.api.categories.show.request import ShowCategoryRequest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def find_category_by_id(
-    db: AsyncSession,
-    category_id: ShowCategoryRequest
+    db: AsyncSession, category_id: ShowCategoryRequest
 ) -> Category:
     """
     Возвращает категорию по id категории
@@ -13,10 +12,10 @@ async def find_category_by_id(
     Args:
         db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных
         category_id (ShowCategoryRequest): Схема для возврата категории
-    
+
     Returns:
         Category: Объект категории
-    
+
     Raises:
         ValueError: Категории по id - `category_id.id` нет в базе
     """

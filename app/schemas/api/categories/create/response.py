@@ -1,5 +1,6 @@
 from fastapi_camelcase import CamelModel
-from pydantic import Field, ConfigDict
+from pydantic import ConfigDict, Field
+
 
 class CreateCategoryResponse(CamelModel):
     """
@@ -9,18 +10,13 @@ class CreateCategoryResponse(CamelModel):
     созданной категории, включая её уникальный идентификатор
     и название.
     """
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int = Field(
-        ..., 
-        example=1, 
-        description="Уникальный идентификатор созданной категории."
+        ..., examples=[1], description="Уникальный идентификатор созданной категории."
     )
     """ID категории, сгенерированный базой данных."""
 
-    name: str = Field(
-        ..., 
-        description="Название категории.", 
-        examples=["Тех-спец"]
-    )
+    name: str = Field(..., description="Название категории.", examples=["Тех-спец"])
     """Название категории, переданное при создании."""

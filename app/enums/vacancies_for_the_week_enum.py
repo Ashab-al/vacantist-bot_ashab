@@ -10,6 +10,7 @@ class VacanciesForTheWeekStatusEnum(Enum):
         VACANCY_LIST_EMPTY (str): Нет доступных вакансий за выбранный период.
         OK (str): Вакансии успешно найдены и готовы к отображению.
     """
-    SUBSCRIBED_CATEGORIES_EMPTY = 'subscribed_categories_empty'
-    VACANCY_LIST_EMPTY = 'vacancy_list_empty'
-    OK = 'ok'
+
+    SUBSCRIBED_CATEGORIES_EMPTY = "subscribed_categories_empty"
+    VACANCY_LIST_EMPTY = "vacancy_list_empty"
+    OK = "ok"

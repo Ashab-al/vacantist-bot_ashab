@@ -12,4 +12,5 @@ class CategoryCallback(CallbackData, prefix="category"):
     пользователем inline-кнопки. Бот может использовать `category_id`, чтобы
     определить, к какой категории относится действие (подписка или отписка).
     """
+
     category_id: int

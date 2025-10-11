@@ -1,20 +1,18 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from models.vacancy import Vacancy
 from models.category import Category
+from models.vacancy import Vacancy
 from schemas.api.vacancies.create.request import CreateVacancyRequest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_vacancy(
-    db: AsyncSession,
-    vacancy_data: CreateVacancyRequest,
-    category: Category
+    db: AsyncSession, vacancy_data: CreateVacancyRequest, category: Category
 ) -> Vacancy:
     """
     Создать вакансию
 
     Args:
         db (AsyncSession): Активная сессия БД.
-        vacancy_data (CreateVacancyRequest): 
+        vacancy_data (CreateVacancyRequest):
             Pydantic-схема с данными для создания вакансии:
               - title (str): Заголовок вакансии
               - category_title (str): Название категории
@@ -25,7 +23,7 @@ async def create_vacancy(
         category (Category): Объект категории к которому относится вакансия
 
     Returns:
-        Vacancy: Созданная вакансия 
+        Vacancy: Созданная вакансия
     """
     vacancy: Vacancy = Vacancy(
         title=vacancy_data.title,
@@ -33,7 +31,7 @@ async def create_vacancy(
         contact_information=vacancy_data.contact_information,
         source=vacancy_data.source,
         platform_id=vacancy_data.platform_id,
-        category=category 
+        category=category,
     )
 
     db.add(vacancy)

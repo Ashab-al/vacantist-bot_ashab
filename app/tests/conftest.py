@@ -1,36 +1,31 @@
-import pytest
-import pytest_asyncio
 import os
+import random
 import sys
 from pathlib import Path
-from fastapi import FastAPI
-from httpx import AsyncClient, ASGITransport
 from typing import AsyncGenerator
-from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch
-from main import app as main_app
-from database import get_async_session
-from sqlalchemy.ext.asyncio import (  # noqa: E501
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
 
+import pytest
+import pytest_asyncio
+from database import get_async_session
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 from lib.tg.constants import SOURCE
+from main import app as main_app
 from models.category import Category
+from models.user import User
 from models.vacancy import Vacancy
 from schemas.api.categories.create.request import CreateCategoryRequest
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.tg.user.tg_user import TgUser
-from models.user import User
-import random
-
 from services.api.category.create_category import create_category
 from services.api.vacancy.create_vacancy import create_vacancy
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E501
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from models.base import Base  # noqa: E402
-
 
 
 def _load_env(path: str) -> None:
@@ -60,26 +55,31 @@ async def session_factory() -> AsyncGenerator[async_sessionmaker[AsyncSession], 
     yield factory
     await engine.dispose()
 
+
 @pytest_asyncio.fixture
 async def session(session_factory):
     async with session_factory() as session:
         yield session
 
+
 @pytest_asyncio.fixture
 async def app(
-    session_factory: AsyncGenerator[async_sessionmaker[AsyncSession], None]
+    session_factory: AsyncGenerator[async_sessionmaker[AsyncSession], None],
 ) -> FastAPI:
     async def _override_get_async_session():
         async with session_factory() as session:
             yield session
-    
+
     main_app.dependency_overrides[get_async_session] = _override_get_async_session
-    
+
     return main_app
+
 
 @pytest_asyncio.fixture
 async def client(app: FastAPI):
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test/api/v1") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test/api/v1"
+    ) as client:
         yield client
 
 
@@ -88,16 +88,18 @@ async def new_tg_user(session_factory) -> User:
     async with session_factory() as session:
         return await create_tg_user(session)
 
+
 async def create_tg_user(session):
     """Возвращает нового пользователя для тестов"""
     return await create_tg_user_with_session(session)
+
 
 async def create_tg_user_with_session(session) -> User:
     """Возвращает нового пользователя для тестов"""
     user_data: dict[str, str | int] = {
         "id": random.randint(1000, 100000000),
-        "first_name": f"Имя {random.randint(1, 1000)}",
-        "username": f"asd{random.randint(1, 1000)}"
+        "first_name": f"Имя {random.randint(1, 100000000)}",
+        "username": f"asd{random.randint(1, 100000000)}",
     }
     new_user_schema: TgUser = TgUser.model_validate(user_data)
     user: User = User(
@@ -108,7 +110,7 @@ async def create_tg_user_with_session(session) -> User:
         phone=new_user_schema.phone,
         point=new_user_schema.point,
         bonus=new_user_schema.bonus,
-        bot_status=new_user_schema.bot_status
+        bot_status=new_user_schema.bot_status,
     )
     session.add(user)
     await session.commit()
@@ -116,15 +118,14 @@ async def create_tg_user_with_session(session) -> User:
 
     return user
 
-async def create_vacancy_and_category(
-    session
-) -> tuple[Vacancy, Category]:
+
+async def create_vacancy_and_category(session) -> tuple[Vacancy, Category]:
     """Создать и вернуть новую вакансию с рандомной категорией"""
     return await create_vacancy_and_category_with_session(session)
 
 
 async def create_vacancy_and_category_with_session(
-    session: AsyncSession
+    session: AsyncSession,
 ) -> tuple[Vacancy, Category]:
     """Создать и вернуть новую вакансию с рандомной категорией"""
     category_name: str = f"Category {random.randint(1, 10000000000)}"
@@ -134,18 +135,13 @@ async def create_vacancy_and_category_with_session(
         "description": f"Описание вакансии{random.randint(100, 1000000)}",
         "contactInformation": f"ТГ - @username{random.randint(100, 1000000)}",
         "source": SOURCE,
-        "platformId": f"{random.randint(100, 1000000)}"
+        "platformId": f"{random.randint(100, 1000000)}",
     }
     create_vacancy_request: CreateVacancyRequest = CreateVacancyRequest(**vacancy_data)
-    
+
     category: Category = await create_category(
-        session, 
-        CreateCategoryRequest(name = category_name)
+        session, CreateCategoryRequest(name=category_name)
     )
-    vacancy: Vacancy = await create_vacancy(
-        session,
-        create_vacancy_request,
-        category
-    )
-    
+    vacancy: Vacancy = await create_vacancy(session, create_vacancy_request, category)
+
     return vacancy, category
