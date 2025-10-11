@@ -1,8 +1,13 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
 from aiogram import Bot, F, Router
-from aiogram.types import (CallbackQuery, ContentType, LabeledPrice, Message,
-                           PreCheckoutQuery)
+from aiogram.types import (
+    CallbackQuery,
+    ContentType,
+    LabeledPrice,
+    Message,
+    PreCheckoutQuery,
+)
 from bot.filters.button import PointsButtonFilter
 from bot.filters.callback.tariff_callback import TariffCallback
 from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard

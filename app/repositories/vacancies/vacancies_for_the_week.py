@@ -19,7 +19,6 @@ class VacancyForTheWeekRepository:
     def __init__(
         self,
         db: AsyncSession,
-        subscribed_categories: list[Category] | list,
         user: User,
         page: int,
         page_size: int,
@@ -36,13 +35,14 @@ class VacancyForTheWeekRepository:
         """
 
         self.db: AsyncSession = db
-        self.subscribed_categories: list[Category] | list = subscribed_categories
         self.user: User = user
         self.page: int = page
         self.page_size: int = page_size
         self.vacancies_stmt: Select | None = None
 
-    async def build_vacancies_for_the_week(self) -> list[Vacancy] | list:
+    async def build_vacancies_for_the_week(
+        self, subscribed_categories: list[Category]
+    ) -> list[Vacancy] | list:
         """
         Получить список вакансий за последнюю неделю с учетом пагинации.
 
@@ -54,7 +54,7 @@ class VacancyForTheWeekRepository:
             list[Vacancy]: Список вакансий для текущей страницы.
         """
 
-        self.vacancies_stmt: Select = await self._base_stmt()
+        self.vacancies_stmt: Select = await self._base_stmt(subscribed_categories)
         stmt: Select = await self._apply_pagination(self.vacancies_stmt)
         result = await self.db.execute(stmt)
         return result.scalars().all()
@@ -73,7 +73,7 @@ class VacancyForTheWeekRepository:
         result = await self.db.execute(count_stmt)
         return result.scalar_one()
 
-    async def _base_stmt(self) -> Select:
+    async def _base_stmt(self, subscribed_categories: list[Category]) -> Select:
         """
         Построить базовый Select-запрос для вакансий пользователя.
 
@@ -81,10 +81,7 @@ class VacancyForTheWeekRepository:
             Select: SQLAlchemy Select-запрос с фильтрацией по категориям,
                     blacklist и дате создания.
         """
-
-        category_ids: set[int] = {
-            category.id for category in self.subscribed_categories
-        }
+        category_ids: set[int] = {category.id for category in subscribed_categories}
         now_datetime: datetime = datetime.now()
         low_datetime: datetime = datetime.combine(
             now_datetime - timedelta(days=QUANTITY_DAYS),

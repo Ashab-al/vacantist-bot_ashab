@@ -1,7 +1,7 @@
-import enum
+from enum import Enum
 
 
-class CheckVacancyEnum(enum.Enum):
+class CheckVacancyEnum(Enum):
     """
     Перечисление статусов проверки вакансии.
 

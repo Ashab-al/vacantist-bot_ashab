@@ -51,6 +51,6 @@ class User(Base):
         Enum(BotStatusEnum, name="bot_status"), nullable=False
     )
 
-    categories: Mapped[List["Category"]] = relationship(
+    categories: Mapped[List["Category"]] = relationship(  # noqa: F821
         "Category", secondary=subscription, back_populates="users"
     )

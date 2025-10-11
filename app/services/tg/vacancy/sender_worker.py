@@ -9,8 +9,9 @@ from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
 from models.user import User
 from models.vacancy import Vacancy
-from repositories.users.find_users_where_have_subscribe_to_category import \
-    find_users_where_have_subscribe_to_category
+from repositories.users.find_users_where_have_subscribe_to_category import (
+    find_users_where_have_subscribe_to_category,
+)
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -81,7 +82,7 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
                     )
                 except TelegramForbiddenError:
                     blocked_user_ids.append(user.id)
-                except Exception as e:
+                except Exception as e:  # pylint: disable=broad-exception-caught
                     await admin_alert(bot, str(e) + "\n" + "\n" + "sender_worker")
 
                 await asyncio.sleep(delay)

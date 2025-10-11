@@ -4,8 +4,7 @@ from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
 from models.category import Category
 from models.user import User
 from models.vacancy import Vacancy
-from repositories.vacancies.vacancies_for_the_week import \
-    VacancyForTheWeekRepository
+from repositories.vacancies.vacancies_for_the_week import VacancyForTheWeekRepository
 from services.tg.category.find_subscribe import find_subscribe
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -41,11 +40,11 @@ async def fetch_vacancies_for_the_week(
 
     if not subscribed_categories:
         return {"status": VacanciesForTheWeekStatusEnum.SUBSCRIBED_CATEGORIES_EMPTY}
-    vacancy_for_the_week_repo = VacancyForTheWeekRepository(
-        db, subscribed_categories, user, page, page_size
-    )
+    vacancy_for_the_week_repo = VacancyForTheWeekRepository(db, user, page, page_size)
     vacancies: list[Vacancy] | list = (
-        await vacancy_for_the_week_repo.build_vacancies_for_the_week()
+        await vacancy_for_the_week_repo.build_vacancies_for_the_week(
+            subscribed_categories
+        )
     )
     if not vacancies:
         return {"status": VacanciesForTheWeekStatusEnum.VACANCY_LIST_EMPTY}

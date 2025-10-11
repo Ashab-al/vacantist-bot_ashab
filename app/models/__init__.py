@@ -1,6 +1,6 @@
-from models.base import Base
-from models.blacklist import BlackList
-from models.category import Category
-from models.subscription import subscription
-from models.user import User
-from models.vacancy import Vacancy
+from models.base import Base  # noqa: F401
+from models.blacklist import BlackList  # noqa: F401
+from models.category import Category  # noqa: F401
+from models.subscription import subscription  # noqa: F401
+from models.user import User  # noqa: F401
+from models.vacancy import Vacancy  # noqa: F401

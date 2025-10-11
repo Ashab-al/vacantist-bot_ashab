@@ -4,8 +4,9 @@ import pytest
 from aiogram.types import User as AiogramTgUser
 from enums.bot_status_enum import BotStatusEnum
 from models.user import User
-from services.tg.user.find_or_create_with_update_by_platform_id import \
-    find_or_create_with_update_by_platform_id
+from services.tg.user.find_or_create_with_update_by_platform_id import (
+    find_or_create_with_update_by_platform_id,
+)
 from sqlalchemy import select
 
 

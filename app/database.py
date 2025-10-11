@@ -3,8 +3,7 @@ from functools import wraps
 from typing import AsyncGenerator
 
 from config import settings
-from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
-                                    create_async_engine)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 database_url: str = settings.database_dsn
 """URL базы данных"""
@@ -53,18 +52,7 @@ def with_session(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         async with get_async_session_for_bot() as session:
-            return await func(session=session, *args, **kwargs)
+            kwargs["session"] = session
+            return await func(*args, **kwargs)
 
     return wrapper
-
-
-# class Base(AsyncAttrs, DeclarativeBase):
-#     """
-#     Базовый класс для моделей SQLAlchemy.
-
-#     Все модели будут автоматически иметь поля:
-#         - created_at: Дата создания записи.
-#         - updated_at: Дата последнего обновления записи.
-#     """
-#     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-#     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())

@@ -2,8 +2,7 @@ from typing import Annotated
 
 from database import get_async_session
 from fastapi import APIRouter, Body, Depends, HTTPException, Path
-from schemas.api.users.set_bonus.request import (SetBonusRequest,
-                                                 SetBonusUserIdRequest)
+from schemas.api.users.set_bonus.request import SetBonusRequest, SetBonusUserIdRequest
 from schemas.api.users.set_bonus.response import SetBonusResponse
 from services.api.user.set_bonus import set_bonus
 from sqlalchemy.ext.asyncio import AsyncSession

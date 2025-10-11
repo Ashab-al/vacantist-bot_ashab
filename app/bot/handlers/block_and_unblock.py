@@ -1,8 +1,7 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
 from aiogram import F, Router
-from aiogram.filters.chat_member_updated import (KICKED, MEMBER,
-                                                 ChatMemberUpdatedFilter)
+from aiogram.filters.chat_member_updated import KICKED, MEMBER, ChatMemberUpdatedFilter
 from aiogram.types import ChatMemberUpdated
 from database import with_session
 from services.tg.user.current_user import current_user

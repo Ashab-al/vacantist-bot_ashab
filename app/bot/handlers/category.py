@@ -4,14 +4,14 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery, Message
 from bot.filters.button import CategoryButtonFilter
 from bot.filters.callback.category_callback import CategoryCallback
-from bot.keyboards.with_all_categories_keyboard import \
-    with_all_categories_keyboard
+from bot.keyboards.with_all_categories_keyboard import with_all_categories_keyboard
 from database import with_session
 from lib.tg.common import jinja_render
 from services.tg.category.find_subscribe import find_subscribe
 from services.tg.user.current_user import current_user
-from services.tg.user.update_subscription_with_category import \
-    update_subscription_with_category
+from services.tg.user.update_subscription_with_category import (
+    update_subscription_with_category,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик категорий")

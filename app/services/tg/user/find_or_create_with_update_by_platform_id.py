@@ -14,7 +14,8 @@ async def find_or_create_with_update_by_platform_id(
     Найти пользователя по его Telegram `platform_id` или создать нового.
 
     Если пользователь существует и его статус `WORKS` — сразу возвращает пользователя
-    Если пользователь существует и его статус `BOT_BLOCKED` — обновляется его атрибут `bot_status` на `WORKS`.
+    Если пользователь существует и его статус `BOT_BLOCKED` — обновляется
+        его атрибут `bot_status` на `WORKS`.
     Если пользователь новый — создаётся запись в базе и отправляется уведомление
     в группу администратора через `send_analytic
 
@@ -27,11 +28,13 @@ async def find_or_create_with_update_by_platform_id(
     """
     user: User | None = await get_user_by_platform_id(db, user_data.id)
 
-    if user and user.bot_status == BotStatusEnum.WORKS:
-        return user
-    elif user and user.bot_status == BotStatusEnum.BOT_BLOCKED:
-        user.bot_status = BotStatusEnum.WORKS
-    elif not user:
+    if user:
+        if user.bot_status == BotStatusEnum.WORKS:
+            return user
+        if user.bot_status == BotStatusEnum.BOT_BLOCKED:
+            user.bot_status = BotStatusEnum.WORKS
+
+    if not user:
         new_user_schema: TgUser = TgUser.model_validate(user_data)
 
         user: User = User(

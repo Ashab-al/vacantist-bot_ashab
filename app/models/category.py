@@ -25,7 +25,9 @@ class Category(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(200), unique=True, nullable=False)
 
-    vacancies: Mapped[List["Vacancy"]] = relationship(back_populates="category")
+    vacancies: Mapped[List["Vacancy"]] = relationship(  # noqa: F821
+        back_populates="category"
+    )
 
     users: Mapped[List["User"]] = relationship(
         "User", secondary=subscription, back_populates="categories"

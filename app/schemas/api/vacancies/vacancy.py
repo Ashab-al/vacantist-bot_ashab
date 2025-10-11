@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 from fastapi_camelcase import CamelModel
 from pydantic import ConfigDict, Field, computed_field
 
@@ -53,4 +54,4 @@ class VacancySchema(CamelModel):
     )
     def category_title(self) -> str:
         """Возвращает название категории вакансии."""
-        return self.category.name
+        return self.category.name  # pylint: disable=no-member

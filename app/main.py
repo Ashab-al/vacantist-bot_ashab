@@ -8,7 +8,7 @@
 """
 
 # pylint: disable=broad-except, unused-import
-import asyncio
+import asyncio  # noqa: F401
 import logging
 from contextlib import asynccontextmanager
 
@@ -16,9 +16,9 @@ from aiogram.types import Update
 from api import api_router
 from bot.create_bot import bot, dp, start_bot, stop_bot
 from bot.handlers import main_router
-from config import settings, vacancy_queue
+from config import settings, vacancy_queue  # noqa: F401
 from fastapi import FastAPI, Request
-from services.tg.vacancy.sender_worker import sender_worker
+from services.tg.vacancy.sender_worker import sender_worker  # noqa: F401
 
 # pylint: enable=broad-except, unused-import
 logging.basicConfig(
@@ -47,7 +47,9 @@ async def lifespan(_app: FastAPI):
         allowed_updates=dp.resolve_used_update_types(),
         drop_pending_updates=True,
     )
-    # worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))#TODO потом включить # pylint: disable=fixme
+    # worker_task = asyncio.create_task(
+    # sender_worker(vacancy_queue, bot
+    # ))#TODO потом включить # pylint: disable=fixme
 
     logging.info("Webhook set to %s", webhook_url)
 

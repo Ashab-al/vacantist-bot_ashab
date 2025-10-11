@@ -5,8 +5,7 @@ import asyncio
 from aiogram import Bot, F, Router
 from aiogram.types import CallbackQuery
 from bot.filters.callback.get_vacancies_callback import GetVacanciesCallback
-from bot.keyboards.get_more_vacancies_keyboard import \
-    get_more_vacancies_keyboard
+from bot.keyboards.get_more_vacancies_keyboard import get_more_vacancies_keyboard
 from bot.keyboards.vacancy_keyboard import vacancy_keyboard
 from database import with_session
 from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
@@ -14,8 +13,7 @@ from lib.tg.common import jinja_render
 from models.user import User
 from models.vacancy import Vacancy
 from services.tg.user.current_user import current_user
-from services.tg.vacancy.vacancies_for_the_week import \
-    fetch_vacancies_for_the_week
+from services.tg.vacancy.vacancies_for_the_week import fetch_vacancies_for_the_week
 from sqlalchemy.ext.asyncio import AsyncSession
 
 DELAY = 0.6

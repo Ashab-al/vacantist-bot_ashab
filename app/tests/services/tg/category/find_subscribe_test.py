@@ -6,8 +6,10 @@ from models.user import User
 from repositories.users.get_user_by_id import get_user_by_id
 from schemas.tg.user.tg_user import TgUser
 from services.tg.category.find_subscribe import find_subscribe
-from tests.conftest import (create_tg_user_with_session,
-                            create_vacancy_and_category_with_session)
+from tests.conftest import (
+    create_tg_user_with_session,
+    create_vacancy_and_category_with_session,
+)
 
 
 @pytest.mark.asyncio

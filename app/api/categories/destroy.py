@@ -2,8 +2,10 @@ from typing import Annotated
 
 from database import get_async_session
 from fastapi import APIRouter, Depends, HTTPException, Path
-from schemas.api.categories.destroy import (DestroyCategoryRequest,
-                                            DestroyCategoryResponse)
+from schemas.api.categories.destroy import (
+    DestroyCategoryRequest,
+    DestroyCategoryResponse,
+)
 from services.api.category.delete_category import delete_category
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 from fastapi_camelcase import CamelModel
 from lib.tg.constants import SOURCE
 from pydantic import Field

@@ -1,8 +1,9 @@
 from lib.tg.constants import SOURCE
 from models.blacklist import BlackList
 from models.vacancy import Vacancy
-from repositories.blacklist.black_list_check_by_platform_id_and_contact_information import \
-    black_list_check_by_platform_id_or_contact_information
+from repositories.blacklist.black_list_check_by_platform_id_and_contact_information import (
+    black_list_check_by_platform_id_or_contact_information,
+)
 from repositories.vacancies.find_vacancy_by_id import find_vacancy_by_id
 from sqlalchemy.ext.asyncio import AsyncSession
 

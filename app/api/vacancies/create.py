@@ -4,10 +4,10 @@ from database import get_async_session
 from fastapi import APIRouter, Body, Depends, HTTPException
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.api.vacancies.create.response import CreateVacancyResponse
-from services.api.vacancy.check_and_create_vacancy import \
-    check_and_create_vacancy
-from services.tg.vacancy.add_vacancy_to_sending_queue import \
-    add_vacancy_to_sending_queue
+from services.api.vacancy.check_and_create_vacancy import check_and_create_vacancy
+from services.tg.vacancy.add_vacancy_to_sending_queue import (
+    add_vacancy_to_sending_queue,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -31,13 +31,15 @@ async def create_new_vacancy(
 
     Args:
         session (AsyncSession): Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
-        vacancy_data (CreateVacancyRequest): Данные новой вакансии (название, описание, контакты, категория и др.).
+        vacancy_data (CreateVacancyRequest): Данные новой вакансии
+            (название, описание, контакты, категория и др.).
 
     Raises:
         HTTPException: Ошибка 400, если создание вакансии не удалось.
 
     Returns:
-        CreateVacancyResponse: Данные созданной вакансии (id, название, описание, контакты, источник, платформа).
+        CreateVacancyResponse: Данные созданной вакансии
+            (id, название, описание, контакты, источник, платформа).
     """
     try:
         new_vacancy = await check_and_create_vacancy(session, vacancy_data)

@@ -2,8 +2,7 @@ from typing import Annotated
 
 from database import get_async_session
 from fastapi import APIRouter, Body, Depends, HTTPException, Path
-from schemas.api.categories.update import (UpdateCategoryRequest,
-                                           UpdateCategoryResponse)
+from schemas.api.categories.update import UpdateCategoryRequest, UpdateCategoryResponse
 from services.api.category.update_category import update_category
 from sqlalchemy.ext.asyncio import AsyncSession
 

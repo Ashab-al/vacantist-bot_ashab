@@ -1,7 +1,7 @@
 test:
 	PYTHONPATH=. pytest .
 lint:
-	-black . 
-	-isort . 
-	-pylint . 
+	-isort .
+	-black .
+	-pylint .
 	-flake8 .
