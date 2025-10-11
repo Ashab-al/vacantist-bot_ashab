@@ -19,7 +19,7 @@ async def send_analytics(db: AsyncSession, user: User) -> None:
     result = await db.execute(
         select(User.bot_status, func.count()).group_by(User.bot_status)
     )
-    analytics = {status: count for status, count in result.all()}
+    analytics = dict(result.all())
     analytics["users_count"] = (
         await db.execute(select(func.count()).select_from(User))
     ).scalar()
