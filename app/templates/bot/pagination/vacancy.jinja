@@ -1,0 +1,8 @@
+№ {{ number }}
+<b>{{ i18n['vacancy']['category'] }}:</b> {{ vacancy.title }}
+<b>{{ i18n['vacancy']['date_create'] }}:</b> {{ vacancy.created_at.strftime('%d.%m.%Y, %H:%M') }}
+<b>{{ i18n['user']['balance']['total_balance'] }}:</b> {{ user.point + user.bonus }}
+
+{{ vacancy.description }}
+
+{{ i18n['vacancy']['signature'] }}

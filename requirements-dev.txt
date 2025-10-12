@@ -1,0 +1,14 @@
+black
+coverage
+flake8
+isort
+mypy
+pytest
+pytest-cov
+flake8-bugbear 
+pep8-naming
+pylint
+types-requests
+python-dotenv
+debugpy
+typing-inspection

@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:latest
+    volumes:
+      - tg_bot_db_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    command: |
+      bash -c "
+      alembic upgrade heads &&
+      python -m debugpy --listen 0.0.0.0:5678 -m uvicorn main:app --reload --host 0.0.0.0 --port 5050
+      "
+    volumes:
+      - ./app:/app
+    ports:
+      - "5050:5050"
+      - "5678:5678"
+    depends_on:
+      - db
+  ngrok:
+    image: ngrok/ngrok:latest
+    command:
+      - "http"
+      - "web:5050"  
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    ports:
+      - "4040:4040"
+volumes:
+  tg_bot_db_data:
