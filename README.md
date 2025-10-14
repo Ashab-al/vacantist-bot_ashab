@@ -45,8 +45,8 @@ cp .env.example .env
 
 | Файл         | Назначение                            | Пример запуска                |
 |--------------|----------------------------------------|-------------------------------|
-| `develop.yml`       | **Разработка** | `docker compose -f develop.yml up --build`   |
-| `production.yml`  | **Продакшн** | `docker compose -f production.yml up -d`  |
+| `develop.yml`       | **Разработка** | `make dev`   |
+| `production.yml`  | **Продакшн** | `make prod`  |
 #### Остановить приложение (`Ctrl + C`) либо:
 ```
 docker compose stop
@@ -66,7 +66,7 @@ docker compose -f develop.yml run --rm web alembic upgrade head
 ### 4. Тесты
 Запуск тестов:
 ```
-docker compose -f develop.yml run --rm web pytest .
+make test
 ```
 
 ### 5. Ngrok (для вебхуков и для локально разработки)
