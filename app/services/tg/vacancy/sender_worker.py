@@ -68,7 +68,7 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
             delay: float | int = DELAY
             await admin_alert(
                 bot,
-                f"Рассылка вакансии '{vacancy.title}' для {len(users)} пользователей."
+                f"Рассылка вакансии '{vacancy.title}' для {len(users)} пользователей.",
             )
             for user in users:
                 try:
@@ -96,7 +96,7 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
         queue.task_done()
         await admin_alert(
             bot,
-            f"Рассылка вакансии '{vacancy.title}' завершена, для {len(users)} пользователей."
+            f"Рассылка вакансии '{vacancy.title}' завершена, для {len(users)} пользователей.",
         )
 
     await admin_alert(bot, "ВЫХОД ИЗ ЦИКЛА")

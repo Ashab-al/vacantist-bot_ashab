@@ -15,7 +15,7 @@ router = Router(name="Обработчик главного меню")
 router.message.filter(F.chat.type == "private")
 
 
-@router.message(Command(commands=['start', 'main_menu']))
+@router.message(Command(commands=["start", "main_menu"]))
 @with_session
 async def cmd_start(message: Message, session: AsyncSession) -> None:
     """

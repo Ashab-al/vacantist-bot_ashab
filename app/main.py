@@ -17,9 +17,9 @@ from api import api_router
 from bot.create_bot import bot, dp, start_bot, stop_bot
 from bot.handlers import main_router
 from config import settings, vacancy_queue  # noqa: F401
+from enums.mode_enum import ModeEnum
 from fastapi import FastAPI, Request
 from services.tg.vacancy.sender_worker import sender_worker  # noqa: F401
-from enums.mode_enum import ModeEnum
 
 # pylint: enable=broad-except, unused-import
 logging.basicConfig(
@@ -56,9 +56,7 @@ async def lifespan(_app: FastAPI):
         drop_pending_updates=drop_pending_updates,
     )
 
-    worker_task = asyncio.create_task(
-        sender_worker(vacancy_queue, bot)
-    )
+    worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))
 
     logging.info("Webhook set to %s", webhook_url)
 
@@ -75,6 +73,7 @@ async def lifespan(_app: FastAPI):
 
     await stop_bot()
     logging.info("Webhook deleted")
+
 
 common_kwargs = {
     "lifespan": lifespan,
