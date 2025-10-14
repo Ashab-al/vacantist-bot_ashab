@@ -41,20 +41,17 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
           на `BOT_BLOCKED`.
         - Для остановки воркера в очередь нужно положить `None`.
     """
-    print("Воркер для рассылки запущен и ждет вакансии...")
     await admin_alert(bot, "Воркер для рассылки запущен и ждет вакансии...")
     while True:
         print("ЦИКЛ ЗАПУЩЕН, ОЖИДАЮ ВАКАНСИИ")
         vacancy: Vacancy | None = await queue.get()
 
         if vacancy is None:
-            print("Получен сигнал на завершение. Воркер останавливается.")
             await admin_alert(
                 bot, "Получен сигнал на завершение. Воркер останавливается."
             )
             queue.task_done()
             break
-        print(f"Начинаю рассылку вакансии: {vacancy.title}")
 
         async with get_async_session_for_bot() as db:
             users: list[User] = await find_users_where_have_subscribe_to_category(
@@ -62,7 +59,6 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
             )
             blocked_user_ids: list[int] = []
             if not users:
-                print(f"Для вакансии '{vacancy.title}' не найдено подписчиков.")
                 await admin_alert(
                     bot, f"Для вакансии '{vacancy.title}' не найдено подписчиков."
                 )
@@ -70,7 +66,10 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
                 continue
 
             delay: float | int = DELAY
-
+            await admin_alert(
+                bot,
+                f"Рассылка вакансии '{vacancy.title}' для {len(users)} пользователей.",
+            )
             for user in users:
                 try:
                     await bot.send_message(
@@ -83,7 +82,7 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
                 except TelegramForbiddenError:
                     blocked_user_ids.append(user.id)
                 except Exception as e:  # pylint: disable=broad-exception-caught
-                    await admin_alert(bot, str(e) + "\n" + "\n" + "sender_worker")
+                    await admin_alert(bot, str(e) + "\n\nsender_worker")
 
                 await asyncio.sleep(delay)
 
@@ -95,10 +94,11 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
                 )
 
         queue.task_done()
-        print(f"Рассылка вакансии '{vacancy.title}' завершена.")
-        await admin_alert(bot, f"Рассылка вакансии '{vacancy.title}' завершена.")
+        await admin_alert(
+            bot,
+            f"Рассылка вакансии '{vacancy.title}' завершена, для {len(users)} пользователей.",
+        )
 
-    print("ВЫХОД ИЗ ЦИКЛА")
     await admin_alert(bot, "ВЫХОД ИЗ ЦИКЛА")
 
 

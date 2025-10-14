@@ -14,6 +14,7 @@ import os
 from typing import Optional
 
 import requests
+from enums.mode_enum import ModeEnum
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from lib.tg.pluralize import pluralize
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -55,6 +56,17 @@ class Settings(BaseSettings):
 
     ngrok_authtoken: Optional[str] = None
 
+    # для продакшена
+    domain_name: str
+    subdomain: str
+    pgadmin_subdomain: str
+    directus_subdomain: str
+    ssl_email: str
+    postgres_password: str
+    password_pgadmin: str
+    secret: str
+    mode: ModeEnum
+
     def ngrok_url(self):
         """
         Получает публичный HTTPS URL от локального ngrok API.
@@ -80,7 +92,13 @@ class Settings(BaseSettings):
         Returns:
             str: URL вебхука
         """
-        return f"{self.ngrok_url()}/api/v1/webhook"
+        if self.mode == ModeEnum.PRODUCTION:
+            return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
+
+        if self.mode == ModeEnum.DEVELOP:
+            return f"{self.ngrok_url()}/api/v1/webhook"
+
+        return None
 
 
 settings = Settings()

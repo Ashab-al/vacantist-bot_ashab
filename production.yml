@@ -1,1 +1,124 @@
 # TODO
+services:
+  traefik:
+    image: "traefik"
+    restart: always
+    command:
+      - "--api=true"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./traefik_data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    command: |
+      bash -c "
+      alembic upgrade heads &&
+      python -m uvicorn main:app --host 0.0.0.0 --port 8080
+      "
+    volumes:
+      - ./app:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.web.entrypoints=web
+      - traefik.http.routers.web.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.web-secure.entrypoints=websecure
+      - traefik.http.routers.web-secure.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.web-secure.tls=true
+      - traefik.http.routers.web-secure.service=web
+      - traefik.http.routers.web-secure.tls.certresolver=mytlschallenge
+      - traefik.http.services.web.loadbalancer.server.port=8080
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${SSL_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PASSWORD_PGADMIN}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pgadmin.entrypoints=web,websecure
+      - traefik.http.routers.pgadmin.tls=true
+      - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.pgadmin.tls.certresolver=mytlschallenge
+      - traefik.http.services.pgadmin.loadbalancer.server.port=80
+
+  directus:
+    image: directus/directus:11.12.0
+    container_name: directus
+    restart: always
+    depends_on:
+      - db
+
+    volumes:
+      - ./database:/directus/database
+      - ./uploads:/directus/uploads
+      - ./extensions:/directus/extensions
+      - ./templates:/directus/templates
+
+    environment:
+      - PUBLIC_URL=https://${DIRECTUS_SUBDOMAIN}.${DOMAIN_NAME}
+      - SECRET=${SECRET}
+      - ADMIN_EMAIL=${SSL_EMAIL}
+      - ADMIN_PASSWORD=${PASSWORD_PGADMIN}
+      - DB_CLIENT=pg
+      - DB_HOST=db
+      - DB_DATABASE=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_PORT=5432
+      - WEBSOCKETS_ENABLED=true
+        # далее натсроки для smtp
+      #- EMAIL_FROM=${EMAIL_FROM}
+      #- EMAIL_TRANSPORT=smtp
+      #- EMAIL_SMTP_HOST=${EMAIL_SMTP_HOST}
+      #- EMAIL_SMTP_PORT=${EMAIL_SMTP_PORT}
+      #- EMAIL_SMTP_USER=${EMAIL_SMTP_USER}
+     # - EMAIL_SMTP_PASSWORD=${EMAIL_SMTP_PASSWORD}
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.directus.entrypoints=web
+      - traefik.http.routers.directus.rule=Host(`${DIRECTUS_SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.directus-secure.entrypoints=websecure
+      - traefik.http.routers.directus-secure.rule=Host(`${DIRECTUS_SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.directus-secure.tls=true
+      - traefik.http.routers.directus-secure.service=directus
+      - traefik.http.routers.directus-secure.tls.certresolver=mytlschallenge
+      - traefik.http.services.directus.loadbalancer.server.port=8055
+volumes:
+  postgres_data:
