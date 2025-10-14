@@ -19,6 +19,7 @@ from bot.handlers import main_router
 from config import settings, vacancy_queue  # noqa: F401
 from fastapi import FastAPI, Request
 from services.tg.vacancy.sender_worker import sender_worker  # noqa: F401
+from enums.mode_enum import ModeEnum
 
 # pylint: enable=broad-except, unused-import
 logging.basicConfig(
@@ -42,14 +43,22 @@ async def lifespan(_app: FastAPI):
 
     await start_bot()
     webhook_url = settings.get_webhook_url()
+
+    drop_pending_updates: bool | None = None
+    if settings.mode == ModeEnum.PRODUCTION:
+        drop_pending_updates = False
+    elif settings.mode == ModeEnum.DEVELOP:
+        drop_pending_updates = True
+
     await bot.set_webhook(
         url=webhook_url,
         allowed_updates=dp.resolve_used_update_types(),
-        drop_pending_updates=True,
+        drop_pending_updates=drop_pending_updates,
     )
+
     worker_task = asyncio.create_task(
-        sender_worker(vacancy_queue, bot
-    ))#TODO потом включить # pylint: disable=fixme
+        sender_worker(vacancy_queue, bot)
+    )
 
     logging.info("Webhook set to %s", webhook_url)
 
@@ -58,7 +67,7 @@ async def lifespan(_app: FastAPI):
     logging.info("Sending shutdown signal to sender_worker...")
     # await vacancy_queue.put(None)#TODO потом включить # pylint: disable=fixme
     # await vacancy_queue.join()#TODO потом включить # pylint: disable=fixme
-    worker_task.cancel() #TODO потом включить # pylint: disable=fixme
+    worker_task.cancel()  # TODO потом включить # pylint: disable=fixme
     logging.info("Sender_worker finished successfully.")
 
     logging.info("Shutting down bot...")
@@ -67,8 +76,22 @@ async def lifespan(_app: FastAPI):
     await stop_bot()
     logging.info("Webhook deleted")
 
+common_kwargs = {
+    "lifespan": lifespan,
+    "title": "Vacantist Bot",
+    "description": "Telegram-бот для поиска вакансий",
+}
 
-app = FastAPI(lifespan=lifespan)
+app = None
+if settings.mode == ModeEnum.DEVELOP:
+    app = FastAPI(**common_kwargs)
+elif settings.mode == ModeEnum.PRODUCTION:
+    app = FastAPI(
+        **common_kwargs,
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
+    )
 
 app.include_router(api_router, prefix="/api/v1")
 
@@ -93,9 +116,6 @@ async def webhook(request: Request) -> None:
     Notes:
         Обновление валидируется и передается в диспетчер dp.feed_update для обработки.
     """
-    logging.info("Received webhook request")
-    update = Update.model_validate(await request.json(), context={"bot": bot})
-    logging.info("ВЕБХУК")
-    logging.info(update)
-    await dp.feed_update(bot, update)
-    logging.info("Update processed")
+    await dp.feed_update(
+        bot, Update.model_validate(await request.json(), context={"bot": bot})
+    )

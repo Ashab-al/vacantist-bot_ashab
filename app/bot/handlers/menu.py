@@ -1,7 +1,7 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
 from aiogram import F, Router
-from aiogram.filters.command import CommandStart
+from aiogram.filters.command import Command
 from aiogram.types import Message
 from bot.filters.button import AdvertisementButtonFilter, HelpButtonFilter
 from bot.keyboards.kbs import menu_keyboard
@@ -15,7 +15,7 @@ router = Router(name="Обработчик главного меню")
 router.message.filter(F.chat.type == "private")
 
 
-@router.message(CommandStart())
+@router.message(Command(commands=['start', 'main_menu']))
 @with_session
 async def cmd_start(message: Message, session: AsyncSession) -> None:
     """

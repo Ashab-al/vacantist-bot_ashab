@@ -8,4 +8,4 @@ lint:
 dev:
 	docker compose -f develop.yml up
 prod:
-	docker compose -f production.yml up -d
+	docker compose -f production.yml up --build -d
