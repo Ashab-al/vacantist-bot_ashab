@@ -64,6 +64,7 @@ class Settings(BaseSettings):
     postgres_password: str
     password_pgadmin: str
     secret: str
+    mode: str
 
     def ngrok_url(self):
         """
@@ -90,7 +91,14 @@ class Settings(BaseSettings):
         Returns:
             str: URL вебхука
         """
-        return f"{self.ngrok_url()}/api/v1/webhook"
+        if self.mode == "production":
+            return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
+
+        if self.mode == "develop":
+            return f"{self.ngrok_url()}/api/v1/webhook"
+
+        return None
+
 
 
 settings = Settings()
