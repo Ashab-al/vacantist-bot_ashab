@@ -3,13 +3,17 @@ from functools import wraps
 from typing import AsyncGenerator
 
 from config import settings
+from enums.mode_enum import ModeEnum
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 database_url: str = settings.database_dsn
 """URL базы данных"""
-
-engine = create_async_engine(url=database_url, echo="debug", pool_pre_ping=True)
+engine = None
 """Асинхронный движок SQLAlchemy"""
+if settings.mode == ModeEnum.DEVELOP:
+    engine = create_async_engine(url=database_url, echo="debug", pool_pre_ping=True)
+elif settings.mode == ModeEnum.PRODUCTION:
+    engine = create_async_engine(url=database_url, echo=False, pool_pre_ping=True)
 
 # Фабрика асинхронных сессий
 async_session_maker = async_sessionmaker(engine, class_=AsyncSession)
