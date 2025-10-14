@@ -15,3 +15,12 @@ __pycache__/
 __pycache__/
 *.py[cod]
 *$py.class
+
+traefik_data/
+pgadmin_data/
+database/
+uploads/
+extensions/
+templates/
+local-files/
+postgres/
