@@ -55,6 +55,16 @@ class Settings(BaseSettings):
 
     ngrok_authtoken: Optional[str] = None
 
+    #для продакшена
+    domain_name: str
+    subdomain: str
+    pgadmin_subdomain: str
+    directus_subdomain: str
+    ssl_email: str
+    postgres_password: str
+    password_pgadmin: str
+    secret: str
+
     def ngrok_url(self):
         """
         Получает публичный HTTPS URL от локального ngrok API.
