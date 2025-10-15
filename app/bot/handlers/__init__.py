@@ -1,4 +1,4 @@
-"""Модуль работы с Telegram-ботом через aiogram."""
+"""Главный обработчик бота, который объединяет все отдельные роутеры."""
 
 from aiogram import F, Router
 from bot.handlers.block_and_unblock import router as block_and_unblock_router
