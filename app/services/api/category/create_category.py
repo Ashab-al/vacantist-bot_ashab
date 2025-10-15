@@ -1,5 +1,5 @@
 from models.category import Category
-from repositories.categories.get_category_by_name import get_category_by_name
+from query_objects.categories.get_category_by_name import get_category_by_name
 from schemas.api.categories.create import CreateCategoryRequest
 from sqlalchemy.ext.asyncio import AsyncSession
 

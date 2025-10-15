@@ -1,7 +1,7 @@
 from aiogram.types.user import User as AiogramTgUser
 from enums.bot_status_enum import BotStatusEnum
 from models.user import User
-from repositories.users.get_user_by_platform_id import get_user_by_platform_id
+from query_objects.users.get_user_by_platform_id import get_user_by_platform_id
 from schemas.tg.user.tg_user import TgUser
 from services.tg.send_analytics import send_analytics
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -1,5 +1,5 @@
 from models.user import User
-from repositories.users.get_user_by_id import get_user_by_id
+from query_objects.users.get_user_by_id import get_user_by_id
 from schemas.api.users.show.request import ShowUserRequest
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -1,6 +1,6 @@
 from aiogram.types.user import User as AiogramTgUser
 from models.user import User
-from repositories.users.get_user_by_platform_id import get_user_by_platform_id
+from query_objects.users.get_user_by_platform_id import get_user_by_platform_id
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

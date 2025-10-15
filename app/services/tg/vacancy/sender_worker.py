@@ -9,7 +9,7 @@ from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
 from models.user import User
 from models.vacancy import Vacancy
-from repositories.users.find_users_where_have_subscribe_to_category import (
+from query_objects.users.find_users_where_have_subscribe_to_category import (
     find_users_where_have_subscribe_to_category,
 )
 from sqlalchemy import update

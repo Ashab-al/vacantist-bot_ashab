@@ -4,7 +4,7 @@ from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
 from models.category import Category
 from models.user import User
 from models.vacancy import Vacancy
-from repositories.vacancies.vacancies_for_the_week import VacancyForTheWeekRepository
+from query_objects.vacancies.vacancies_for_the_week import VacancyForTheWeekRepository
 from services.tg.category.find_subscribe import find_subscribe
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -1,5 +1,5 @@
 from models.category import Category
-from repositories.categories.get_all_categories import get_all_categories
+from query_objects.categories.get_all_categories import get_all_categories
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

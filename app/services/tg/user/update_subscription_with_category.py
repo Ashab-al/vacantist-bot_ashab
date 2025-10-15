@@ -2,7 +2,7 @@ from bot.filters.callback.category_callback import CategoryCallback
 from enums.category_subscription_enum import CategorySubscriptionEnum
 from models.category import Category
 from models.user import User
-from repositories.categories.get_category_by_id import get_category_by_id
+from query_objects.categories.get_category_by_id import get_category_by_id
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

@@ -1,6 +1,6 @@
 from models.category import Category
 from models.vacancy import Vacancy
-from repositories.categories.get_category_by_name import get_category_by_name
+from query_objects.categories.get_category_by_name import get_category_by_name
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from services.api.vacancy.black_list_check import black_list_check
 from services.api.vacancy.create_vacancy import create_vacancy

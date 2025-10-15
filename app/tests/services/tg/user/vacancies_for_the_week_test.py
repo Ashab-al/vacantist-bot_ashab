@@ -6,7 +6,7 @@ from bot.keyboards.get_vacancies_button import PAGE, PAGE_SIZE
 from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
 from models.category import Category
 from models.user import User
-from repositories.users.get_user_by_id import get_user_by_id
+from query_objects.users.get_user_by_id import get_user_by_id
 from schemas.api.categories.create.request import CreateCategoryRequest
 from services.api.category.create_category import create_category
 from services.tg.vacancy.vacancies_for_the_week import fetch_vacancies_for_the_week
