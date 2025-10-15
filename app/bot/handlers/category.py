@@ -6,6 +6,7 @@ from bot.filters.button import CategoryButtonFilter
 from bot.filters.callback.category_callback import CategoryCallback
 from bot.keyboards.with_all_categories_keyboard import with_all_categories_keyboard
 from database import with_session
+from enums.category_subscription_enum import CategorySubscriptionEnum
 from lib.tg.common import jinja_render
 from services.tg.category.find_subscribe import find_subscribe
 from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
@@ -60,7 +61,7 @@ async def reaction_btn_choice_category(
         - Отправляет пользователю уведомление (show_alert) с результатом действия.
     """
 
-    view_path: dict[str, str] = await update_subscription_with_category(
+    view_path: CategorySubscriptionEnum = await update_subscription_with_category(
         callback_data,
         session,
         await find_subscribe(session, query.from_user),
@@ -73,6 +74,6 @@ async def reaction_btn_choice_category(
     )
 
     await query.answer(
-        await jinja_render(f"callback_query/{view_path['path_to_templates']}"),
+        await jinja_render(f"callback_query/{view_path.value}"),
         show_alert=True,
     )

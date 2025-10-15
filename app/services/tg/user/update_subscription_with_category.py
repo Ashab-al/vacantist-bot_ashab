@@ -11,7 +11,7 @@ async def update_subscription_with_category(
     db: AsyncSession,
     subscribed_categories: list[Category],
     user: User,
-) -> dict[str, str]:
+) -> CategorySubscriptionEnum:
     """
     Обновляет подписку пользователя на категорию.
 
@@ -31,15 +31,15 @@ async def update_subscription_with_category(
     if not (category := await get_category_by_id(db, category_callback.category_id)):
         raise ValueError("Такой категории не найдено")
 
-    template: str | None = None
+    template: CategorySubscriptionEnum = None
 
     if category in subscribed_categories:
         user.categories.remove(category)
-        template: str = CategorySubscriptionEnum.UNSUBSCRIBE.value
+        template: str = CategorySubscriptionEnum.UNSUBSCRIBE
     else:
         user.categories.append(category)
-        template: str = CategorySubscriptionEnum.SUBSCRIBE.value
+        template: str = CategorySubscriptionEnum.SUBSCRIBE
 
     await db.commit()
 
-    return {"path_to_templates": template}
+    return template
