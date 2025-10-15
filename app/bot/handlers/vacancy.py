@@ -10,7 +10,7 @@ from enums.check_vacancy_enum import CheckVacancyEnum
 from lib.tg.common import jinja_render
 from services.tg.open_vacancy import open_vacancy
 from services.tg.spam_vacancy import BLACKLISTED, spam_vacancy
-from services.tg.user.current_user import current_user
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик вакансий")
@@ -45,7 +45,7 @@ async def reaction_choice_vacancy(
     Returns:
         None
     """
-    user = await current_user(session, query=callback)
+    user = await find_user_by_platform_id(session, callback.from_user.id)
     vacancy_data: dict = await open_vacancy(session, user, callback_data.vacancy_id)
     alert_data: dict = {}
     if vacancy_data.get("status") == CheckVacancyEnum.WARNING:

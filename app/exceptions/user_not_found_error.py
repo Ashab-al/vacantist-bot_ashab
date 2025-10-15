@@ -3,4 +3,4 @@ class UserNotFoundError(Exception):
 
     def __init__(self, user_id: int):
         self.user_id = user_id
-        super().__init__(f"пользователь с ID {user_id} не найден")
+        super().__init__(f"Пользователь с ID {user_id} не найден")

@@ -1,7 +1,7 @@
 from aiogram.types.user import User as AiogramTgUser
 from models.category import Category
 from models.user import User
-from query_objects.users.get_user_by_platform_id import get_user_by_platform_id
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -18,17 +18,14 @@ async def find_subscribe(
     Returns:
         user.categories (list[Category]): Список категорий, на которые подписан пользователь
     """
-    platform_id: str | None = None
+    platform_id: int | None = None
 
     if isinstance(user_data, AiogramTgUser):
-        platform_id: str = user_data.id
+        platform_id: int = int(user_data.id)
 
     elif isinstance(user_data, User):
-        platform_id: str = user_data.platform_id
+        platform_id: int = int(user_data.platform_id)
 
-    user: User | None = await get_user_by_platform_id(db, platform_id)
-
-    if not user:
-        raise ValueError("Пользователь не найден")
+    user: User = await find_user_by_platform_id(db, platform_id)
 
     return user.categories

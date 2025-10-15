@@ -15,7 +15,7 @@ from config import i18n, settings
 from database import with_session
 from lib.tg.common import jinja_render
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
-from services.tg.user.current_user import current_user
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from services.tg.user.update_points import update_points
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -34,7 +34,7 @@ async def reaction_btn_points(message: Message, session: AsyncSession) -> None:
         session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
 
     Notes:
-        - Получает текущего пользователя через `current_user`.
+        - Получает текущего пользователя через `find_user_by_platform_id`.
         - Отправляет сообщение с описанием тарифов и клавиатурой для выбора.
     """
     await btn_points(message, session)
@@ -60,7 +60,8 @@ async def choice_btn_points(callback: CallbackQuery, bot: Bot, session: AsyncSes
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=await jinja_render(
-            "points/description", {"user": await current_user(session, query=callback)}
+            "points/description",
+            {"user": await find_user_by_platform_id(session, callback.from_user.id)},
         ),
         reply_markup=await with_all_tariffs_keyboard(),
     )
@@ -175,7 +176,7 @@ async def btn_points(message: Message, session: AsyncSession):
     Обрабатывает нажатие кнопки "Поинты" в Telegram-боте.
 
     Функция:
-    - Получает текущего пользователя из базы данных с помощью `current_user`.
+    - Получает текущего пользователя из базы данных с помощью `find_user_by_platform_id`.
     - Формирует сообщение с описанием очков пользователя через шаблон Jinja2 (`points/description`).
     - Отправляет сообщение пользователю с клавиатурой, содержащей все доступные тарифы.
 
@@ -185,7 +186,8 @@ async def btn_points(message: Message, session: AsyncSession):
     """
     await message.answer(
         await jinja_render(
-            "points/description", {"user": await current_user(session, message=message)}
+            "points/description",
+            {"user": await find_user_by_platform_id(session, message.from_user.id)},
         ),
         reply_markup=await with_all_tariffs_keyboard(),
     )

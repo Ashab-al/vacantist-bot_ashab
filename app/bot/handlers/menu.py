@@ -17,7 +17,6 @@ from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
 router = Router(name="Обработчик главного меню")
 router.message.filter(F.chat.type == "private")
 
@@ -33,7 +32,8 @@ async def cmd_start(message: Message, session: AsyncSession) -> None:
         session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
 
     Notes:
-        - Создает или обновляет пользователя через `current_user`.
+        - Создает пользователя через `create_user`.
+        - Обновляет пользователя через `update_bot_status`.
         - Отправляет приветственное сообщение с инструкциями.
         - Прикрепляет основное меню с кнопками.
     """

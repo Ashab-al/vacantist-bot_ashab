@@ -12,7 +12,7 @@ from enums.vacancies_for_the_week_enum import VacanciesForTheWeekStatusEnum
 from lib.tg.common import jinja_render
 from models.user import User
 from models.vacancy import Vacancy
-from services.tg.user.current_user import current_user
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from services.tg.vacancy.vacancies_for_the_week import fetch_vacancies_for_the_week
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -40,13 +40,13 @@ async def reaction_get_vacancies(
         bot (Bot): Экземпляр бота Aiogram.
 
     Notes:
-        - Получает текущего пользователя через `current_user`.
+        - Получает текущего пользователя через `find_user_by_platform_id`.
         - Извлекает вакансии недели через `fetch_vacancies_for_the_week`.
         - Проверяет статус выборки вакансий и уведомляет пользователя, если нет данных.
         - Отправляет вакансии пользователю с задержкой DELAY между сообщениями.
         - Прикрепляет клавиатуру для получения следующей страницы вакансий.
     """
-    user: User = await current_user(session, query=callback)
+    user: User = await find_user_by_platform_id(session, callback.from_user.id)
     vacancies_for_the_week = await fetch_vacancies_for_the_week(
         session, user, callback_data.page, callback_data.page_size
     )

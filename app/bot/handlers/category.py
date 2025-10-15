@@ -8,7 +8,7 @@ from bot.keyboards.with_all_categories_keyboard import with_all_categories_keybo
 from database import with_session
 from lib.tg.common import jinja_render
 from services.tg.category.find_subscribe import find_subscribe
-from services.tg.user.current_user import current_user
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from services.tg.user.update_subscription_with_category import (
     update_subscription_with_category,
 )
@@ -59,11 +59,12 @@ async def reaction_btn_choice_category(
         - Обновляет клавиатуру сообщений с категориями.
         - Отправляет пользователю уведомление (show_alert) с результатом действия.
     """
+
     view_path: dict[str, str] = await update_subscription_with_category(
         callback_data,
         session,
         await find_subscribe(session, query.from_user),
-        await current_user(session, query=query),
+        await find_user_by_platform_id(session, query.from_user.id),
     )
     await query.message.edit_reply_markup(
         reply_markup=await with_all_categories_keyboard(
