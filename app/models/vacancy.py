@@ -30,5 +30,5 @@ class Vacancy(Base):
     source: Mapped[str] = mapped_column(String, nullable=False)
     platform_id: Mapped[str] = mapped_column(String, nullable=False)
 
-    category_id: Mapped[str] = mapped_column(ForeignKey("categories.id"))
+    category_id: Mapped[str] = mapped_column(ForeignKey("categories.id"), index=True)
     category: Mapped["Category"] = relationship(back_populates="vacancies")

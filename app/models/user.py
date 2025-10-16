@@ -48,7 +48,7 @@ class User(Base):
     point: Mapped[int] = mapped_column(Integer, default=DEFAULT_POINT, nullable=False)
     bonus: Mapped[int] = mapped_column(Integer, default=DEFAULT_BONUS, nullable=False)
     bot_status: Mapped[BotStatusEnum] = mapped_column(
-        Enum(BotStatusEnum, name="bot_status"), nullable=False
+        Enum(BotStatusEnum, name="bot_status"), nullable=False, index=True
     )
 
     categories: Mapped[List["Category"]] = relationship(  # noqa: F821
