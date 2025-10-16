@@ -7,7 +7,11 @@ from schemas.api.categories.create.request import CreateCategoryRequest
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from services.api.category.create_category import create_category
 from services.api.vacancy.create_vacancy import create_vacancy
-from services.tg.spam_vacancy import BLACKLISTED, COMPLAINT_COUNTER, spam_vacancy
+from services.tg.vacancy.spam_vacancy import (
+    BLACKLISTED,
+    COMPLAINT_COUNTER,
+    spam_vacancy,
+)
 from sqlalchemy import select
 
 

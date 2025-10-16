@@ -6,7 +6,7 @@ from query_objects.blacklist.black_list_check_by_platform_id_and_contact_informa
     black_list_check_by_platform_id_or_contact_information,
 )
 from query_objects.vacancies.find_vacancy_by_id import find_vacancy_by_id
-from services.tg.spam_vacancy import COMPLAINT_COUNTER
+from services.tg.vacancy.spam_vacancy import COMPLAINT_COUNTER
 from sqlalchemy.ext.asyncio import AsyncSession
 
 REDUCE_BALANCE = 1

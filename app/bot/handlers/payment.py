@@ -14,11 +14,12 @@ from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
 from config import i18n
 from database import with_session
 from lib.tg.common import jinja_render
-from services.tg.admin_alert import admin_alert
 from services.tg.point.show_points_info import show_points_info
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
 from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
-from services.tg.user.update_points import update_points
+from services.tg.user.update_points_for_pre_checkout_query import (
+    update_points_for_pre_checkout_query,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик тарифов и платежей")
@@ -119,29 +120,14 @@ async def process_pre_checkout_query(
         session (AsyncSession): Асинхронная сессия SQLAlchemy.
 
     Notes:
-        - Обновляет баллы пользователя через `update_points`.
+        - Обновляет баллы пользователя через `update_points_for_pre_checkout_query`.
         - В случае ошибки отправляет сообщение об ошибке пользователю и админу.
         - При успешной обработке подтверждает pre-checkout запрос.
     """
-    try:
-        await update_points(
-            session,
-            pre_checkout_query.from_user,
-            TariffCallback.unpack(pre_checkout_query.invoice_payload).points,
-        )
-    except Exception as e:  # pylint: disable=broad-except
-        await bot.send_message(
-            chat_id=pre_checkout_query.from_user.id,
-            text=await jinja_render("pre_checkout_query/fail_payment"),
-        )
-
-        await admin_alert(
-            bot=bot,
-            text="\n\n".join([str(e), "Метод process_pre_checkout_query"]),
-        )
-
-    else:
-        await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+    await update_points_for_pre_checkout_query(
+        pre_checkout_query=pre_checkout_query, bot=bot, session=session
+    )
+    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
 
 @router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)

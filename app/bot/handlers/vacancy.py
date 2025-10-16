@@ -8,9 +8,8 @@ from bot.keyboards.open_vacancy_keyboard import open_vacancy_keyboard
 from database import with_session
 from enums.check_vacancy_enum import CheckVacancyEnum
 from lib.tg.common import jinja_render
-from services.tg.open_vacancy import open_vacancy
-from services.tg.spam_vacancy import BLACKLISTED, spam_vacancy
-from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
+from services.tg.vacancy.open_vacancy_and_show_alert import open_vacancy_and_show_alert
+from services.tg.vacancy.spam_vacancy import BLACKLISTED, spam_vacancy
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик вакансий")
@@ -45,17 +44,9 @@ async def reaction_choice_vacancy(
     Returns:
         None
     """
-    user = await find_user_by_platform_id(session, callback.from_user.id)
-    vacancy_data: dict = await open_vacancy(session, user, callback_data.vacancy_id)
-    alert_data: dict = {}
-    if vacancy_data.get("status") == CheckVacancyEnum.WARNING:
-        alert_data["text"] = await jinja_render(
-            vacancy_data["path_view"], {"open_vacancy": vacancy_data, "user": user}
-        )
-        alert_data["show_alert"] = True
-
-    await callback.answer(**alert_data)
-
+    vacancy_data, user = await open_vacancy_and_show_alert(
+        callback, callback_data, session
+    )
     if vacancy_data.get("status") == CheckVacancyEnum.OPEN_VACANCY:
         await bot.edit_message_text(
             chat_id=callback.from_user.id,
