@@ -6,7 +6,7 @@ from services.tg.user import create_user, find_user_by_platform_id
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def get_or_create_user_with_analytics(
+async def find_or_create_user_with_analytics(
     session: AsyncSession, from_user: TgUser
 ) -> User:
     """

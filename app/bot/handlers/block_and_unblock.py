@@ -5,8 +5,8 @@ from aiogram.filters.chat_member_updated import KICKED, MEMBER, ChatMemberUpdate
 from aiogram.types import ChatMemberUpdated
 from database import with_session
 from enums.bot_status_enum import BotStatusEnum
-from services.tg.user.get_or_create_user_with_analytics import (
-    get_or_create_user_with_analytics,
+from services.tg.user.find_or_create_user_with_analytics import (
+    find_or_create_user_with_analytics,
 )
 from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,7 +31,7 @@ async def user_blocked_bot(event: ChatMemberUpdated, session: AsyncSession):
     """
     await update_bot_status(
         db=session,
-        user=await get_or_create_user_with_analytics(session, event.from_user),
+        user=await find_or_create_user_with_analytics(session, event.from_user),
         new_status=BotStatusEnum.BOT_BLOCKED,
     )
 
@@ -52,6 +52,6 @@ async def user_unblocked_bot(event: ChatMemberUpdated, session: AsyncSession):
     """
     await update_bot_status(
         db=session,
-        user=await get_or_create_user_with_analytics(session, event.from_user),
+        user=await find_or_create_user_with_analytics(session, event.from_user),
         new_status=BotStatusEnum.WORKS,
     )

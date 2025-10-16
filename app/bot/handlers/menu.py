@@ -10,8 +10,8 @@ from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
 from models.user import User
 from services.tg.advertisement import advertisement
-from services.tg.user.get_or_create_user_with_analytics import (
-    get_or_create_user_with_analytics,
+from services.tg.user.find_or_create_user_with_analytics import (
+    find_or_create_user_with_analytics,
 )
 from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,13 +31,13 @@ async def cmd_start(message: Message, session: AsyncSession) -> None:
         session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
 
     Notes:
-        - Создает или возвращает пользователя через `get_or_create_user_with_analytics`.
+        - Создает или возвращает пользователя через `find_or_create_user_with_analytics`.
         - Обновляет пользователя через `update_bot_status`.
         - Отправляет приветственное сообщение с инструкциями.
         - Прикрепляет основное меню с кнопками.
     """
 
-    user: User = await get_or_create_user_with_analytics(session, message.from_user)
+    user: User = await find_or_create_user_with_analytics(session, message.from_user)
     if user.bot_status == BotStatusEnum.BOT_BLOCKED:
         await update_bot_status(session, user, BotStatusEnum.WORKS)
 
