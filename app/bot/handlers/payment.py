@@ -11,9 +11,11 @@ from aiogram.types import (
 from bot.filters.button import PointsButtonFilter
 from bot.filters.callback.tariff_callback import TariffCallback
 from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
-from config import i18n, settings
+from config import i18n
 from database import with_session
 from lib.tg.common import jinja_render
+from services.tg.admin_alert import admin_alert
+from services.tg.point.show_points_info import show_points_info
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
 from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from services.tg.user.update_points import update_points
@@ -37,7 +39,7 @@ async def reaction_btn_points(message: Message, session: AsyncSession) -> None:
         - Получает текущего пользователя через `find_user_by_platform_id`.
         - Отправляет сообщение с описанием тарифов и клавиатурой для выбора.
     """
-    await btn_points(message, session)
+    await show_points_info(message, session)
 
 
 @router.callback_query(F.data == i18n["buttons"]["points"])
@@ -133,10 +135,11 @@ async def process_pre_checkout_query(
             text=await jinja_render("pre_checkout_query/fail_payment"),
         )
 
-        await bot.send_message(
-            chat_id=settings.admin_chat_id,
-            text=str(e) + "\n\nМетод process_pre_checkout_query",
+        await admin_alert(
+            bot=bot,
+            text="\n\n".join([str(e), "Метод process_pre_checkout_query"]),
         )
+
     else:
         await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
@@ -168,26 +171,4 @@ async def successful_payment_handler(message: Message, session: AsyncSession, bo
         )
     )
 
-    await btn_points(message=message, session=session)
-
-
-async def btn_points(message: Message, session: AsyncSession):
-    """
-    Обрабатывает нажатие кнопки "Поинты" в Telegram-боте.
-
-    Функция:
-    - Получает текущего пользователя из базы данных с помощью `find_user_by_platform_id`.
-    - Формирует сообщение с описанием очков пользователя через шаблон Jinja2 (`points/description`).
-    - Отправляет сообщение пользователю с клавиатурой, содержащей все доступные тарифы.
-
-    Args:
-        message (Message): Объект входящего сообщения Telegram.
-        session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
-    """
-    await message.answer(
-        await jinja_render(
-            "points/description",
-            {"user": await find_user_by_platform_id(session, message.from_user.id)},
-        ),
-        reply_markup=await with_all_tariffs_keyboard(),
-    )
+    await show_points_info(message=message, session=session)

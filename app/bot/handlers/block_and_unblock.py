@@ -5,11 +5,9 @@ from aiogram.filters.chat_member_updated import KICKED, MEMBER, ChatMemberUpdate
 from aiogram.types import ChatMemberUpdated
 from database import with_session
 from enums.bot_status_enum import BotStatusEnum
-from exceptions.user_not_found_error import UserNotFoundError
-from models.user import User
-from services.tg.send_analytics import send_analytics
-from services.tg.user.create_user import create_user
-from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
+from services.tg.user.get_or_create_user_with_analytics import (
+    get_or_create_user_with_analytics,
+)
 from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,12 +29,11 @@ async def user_blocked_bot(event: ChatMemberUpdated, session: AsyncSession):
         Вызывается, когда пользователь блокирует бота в личном чате.
         Производит обновление статуса пользователя в базе данных через `update_bot_status`.
     """
-    try:
-        user: User = await find_user_by_platform_id(session, event.from_user.id)
-    except UserNotFoundError:
-        user = await create_user(session, event.from_user)
-        await send_analytics(session, user)
-    await update_bot_status(session, user, BotStatusEnum.BOT_BLOCKED)
+    await update_bot_status(
+        db=session,
+        user=await get_or_create_user_with_analytics(session, event.from_user),
+        new_status=BotStatusEnum.BOT_BLOCKED,
+    )
 
 
 @router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=MEMBER))
@@ -53,10 +50,8 @@ async def user_unblocked_bot(event: ChatMemberUpdated, session: AsyncSession):
         Вызывается, когда пользователь разблокирует бота в личном чате.
         Производит обновление в базе данных через `update_bot_status`.
     """
-    try:
-        user: User = await find_user_by_platform_id(session, event.from_user.id)
-    except UserNotFoundError:
-        user = await create_user(session, event.from_user)
-        await send_analytics(session, user)
-    if user.bot_status == BotStatusEnum.BOT_BLOCKED:
-        await update_bot_status(session, user, BotStatusEnum.WORKS)
+    await update_bot_status(
+        db=session,
+        user=await get_or_create_user_with_analytics(session, event.from_user),
+        new_status=BotStatusEnum.WORKS,
+    )

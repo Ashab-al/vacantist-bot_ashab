@@ -3,7 +3,6 @@ import asyncio
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError
 from bot.keyboards.vacancy_keyboard import vacancy_keyboard
-from config import settings
 from database import get_async_session_for_bot
 from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
@@ -12,6 +11,7 @@ from models.vacancy import Vacancy
 from query_objects.users.find_users_where_have_subscribe_to_category import (
     find_users_where_have_subscribe_to_category,
 )
+from services.tg.admin_alert import admin_alert
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -120,14 +120,3 @@ async def update_users_bot_status(
         )
     )
     await db.commit()
-
-
-async def admin_alert(bot: Bot, text: str) -> None:
-    """
-    Отправить в группу админа уведомление
-
-    Args:
-        bot (Bot): Экземпляр бота, для отправки сообщения
-        text (str): Текст, который нужно отправить в группу
-    """
-    await bot.send_message(chat_id=settings.admin_chat_id, text=text)

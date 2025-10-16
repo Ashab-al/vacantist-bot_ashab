@@ -7,13 +7,12 @@ from bot.filters.button import AdvertisementButtonFilter, HelpButtonFilter
 from bot.keyboards.kbs import menu_keyboard
 from database import with_session
 from enums.bot_status_enum import BotStatusEnum
-from exceptions.user_not_found_error import UserNotFoundError
 from lib.tg.common import jinja_render
 from models.user import User
 from services.tg.advertisement import advertisement
-from services.tg.send_analytics import send_analytics
-from services.tg.user.create_user import create_user
-from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
+from services.tg.user.get_or_create_user_with_analytics import (
+    get_or_create_user_with_analytics,
+)
 from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,25 +24,22 @@ router.message.filter(F.chat.type == "private")
 @with_session
 async def cmd_start(message: Message, session: AsyncSession) -> None:
     """
-    Обрабатывает команду /start.
+    Обрабатывает команду /start и /main_menu.
 
     Args:
         message (Message): Объект сообщения от пользователя.
         session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
 
     Notes:
-        - Создает пользователя через `create_user`.
+        - Создает или возвращает пользователя через `get_or_create_user_with_analytics`.
         - Обновляет пользователя через `update_bot_status`.
         - Отправляет приветственное сообщение с инструкциями.
         - Прикрепляет основное меню с кнопками.
     """
-    try:
-        user: User = await find_user_by_platform_id(session, message.from_user.id)
-        if user.bot_status == BotStatusEnum.BOT_BLOCKED:
-            user = await update_bot_status(session, user, BotStatusEnum.WORKS)
-    except UserNotFoundError:
-        user = await create_user(session, message.from_user)
-        await send_analytics(session, user)
+
+    user: User = await get_or_create_user_with_analytics(session, message.from_user)
+    if user.bot_status == BotStatusEnum.BOT_BLOCKED:
+        await update_bot_status(session, user, BotStatusEnum.WORKS)
 
     await message.answer(
         "\n\n".join(

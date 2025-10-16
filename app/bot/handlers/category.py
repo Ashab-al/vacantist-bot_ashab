@@ -34,10 +34,12 @@ async def reaction_btn_categories(message: Message, session: AsyncSession) -> No
         - Отправляет сообщение с клавиатурой,
         где пользователь может выбрать или изменить подписки на категории.
     """
-    subscribed_categories = await find_subscribe(session, message.from_user)
     await message.answer(
         await jinja_render("choice_category"),
-        reply_markup=await with_all_categories_keyboard(session, subscribed_categories),
+        reply_markup=await with_all_categories_keyboard(
+            db=session,
+            subscribed_categories=await find_subscribe(session, message.from_user),
+        ),
     )
 
 
