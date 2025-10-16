@@ -51,6 +51,6 @@ class User(Base):
         Enum(BotStatusEnum, name="bot_status"), nullable=False, index=True
     )
 
-    categories: Mapped[List["Category"]] = relationship(  # noqa: F821
+    categories: Mapped[List["Category"]] = relationship(  # noqa: F821 # pyright: ignore[reportUndefinedVariable]
         "Category", secondary=subscription, back_populates="users"
     )
