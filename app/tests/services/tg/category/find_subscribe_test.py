@@ -1,64 +1,54 @@
 import random
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from exceptions.user_not_found_error import UserNotFoundError
 from models.category import Category
 from models.user import User
-from query_objects.users.get_user_by_id import get_user_by_id
-from schemas.tg.user.tg_user import TgUser
 from services.tg.category.find_subscribe import find_subscribe
-from tests.conftest import (
-    create_tg_user_with_session,
-    create_vacancy_and_category_with_session,
-)
 
 
 @pytest.mark.asyncio
-async def test_find_subscribe(session):
+async def test_find_subscribe_mocked():
     """Проверяет поиск подписок пользователя"""
-    subscribe_count: int = random.randint(3, 10)
-    categories = []
-    for _ in range(subscribe_count):
-        _vacancy, category = await create_vacancy_and_category_with_session(session)
-        categories.append(category)
+    random_count_categories: int = random.randint(1, 5)
+    categories: list[Category] = [
+        Category(id=i, name=f"cat_{i}") for i in range(random_count_categories)
+    ]
+    user_id = random.randint(1, 5)
+    user_platform_id = random.randint(100, 200)
+    fake_user: User = User(id=user_id, platform_id=user_platform_id, categories=categories)
 
-    user: User = await get_user_by_id(
-        session, user_id=(await create_tg_user_with_session(session)).id
-    )
+    with patch(
+        "services.tg.user.find_user_by_platform_id.get_user_by_platform_id",
+        new_callable=AsyncMock,
+    ) as mock_find_user:
+        mock_find_user.return_value = fake_user
 
-    user.categories.extend(categories)
+        result: list[Category] = await find_subscribe(db=None, user_data=fake_user)
 
-    await session.commit()
+        mock_find_user.assert_awaited_once_with(None, fake_user.platform_id)
 
-    subscribes: list[Category] = await find_subscribe(session, user)
-
-    assert len(subscribes) == len(categories)
-    assert len(subscribes) == subscribe_count
-    assert all(isinstance(category, Category) for category in subscribes)
+        assert result == categories
+        assert all(isinstance(cat, Category) for cat in result)
 
 
 @pytest.mark.asyncio
-async def test_find_subscribe_when_user_is_not_exist(session):
+async def test_find_subscribe_when_user_is_not_exist():
     """Проверяет поиск подписок у несуществующего пользователя"""
-    user_id: int = random.randint(1, 100)
-    platform_id: int = random.randint(1000, 100000000)
-    user_data: dict[str, str | int] = {
-        "id": platform_id,
-        "first_name": f"Имя {random.randint(1, 1000)}",
-        "username": f"asd{random.randint(1, 1000)}",
-    }
-    new_user_schema: TgUser = TgUser.model_validate(user_data)
-    user: User = User(
-        platform_id=new_user_schema.id,
-        first_name=new_user_schema.first_name,
-        username=new_user_schema.username,
-        email=new_user_schema.email,
-        phone=new_user_schema.phone,
-        point=new_user_schema.point,
-        bonus=new_user_schema.bonus,
-        bot_status=new_user_schema.bot_status,
-    )
-    user.id = user_id
+    random_count_categories: int = random.randint(1, 5)
+    categories: list[Category] = [
+        Category(id=i, name=f"cat_{i}") for i in range(random_count_categories)
+    ]
+    user_id = random.randint(1, 5)
+    user_platform_id = random.randint(100, 200)
+    fake_user = User(id=user_id, platform_id=user_platform_id, categories=categories)
 
-    with pytest.raises(UserNotFoundError):
-        await find_subscribe(session, user)
+    with patch(
+        "services.tg.user.find_user_by_platform_id.get_user_by_platform_id",
+        new_callable=AsyncMock,
+    ) as mock_find_user:
+        mock_find_user.return_value = None
+        with pytest.raises(UserNotFoundError):
+            await find_subscribe(db=None, user_data=fake_user)
+        mock_find_user.assert_awaited_once_with(None, fake_user.platform_id)
