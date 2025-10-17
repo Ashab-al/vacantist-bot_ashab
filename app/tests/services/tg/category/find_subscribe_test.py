@@ -1,6 +1,7 @@
 import random
 
 import pytest
+from exceptions.user_not_found_error import UserNotFoundError
 from models.category import Category
 from models.user import User
 from query_objects.users.get_user_by_id import get_user_by_id
@@ -40,24 +41,24 @@ async def test_find_subscribe(session):
 async def test_find_subscribe_when_user_is_not_exist(session):
     """Проверяет поиск подписок у несуществующего пользователя"""
     user_id: int = random.randint(1, 100)
+    platform_id: int = random.randint(1000, 100000000)
+    user_data: dict[str, str | int] = {
+        "id": platform_id,
+        "first_name": f"Имя {random.randint(1, 1000)}",
+        "username": f"asd{random.randint(1, 1000)}",
+    }
+    new_user_schema: TgUser = TgUser.model_validate(user_data)
+    user: User = User(
+        platform_id=new_user_schema.id,
+        first_name=new_user_schema.first_name,
+        username=new_user_schema.username,
+        email=new_user_schema.email,
+        phone=new_user_schema.phone,
+        point=new_user_schema.point,
+        bonus=new_user_schema.bonus,
+        bot_status=new_user_schema.bot_status,
+    )
+    user.id = user_id
 
-    with pytest.raises(ValueError, match="Пользователь не найден"):
-        user_data: dict[str, str | int] = {
-            "id": random.randint(1000, 100000000),
-            "first_name": f"Имя {random.randint(1, 1000)}",
-            "username": f"asd{random.randint(1, 1000)}",
-        }
-        new_user_schema: TgUser = TgUser.model_validate(user_data)
-        user: User = User(
-            platform_id=new_user_schema.id,
-            first_name=new_user_schema.first_name,
-            username=new_user_schema.username,
-            email=new_user_schema.email,
-            phone=new_user_schema.phone,
-            point=new_user_schema.point,
-            bonus=new_user_schema.bonus,
-            bot_status=new_user_schema.bot_status,
-        )
-        user.id = user_id
-
+    with pytest.raises(UserNotFoundError):
         await find_subscribe(session, user)

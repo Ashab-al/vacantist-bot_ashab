@@ -33,11 +33,11 @@ async def test_update_subscription_with_category_when_user_has_subscribe(session
 
     await session.commit()
 
-    result: dict[str, str] = await update_subscription_with_category(
+    result: CategorySubscriptionEnum = await update_subscription_with_category(
         CategoryCallback(category_id=categories[0].id), session, user.categories, user
     )
 
-    assert result.get("path_to_templates") == CategorySubscriptionEnum.UNSUBSCRIBE.value
+    assert result == CategorySubscriptionEnum.UNSUBSCRIBE
 
 
 @pytest.mark.asyncio
@@ -55,8 +55,8 @@ async def test_update_subscription_with_category_when_user_has_not_subscribe(ses
         session, user_id=(await create_tg_user_with_session(session)).id
     )
 
-    result: dict[str, str] = await update_subscription_with_category(
+    result: CategorySubscriptionEnum = await update_subscription_with_category(
         CategoryCallback(category_id=categories[0].id), session, user.categories, user
     )
 
-    assert result.get("path_to_templates") == CategorySubscriptionEnum.SUBSCRIBE.value
+    assert result == CategorySubscriptionEnum.SUBSCRIBE

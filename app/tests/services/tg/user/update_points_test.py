@@ -3,6 +3,7 @@ import random
 import pytest
 from aiogram.types import User as AiogramTgUser
 from enums.bot_status_enum import BotStatusEnum
+from exceptions.user_not_found_error import UserNotFoundError
 from models.user import User
 from services.tg.user.update_points import update_points
 
@@ -37,7 +38,5 @@ async def test_update_points_when_user_is_not_exist(session):
     aiogram_user = AiogramTgUser(
         id=user_id, is_bot=is_bot, first_name=first_name, username=username
     )
-    with pytest.raises(
-        ValueError, match=f"Пользователь с platform_id {user_id} не найден"
-    ):
+    with pytest.raises(UserNotFoundError):
         await update_points(session, aiogram_user, count_points)
