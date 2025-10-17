@@ -18,4 +18,5 @@ subscription = Table(
 Колонки:
 - user_id (FK): ID пользователя.
 - category_id (FK): ID категории.
+- Индексы для оптимизации запросов по user_id и category_id.
 """

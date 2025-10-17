@@ -20,6 +20,7 @@ class Vacancy(Base):
         platform_id (str): Идентификатор отправителя вакансии.
         category_id (str): Внешний ключ на категорию вакансии.
         category (Category): Связанная категория вакансии.
+        индекс для оптимизации запросов по category_id.
     """
 
     __tablename__ = "vacancies"

@@ -31,6 +31,7 @@ class User(Base):
         bonus (int): Количество бонусных поинтов у пользователя.
         bot_status (BotStatusEnum): Статус пользователя в системе.
         categories (List[Category]): Список категорий, на которые подписан пользователь.
+        индексы для оптимизации запросов по bot_status.
     """
 
     __tablename__ = "users"
