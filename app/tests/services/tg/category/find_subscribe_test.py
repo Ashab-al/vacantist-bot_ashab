@@ -17,7 +17,9 @@ async def test_find_subscribe_mocked():
     ]
     user_id = random.randint(1, 5)
     user_platform_id = random.randint(100, 200)
-    fake_user: User = User(id=user_id, platform_id=user_platform_id, categories=categories)
+    fake_user: User = User(
+        id=user_id, platform_id=user_platform_id, categories=categories
+    )
 
     with patch(
         "services.tg.user.find_user_by_platform_id.get_user_by_platform_id",

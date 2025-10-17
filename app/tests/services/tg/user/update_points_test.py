@@ -1,5 +1,6 @@
 import random
 from unittest.mock import AsyncMock
+
 import pytest
 from aiogram.types import User as AiogramTgUser
 from exceptions.user_not_found_error import UserNotFoundError
@@ -16,12 +17,14 @@ async def test_update_points(mocker):
     zero_points: int = 0
     first_name: str = "Тестовый"
     is_bot: bool = False
-    aiogram_user: AiogramTgUser = AiogramTgUser(id=platform_id, is_bot=is_bot, first_name=first_name)
+    aiogram_user: AiogramTgUser = AiogramTgUser(
+        id=platform_id, is_bot=is_bot, first_name=first_name
+    )
     new_user: User = User(id=user_id, platform_id=platform_id, point=zero_points)
 
     mock_get_user_by_platform_id = mocker.patch(
         "services.tg.user.find_user_by_platform_id.get_user_by_platform_id",
-        return_value=new_user
+        return_value=new_user,
     )
     mock_db = AsyncMock()
     user: User = await update_points(mock_db, aiogram_user, count_points)
@@ -45,7 +48,7 @@ async def test_update_points_when_user_is_not_exist(mocker):
     )
     mock_get_user_by_platform_id = mocker.patch(
         "services.tg.user.find_user_by_platform_id.get_user_by_platform_id",
-        return_value=None
+        return_value=None,
     )
     mock_db = AsyncMock()
     with pytest.raises(UserNotFoundError):

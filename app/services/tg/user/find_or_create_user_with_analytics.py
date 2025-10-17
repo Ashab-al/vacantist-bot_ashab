@@ -2,8 +2,8 @@ from aiogram.types.user import User as TgUser
 from exceptions.user_not_found_error import UserNotFoundError
 from models.user import User
 from services.tg.send_analytics import send_analytics
-from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from services.tg.user.create_user import create_user
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
