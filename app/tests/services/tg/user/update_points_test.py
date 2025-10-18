@@ -6,21 +6,18 @@ from aiogram.types import User as AiogramTgUser
 from exceptions.user_not_found_error import UserNotFoundError
 from models.user import User
 from services.tg.user.update_points import update_points
+from tests.factories.user import UserFactoryWithoutSubscriptions
 
 
 @pytest.mark.asyncio
 async def test_update_points(mocker):
     """Проверяет обновление количества поинтов"""
     count_points: int = random.randint(3, 100)
-    platform_id: int = random.randint(1000, 2000)
-    user_id: int = random.randint(1, 1000)
-    zero_points: int = 0
-    first_name: str = "Тестовый"
     is_bot: bool = False
+    new_user: User = UserFactoryWithoutSubscriptions()
     aiogram_user: AiogramTgUser = AiogramTgUser(
-        id=platform_id, is_bot=is_bot, first_name=first_name
+        id=new_user.platform_id, is_bot=is_bot, first_name=new_user.first_name
     )
-    new_user: User = User(id=user_id, platform_id=platform_id, point=zero_points)
 
     mock_get_user_by_platform_id = mocker.patch(
         "services.tg.user.find_user_by_platform_id.get_user_by_platform_id",
