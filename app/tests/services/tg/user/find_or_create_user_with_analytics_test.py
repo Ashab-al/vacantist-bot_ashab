@@ -54,9 +54,7 @@ async def test_find_or_create_user_with_analytics_when_user_is_not_exist(
     )
 
     result: User = await find_or_create_user_with_analytics(mock_db, from_user)
-    mock_get_user_by_platform_id.assert_awaited_once_with(
-        mock_db, from_user.id
-    )
+    mock_get_user_by_platform_id.assert_awaited_once_with(mock_db, from_user.id)
     mock_create_user.assert_awaited_once_with(mock_db, from_user)
     mock_send_analytics.assert_awaited_once_with(mock_db, new_user)
     assert isinstance(result, User)
