@@ -2,33 +2,27 @@ import random
 
 import pytest
 from models.category import Category
-from models.user import User
-from query_objects.users.get_user_by_id import get_user_by_id
-from schemas.api.categories.create.request import CreateCategoryRequest
-from services.api.category.create_category import create_category
 from services.tg.advertisement import advertisement
-from tests.conftest import create_tg_user_with_session
-
+from tests.factories.category import CategoryFactory
+from unittest.mock import AsyncMock, Mock
 
 @pytest.mark.asyncio
-async def test_advertisement(session):
+async def test_advertisement():
+    """Тестирует получение списка категорий с количеством пользователей"""
     one_user: int = 1
     subscribe_count: int = random.randint(3, 10)
-    categories: list[Category] = []
-    for _ in range(subscribe_count):
-        category_name: str = f"Category {random.randint(1, 10000000000)}"
-        category: Category = await create_category(
-            session, CreateCategoryRequest(name=category_name)
-        )
-        categories.append(category)
+    categories: list[Category] = [
+        CategoryFactory() for _ in range(subscribe_count)
+    ]
 
-    user: User = await get_user_by_id(
-        session, user_id=(await create_tg_user_with_session(session)).id
-    )
-    user.categories.extend(categories)
-    await session.commit()
+    mock_db = AsyncMock()
+    mock_all = Mock()
+    mock_all.all.return_value = [
+        (category.name, one_user) for category in categories
+    ]
+    mock_db.execute.return_value = mock_all
 
-    result: list[tuple[str, int]] = await advertisement(session)
+    result: list[tuple[str, int]] = await advertisement(mock_db)
 
     assert len(result) == subscribe_count
     assert {category_name for category_name, _ in result} == {
