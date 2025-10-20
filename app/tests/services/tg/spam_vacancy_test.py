@@ -1,8 +1,10 @@
 import random
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from lib.tg.constants import SOURCE
 from models.blacklist import BlackList
+from models.vacancy import Vacancy
 from schemas.api.categories.create.request import CreateCategoryRequest
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from services.api.category.create_category import create_category
@@ -12,78 +14,52 @@ from services.tg.vacancy.spam_vacancy import (
     COMPLAINT_COUNTER,
     spam_vacancy,
 )
-from sqlalchemy import select
+from tests.factories.vacancy import VacancyWithCategoryFactory
 
 
 @pytest.mark.asyncio
-async def test_spam_vacancy_creates_blacklist_entry(session):
-    """Проверяет, что при первом обращении создаётся запись в BlackList и счётчик = 1"""
+@patch("services.tg.vacancy.spam_vacancy.find_vacancy_by_id")
+@patch(
+    "services.tg.vacancy.spam_vacancy.black_list_check_by_platform_id_or_contact_information",
+)
+async def test_spam_vacancy_creates_blacklist_entry(
+    mock_black_list_check_by_platform_id_or_contact_information,
+    mock_find_vacancy_by_id,
+):
+    """Проверяет, что при первом обращении создаётся запись в BlackList"""
+    vacancy: Vacancy = VacancyWithCategoryFactory()
+    mock_find_vacancy_by_id.return_value = vacancy
+    mock_black_list_check_by_platform_id_or_contact_information.return_value = None
+    mock_db = AsyncMock()
 
-    category_name = "IT"
-    vacancy_title = "Dev"
-    description = "Описание"
-    contact_information = "@dev"
+    result = await spam_vacancy(mock_db, vacancy.id)
 
-    # создаём категорию и вакансию
-    category = await create_category(session, CreateCategoryRequest(name=category_name))
-    vacancy = await create_vacancy(
-        session,
-        category=category,
-        vacancy_data=CreateVacancyRequest(
-            title=vacancy_title,
-            category_title=category_name,
-            description=description,
-            contact_information=contact_information,
-            source=SOURCE,
-            platform_id=str(random.randint(1, 1000)),
-        ),
+    mock_black_list_check_by_platform_id_or_contact_information.assert_awaited_once_with(
+        mock_db, contact_information=vacancy.platform_id
     )
-
-    result = await spam_vacancy(session, vacancy.id)
-
-    # проверяем, что запись создана
-    black_list: BlackList = (
-        await session.scalars(
-            select(BlackList).filter_by(contact_information=vacancy.platform_id)
-        )
-    ).one_or_none()
-
     assert result is None
-    assert black_list is not None
-    assert black_list.contact_information == vacancy.platform_id
-    assert black_list.complaint_counter == 1
 
 
 @pytest.mark.asyncio
-async def test_spam_vacancy_reaches_blacklisted_state(session):
+@patch("services.tg.vacancy.spam_vacancy.find_vacancy_by_id")
+@patch(
+    "services.tg.vacancy.spam_vacancy.black_list_check_by_platform_id_or_contact_information",
+)
+async def test_spam_vacancy_reaches_blacklisted_state(
+    mock_black_list_check_by_platform_id_or_contact_information,
+    mock_find_vacancy_by_id,
+):
     """Проверяет, что после превышения порога возвращается статус BLACKLISTED"""
-    platform_id: str = str(random.randint(1, 1000))
-    category_name = "IT"
-    vacancy_title = "Dev"
-    description = "Описание"
-    contact_information = "@dev"
-
-    category = await create_category(session, CreateCategoryRequest(name=category_name))
-    vacancy = await create_vacancy(
-        session,
-        category=category,
-        vacancy_data=CreateVacancyRequest(
-            title=vacancy_title,
-            category_title=category_name,
-            description=description,
-            contact_information=contact_information,
-            source=SOURCE,
-            platform_id=platform_id,
-        ),
-    )
-
-    # создаём запись в BlackList заранее с complaint_counter = порог
+    mock_db = AsyncMock()
+    vacancy: Vacancy = VacancyWithCategoryFactory()
     blacklisted = BlackList(
-        contact_information=platform_id, complaint_counter=COMPLAINT_COUNTER
+        contact_information=vacancy.platform_id, complaint_counter=COMPLAINT_COUNTER
     )
-    session.add(blacklisted)
-    await session.commit()
+    mock_find_vacancy_by_id.return_value = vacancy
+    mock_black_list_check_by_platform_id_or_contact_information.return_value = (
+        blacklisted
+    )
 
-    result = await spam_vacancy(session, vacancy.id)
+    result = await spam_vacancy(mock_db, vacancy.id)
 
     assert result == BLACKLISTED

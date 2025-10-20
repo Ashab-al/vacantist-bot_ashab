@@ -47,9 +47,6 @@ async def test_send_analytics(mock_render, mock_send):
 
     await send_analytics(mock_db, mock_user)
 
-    mock_render.assert_awaited_once_with(
-        "analytics",
-        render_data
-    )
+    mock_render.assert_awaited_once_with("analytics", render_data)
 
     mock_send.assert_awaited_once_with(chat_id=settings.admin_chat_id, text=jinja_text)
