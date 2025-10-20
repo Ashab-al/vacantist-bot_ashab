@@ -11,7 +11,7 @@ from tests.factories.vacancy import VacancyWithCategoryFactory
 @pytest.mark.asyncio
 @patch("services.tg.vacancy.open_vacancy_and_show_alert.open_vacancy")
 @patch("services.tg.vacancy.open_vacancy_and_show_alert.find_user_by_platform_id")
-async def open_vacancy_and_show_alert_test(
+async def test_open_vacancy_and_show_alert(
     mock_find_user_by_platform_id, mock_open_vacancy
 ):
     """Проверяет открытие вакансии и показ алерта при необходимости"""

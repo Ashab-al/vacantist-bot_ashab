@@ -24,6 +24,7 @@ class UserFactoryWithoutSubscriptions(factory.Factory):
     id: int = factory.Sequence(lambda n: n + 1)
     platform_id: int = factory.Sequence(lambda n: n + 1)
     categories: list = factory.LazyAttribute(lambda _: [])
+    username: str = factory.Faker("user_name")
     first_name: str = factory.Faker("name")
     point: int = 0
     bonus: int = 0
