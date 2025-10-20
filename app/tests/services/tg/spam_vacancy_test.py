@@ -1,14 +1,8 @@
-import random
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from lib.tg.constants import SOURCE
 from models.blacklist import BlackList
 from models.vacancy import Vacancy
-from schemas.api.categories.create.request import CreateCategoryRequest
-from schemas.api.vacancies.create.request import CreateVacancyRequest
-from services.api.category.create_category import create_category
-from services.api.vacancy.create_vacancy import create_vacancy
 from services.tg.vacancy.spam_vacancy import (
     BLACKLISTED,
     COMPLAINT_COUNTER,
