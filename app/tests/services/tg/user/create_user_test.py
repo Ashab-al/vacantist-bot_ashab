@@ -20,7 +20,7 @@ async def test_create_user(mock_get_user_by_platform_id):
         id=new_user.platform_id,
         is_bot=is_bot,
         first_name=new_user.first_name,
-        username=new_user.username
+        username=new_user.username,
     )
 
     result = await create_user(mock_db, aiogram_user)

@@ -30,9 +30,9 @@ async def test_open_vacancy_and_show_alert(
     result = await open_vacancy_and_show_alert(callback, callback_data, mock_db)
 
     callback.answer.assert_awaited_once()
-    mock_find_user_by_platform_id.assert_awaited_once_with(mock_db, callback.from_user.id)
-    mock_open_vacancy.assert_awaited_once_with(
-        mock_db, user, callback_data.vacancy_id
+    mock_find_user_by_platform_id.assert_awaited_once_with(
+        mock_db, callback.from_user.id
     )
+    mock_open_vacancy.assert_awaited_once_with(mock_db, user, callback_data.vacancy_id)
     assert result[0]["status"] == CheckVacancyEnum.OPEN_VACANCY
     assert result[1] == user
