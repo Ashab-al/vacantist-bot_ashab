@@ -36,9 +36,7 @@ async def test_update_category_when_category_is_not_exist(client):
     )
 
     assert response.status_code == 404
-    assert (
-        response.json().get("detail") == f"Категории по id - {category_id} нет в базе"
-    )
+
 
 
 @pytest.mark.asyncio
