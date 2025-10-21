@@ -17,6 +17,7 @@ async def test_categories_list(mock_get_all_categories):
     mock_get_all_categories.return_value = categories
     result: list[Category] = await categories_list(mock_db)
 
+    mock_get_all_categories.assert_awaited_once_with(mock_db)
     assert len(result) == categories_count
     assert all(isinstance(category, Category) for category in result)
 
@@ -30,4 +31,5 @@ async def test_categories_list_empty(mock_get_all_categories):
     mock_get_all_categories.return_value = []
     result: list[Category] = await categories_list(mock_db)
 
+    mock_get_all_categories.assert_awaited_once_with(mock_db)
     assert len(result) == empty_list_size
