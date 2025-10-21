@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from database import get_async_session
+from exceptions.category.category_not_found_error import CategoryNotFoundError
 from fastapi import APIRouter, Depends, HTTPException, Path
 from schemas.api.categories.destroy import (
     DestroyCategoryRequest,
@@ -37,7 +38,7 @@ async def destroy_category(
     """
     try:
         category = await delete_category(session, category_id)
-    except ValueError as e:
+    except CategoryNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     except Exception as e:
         raise HTTPException(

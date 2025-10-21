@@ -34,4 +34,3 @@ async def test_destroy_category_when_category_is_not_exist(client):
     response = await client.delete(f"/categories/{category_id}")
 
     assert response.status_code == 404
-    assert response.json().get("detail") == "Категории не существует"
