@@ -1,11 +1,9 @@
-import random
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 from fastapi import status
 from httpx import AsyncClient
 from models.category import Category
-from sqlalchemy import select
 from tests.factories.category import CategoryFactory
 
 
@@ -36,5 +34,5 @@ async def test_create_category_when_category_is_exist(
 
     data: dict[str, str] = {"name": category.name}
     response = await client.post("/categories/", json=data)
-    assert response.status_code == 400
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json().get("detail") == "Такая категория уже существует"
