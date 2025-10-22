@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from database import get_async_session
+from exceptions.user_not_found_error import UserNotFoundError
 from fastapi import APIRouter, Body, Depends, HTTPException, Path
 from schemas.api.users.set_bonus.request import SetBonusRequest, SetBonusUserIdRequest
 from schemas.api.users.set_bonus.response import SetBonusResponse
@@ -38,7 +39,7 @@ async def update_bonus(
     """
     try:
         user = await set_bonus(session, user_id, bonus)
-    except ValueError as e:
+    except UserNotFoundError as e:
         raise HTTPException(404, str(e)) from e
 
     return user
