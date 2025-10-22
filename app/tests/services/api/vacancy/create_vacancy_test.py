@@ -9,6 +9,7 @@ from schemas.api.vacancies.create.request import CreateVacancyRequest
 from services.api.vacancy.create_vacancy import create_vacancy
 from tests.factories.category import CategoryFactory
 
+
 @pytest.mark.asyncio
 async def test_create_vacancy():
     """Проверяет создание вакансии"""
