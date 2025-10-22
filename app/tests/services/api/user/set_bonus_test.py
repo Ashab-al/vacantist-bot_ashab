@@ -1,6 +1,7 @@
 import random
 
 import pytest
+from exceptions.user_not_found_error import UserNotFoundError
 from models.user import User
 from schemas.api.users.set_bonus.request import SetBonusRequest, SetBonusUserIdRequest
 from services.api.user.set_bonus import set_bonus
@@ -30,7 +31,7 @@ async def test_set_bonus_when_user_not_exist(session):
     user_id: int = random.randint(1, 100)
     bonus_count = random.randint(10, 100)
 
-    with pytest.raises(ValueError, match=f"Пользователя по id - {user_id} нет в базе"):
+    with pytest.raises(UserNotFoundError):
         await set_bonus(
             session,
             SetBonusUserIdRequest(id=user_id),

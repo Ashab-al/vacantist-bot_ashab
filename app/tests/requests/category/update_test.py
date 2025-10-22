@@ -38,7 +38,6 @@ async def test_update_category_when_category_is_not_exist(client):
     assert response.status_code == 404
 
 
-
 @pytest.mark.asyncio
 async def test_update_category_when_data_is_not_correct(client, session):
     """Тестирует эндпоинт обновления названия категории передавая некорректное название"""

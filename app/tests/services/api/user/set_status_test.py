@@ -2,6 +2,7 @@ import random
 
 import pytest
 from enums.bot_status_enum import BotStatusEnum
+from exceptions.user_not_found_error import UserNotFoundError
 from models.user import User
 from schemas.api.users.set_status.request import (
     SetStatusRequest,
@@ -32,7 +33,7 @@ async def test_set_status_when_user_not_exist(session):
     """Проверяет обновление статуса у не существующего пользователя"""
     user_id: int = random.randint(1, 100)
 
-    with pytest.raises(ValueError, match=f"Пользователя по id - {user_id} нет в базе"):
+    with pytest.raises(UserNotFoundError):
         await set_status(
             session,
             SetStatusUserIdRequest(id=user_id),
