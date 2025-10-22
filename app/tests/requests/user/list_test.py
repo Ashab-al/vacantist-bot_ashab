@@ -2,6 +2,7 @@ import random
 from unittest.mock import patch
 
 import pytest
+from fastapi import status
 from models.user import User
 from tests.factories.user import UserFactoryWithoutSubscriptions
 
@@ -18,5 +19,5 @@ async def test_list_users(mock_get_all_users, mock_list_users_response, client):
     mock_list_users_response.return_value = {"users": users}
     response = await client.get("/users/")
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert len(response.json().get("users")) == len(users)
