@@ -1,3 +1,5 @@
+from exceptions.category.category_not_found_error import CategoryNotFoundError
+from exceptions.vacancy.blacklisted_vacancy import BlacklistedVacancyError
 from models.category import Category
 from models.vacancy import Vacancy
 from query_objects.categories.get_category_by_name import get_category_by_name
@@ -28,15 +30,15 @@ async def check_and_create_vacancy(
         Vacancy: Созданная вакансия.
 
     Raises:
-        ValueError: Вакансия в черном списке
-        ValueError: Такой категории не существует
+        BlacklistedVacancyError: Вакансия в черном списке
+        CategoryNotFoundError: Такой категории не существует
         Exception: Непредвиденная ошибка. Метод black_list_check
     """
     try:
         await black_list_check(
             db, vacancy_data.platform_id, vacancy_data.contact_information
         )
-    except ValueError:
+    except BlacklistedVacancyError:
         raise
     except Exception as e:
         e.add_note("Непредвиденная ошибка. Метод black_list_check")
@@ -45,7 +47,7 @@ async def check_and_create_vacancy(
     category: Category = await get_category_by_name(db, vacancy_data.category_title)
 
     if not category:
-        raise ValueError("Такой категории не существует")
+        raise CategoryNotFoundError()
 
     vacancy: Vacancy = await create_vacancy(db, vacancy_data, category)
 
