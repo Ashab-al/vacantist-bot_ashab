@@ -1,3 +1,4 @@
+from exceptions.vacancy.blacklisted_vacancy import BlacklistedVacancyError
 from models.blacklist import BlackList
 from query_objects.blacklist.black_list_check_by_platform_id_and_contact_information import (
     black_list_check_by_platform_id_or_contact_information,
@@ -17,7 +18,7 @@ async def black_list_check(
         contact_information (str): Контактная информация из вакансии
 
     Raises:
-        ValueError: Вакансия в черном списке
+        BlacklistedVacancyError: Вакансия в черном списке
     """
     blacklist: BlackList | None = (
         await black_list_check_by_platform_id_or_contact_information(
@@ -26,4 +27,4 @@ async def black_list_check(
     )
 
     if blacklist:
-        raise ValueError("Вакансия в черном списке")
+        raise BlacklistedVacancyError()

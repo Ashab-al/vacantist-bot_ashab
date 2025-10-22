@@ -1,6 +1,7 @@
 import random
 
 import pytest
+from exceptions.vacancy.blacklisted_vacancy import BlacklistedVacancyError
 from models.blacklist import BlackList
 from models.vacancy import Vacancy
 from schemas.api.vacancies.create.request import CreateVacancyRequest
@@ -42,7 +43,7 @@ async def test_check_and_create_vacancy_when_vacancy_is_blacklist(
     vacancy, category = await create_vacancy_and_category(session)
     complaint_counter: int = random.randint(3, 10)
 
-    with pytest.raises(ValueError, match="Вакансия в черном списке"):
+    with pytest.raises(BlacklistedVacancyError):
         blacklist: BlackList = BlackList(
             contact_information=vacancy.contact_information,
             complaint_counter=complaint_counter,

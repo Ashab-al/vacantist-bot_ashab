@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from database import get_async_session
+from exceptions.vacancy.blacklisted_vacancy import BlacklistedVacancyError
 from fastapi import APIRouter, Body, Depends, HTTPException
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.api.vacancies.create.response import CreateVacancyResponse
@@ -43,7 +44,7 @@ async def create_new_vacancy(
     """
     try:
         new_vacancy = await check_and_create_vacancy(session, vacancy_data)
-    except Exception as e:
+    except BlacklistedVacancyError as e:
         raise HTTPException(400, str(e)) from e
 
     await add_vacancy_to_sending_queue(new_vacancy)
