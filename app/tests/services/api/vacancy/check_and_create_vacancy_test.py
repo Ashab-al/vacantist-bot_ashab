@@ -9,8 +9,6 @@ from models.category import Category
 from models.vacancy import Vacancy
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from services.api.vacancy.check_and_create_vacancy import check_and_create_vacancy
-from sqlalchemy.ext.asyncio import AsyncSession
-from tests.conftest import create_vacancy_and_category
 from tests.factories.vacancy import VacancyWithCategoryFactory
 
 
