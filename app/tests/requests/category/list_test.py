@@ -2,9 +2,10 @@ import random
 from unittest.mock import patch
 
 import pytest
+from fastapi import status
 from models.category import Category
 from tests.factories.category import CategoryFactory
-from fastapi import status
+
 
 @pytest.mark.asyncio
 @patch("api.categories.list.ListCategoryResponse")
