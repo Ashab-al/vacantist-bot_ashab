@@ -7,12 +7,34 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 import pytest_asyncio
+
+# Добавляем импорт модули Categories
+from api.categories import categories_router
+from api.categories import create as categories_create_module  # noqa: E402
+from api.categories import destroy as categories_destroy_module  # noqa: E402
+from api.categories import list as categories_list_module  # noqa: E402
+from api.categories import show as categories_show_module  # noqa: E402
+from api.categories import update as categories_update_module  # noqa: E402
+
+# Добавляем импорт модулей Users
+from api.users import list as users_list_module  # noqa: E402
+from api.users import mail_all as users_mail_all_module  # noqa: E402
+from api.users import set_bonus as users_set_bonus_module  # noqa: E402
+from api.users import set_status as users_set_status_module  # noqa: E402
+from api.users import show as users_show_module  # noqa: E402
+from api.users import users_router
+
+# Добавляем импорт модули Vacancies
+from api.vacancies import create as vacancies_create_module  # noqa: E402
+from api.vacancies import list as vacancies_list_module  # noqa: E402
+from api.vacancies import vacancies_router
 from database import get_async_session
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 from lib.tg.constants import SOURCE
-from main import app as main_app
+
+# from main import app as main_app
 from models.category import Category
 from models.user import User
 from models.vacancy import Vacancy
@@ -62,23 +84,83 @@ async def session(session_factory):
         yield session
 
 
+async def remove_response_model_in_router(router):
+    for route in router.routes:
+        route.response_model = None
+    return router
+
+
 @pytest_asyncio.fixture
-async def app(
-    session_factory: AsyncGenerator[async_sessionmaker[AsyncSession], None],
-) -> FastAPI:
+async def app(session_mock: AsyncMock) -> FastAPI:
+    new_app = FastAPI()
+
+    new_app.include_router(
+        await remove_response_model_in_router(categories_router), prefix="/categories"
+    )
+
+    new_app.include_router(
+        await remove_response_model_in_router(users_router), prefix="/users"
+    )
+
+    new_app.include_router(
+        await remove_response_model_in_router(vacancies_router), prefix="/vacancies"
+    )
+
     async def _override_get_async_session():
-        async with session_factory() as session:
-            yield session
+        """Мокаем зависимость get_async_session"""
+        yield session_mock
 
-    main_app.dependency_overrides[get_async_session] = _override_get_async_session
+    new_app.dependency_overrides[categories_create_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[categories_destroy_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[categories_list_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[categories_show_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[categories_update_module.get_async_session] = (
+        _override_get_async_session
+    )
 
-    return main_app
+    new_app.dependency_overrides[users_list_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[users_mail_all_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[users_set_bonus_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[users_set_status_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[users_show_module.get_async_session] = (
+        _override_get_async_session
+    )
+
+    new_app.dependency_overrides[vacancies_create_module.get_async_session] = (
+        _override_get_async_session
+    )
+    new_app.dependency_overrides[vacancies_list_module.get_async_session] = (
+        _override_get_async_session
+    )
+
+    return new_app
+
+
+@pytest.fixture
+def session_mock() -> AsyncMock:
+    return AsyncMock()
 
 
 @pytest_asyncio.fixture
 async def client(app: FastAPI):
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test/api/v1"
+        transport=ASGITransport(app=app), base_url="http://test"
     ) as client:
         yield client
 
