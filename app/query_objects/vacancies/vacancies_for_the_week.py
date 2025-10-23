@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 QUANTITY_DAYS = 7
 
 
-class VacancyForTheWeekRepository:
+class VacancyForTheWeekQuery:
     """
     Репозиторий для получения вакансий за последнюю неделю
     для пользователя с учетом его подписок на категории.

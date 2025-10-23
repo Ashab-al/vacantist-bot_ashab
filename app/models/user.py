@@ -31,6 +31,7 @@ class User(Base):
         bonus (int): Количество бонусных поинтов у пользователя.
         bot_status (BotStatusEnum): Статус пользователя в системе.
         categories (List[Category]): Список категорий, на которые подписан пользователь.
+        индексы для оптимизации запросов по bot_status.
     """
 
     __tablename__ = "users"
@@ -48,9 +49,11 @@ class User(Base):
     point: Mapped[int] = mapped_column(Integer, default=DEFAULT_POINT, nullable=False)
     bonus: Mapped[int] = mapped_column(Integer, default=DEFAULT_BONUS, nullable=False)
     bot_status: Mapped[BotStatusEnum] = mapped_column(
-        Enum(BotStatusEnum, name="bot_status"), nullable=False
+        Enum(BotStatusEnum, name="bot_status"), nullable=False, index=True
     )
 
-    categories: Mapped[List["Category"]] = relationship(  # noqa: F821
-        "Category", secondary=subscription, back_populates="users"
+    categories: Mapped[List["Category"]] = (
+        relationship(  # noqa: F821 # pyright: ignore[reportUndefinedVariable]
+            "Category", secondary=subscription, back_populates="users"
+        )
     )

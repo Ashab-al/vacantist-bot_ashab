@@ -1,42 +1,29 @@
 import random
+from unittest.mock import AsyncMock, patch
 
 import pytest
-from lib.tg.constants import SOURCE
-from models.category import Category
-from schemas.api.categories.create.request import CreateCategoryRequest
-from schemas.api.vacancies.create.request import CreateVacancyRequest
+from models.vacancy import Vacancy
 from schemas.api.vacancies.vacancy import VacancySchema
-from services.api.category.create_category import create_category
-from services.api.vacancy.create_vacancy import create_vacancy
 from services.api.vacancy.vacancies_list import vacancies_list
-from sqlalchemy.ext.asyncio import AsyncSession
+from tests.factories.vacancy import VacancyWithCategoryFactory
 
 
 @pytest.mark.asyncio
-async def test_vacancies_list(session):
+@patch("services.api.vacancy.vacancies_list.get_all_vacancies")
+async def test_vacancies_list(mock_get_all_vacancies):
     """Проверяет возврат списка вакансий"""
 
     count_vacancy = random.randint(3, 10)
-    category_name: str = f"Category {random.randint(1, 100)}"
+    mock_db = AsyncMock()
 
-    category: Category = await create_category(
-        session, CreateCategoryRequest(name=category_name)
-    )
-    for i in range(count_vacancy):
-        await create_vacancy(
-            session,
-            category=category,
-            vacancy_data=CreateVacancyRequest(
-                title="Технический специалист",
-                category_title=category_name,
-                description=f"Описание вакансии{i}",
-                contact_information=f"ТГ - @username{i}",
-                source=SOURCE,
-                platform_id=f"{i}",
-            ),
-        )
+    vacancies: list[Vacancy] = [
+        VacancyWithCategoryFactory() for _ in range(count_vacancy)
+    ]
 
-    vacancies: list[VacancySchema] = await vacancies_list(session)
+    mock_get_all_vacancies.return_value = vacancies
 
+    vacancies: list[VacancySchema] = await vacancies_list(mock_db)
+
+    mock_get_all_vacancies.assert_awaited_once_with(mock_db)
     assert len(vacancies) == count_vacancy
     assert all(isinstance(vacancy, VacancySchema) for vacancy in vacancies)

@@ -1,4 +1,4 @@
-from repositories.vacancies.get_all_vacancies import get_all_vacancies
+from query_objects.vacancies.get_all_vacancies import get_all_vacancies
 from schemas.api.vacancies.vacancy import VacancySchema
 from sqlalchemy.ext.asyncio import AsyncSession
 

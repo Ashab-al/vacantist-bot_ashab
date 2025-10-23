@@ -59,11 +59,11 @@ class Settings(BaseSettings):
     # для продакшена
     domain_name: str
     subdomain: str
-    pgadmin_subdomain: str
     directus_subdomain: str
+    directus_db_client: str
     ssl_email: str
     postgres_password: str
-    password_pgadmin: str
+    password_directus: str
     secret: str
     mode: ModeEnum
 

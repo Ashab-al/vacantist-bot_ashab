@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from database import get_async_session
+from exceptions.user_not_found_error import UserNotFoundError
 from fastapi import APIRouter, Body, Depends, HTTPException, Path
 from schemas.api.users.set_status.request import (
     SetStatusRequest,
@@ -47,7 +48,7 @@ async def update_status(
     """
     try:
         user = await set_status(session, user_id, bot_status)
-    except ValueError as e:
+    except UserNotFoundError as e:
         raise HTTPException(404, str(e)) from e
 
     return user

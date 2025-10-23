@@ -11,12 +11,15 @@ from aiogram.types import (
 from bot.filters.button import PointsButtonFilter
 from bot.filters.callback.tariff_callback import TariffCallback
 from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
-from config import i18n, settings
+from config import i18n
 from database import with_session
 from lib.tg.common import jinja_render
+from services.tg.point.show_points_info import show_points_info
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
-from services.tg.user.current_user import current_user
-from services.tg.user.update_points import update_points
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
+from services.tg.user.update_points_for_pre_checkout_query import (
+    update_points_for_pre_checkout_query,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик тарифов и платежей")
@@ -34,10 +37,10 @@ async def reaction_btn_points(message: Message, session: AsyncSession) -> None:
         session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
 
     Notes:
-        - Получает текущего пользователя через `current_user`.
+        - Получает текущего пользователя через `find_user_by_platform_id`.
         - Отправляет сообщение с описанием тарифов и клавиатурой для выбора.
     """
-    await btn_points(message, session)
+    await show_points_info(message, session)
 
 
 @router.callback_query(F.data == i18n["buttons"]["points"])
@@ -60,7 +63,8 @@ async def choice_btn_points(callback: CallbackQuery, bot: Bot, session: AsyncSes
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=await jinja_render(
-            "points/description", {"user": await current_user(session, query=callback)}
+            "points/description",
+            {"user": await find_user_by_platform_id(session, callback.from_user.id)},
         ),
         reply_markup=await with_all_tariffs_keyboard(),
     )
@@ -116,28 +120,14 @@ async def process_pre_checkout_query(
         session (AsyncSession): Асинхронная сессия SQLAlchemy.
 
     Notes:
-        - Обновляет баллы пользователя через `update_points`.
+        - Обновляет баллы пользователя через `update_points_for_pre_checkout_query`.
         - В случае ошибки отправляет сообщение об ошибке пользователю и админу.
         - При успешной обработке подтверждает pre-checkout запрос.
     """
-    try:
-        await update_points(
-            session,
-            pre_checkout_query.from_user,
-            TariffCallback.unpack(pre_checkout_query.invoice_payload).points,
-        )
-    except Exception as e:  # pylint: disable=broad-except
-        await bot.send_message(
-            chat_id=pre_checkout_query.from_user.id,
-            text=await jinja_render("pre_checkout_query/fail_payment"),
-        )
-
-        await bot.send_message(
-            chat_id=settings.admin_chat_id,
-            text=str(e) + "\n\nМетод process_pre_checkout_query",
-        )
-    else:
-        await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+    await update_points_for_pre_checkout_query(
+        pre_checkout_query=pre_checkout_query, bot=bot, session=session
+    )
+    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
 
 @router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
@@ -167,25 +157,4 @@ async def successful_payment_handler(message: Message, session: AsyncSession, bo
         )
     )
 
-    await btn_points(message=message, session=session)
-
-
-async def btn_points(message: Message, session: AsyncSession):
-    """
-    Обрабатывает нажатие кнопки "Поинты" в Telegram-боте.
-
-    Функция:
-    - Получает текущего пользователя из базы данных с помощью `current_user`.
-    - Формирует сообщение с описанием очков пользователя через шаблон Jinja2 (`points/description`).
-    - Отправляет сообщение пользователю с клавиатурой, содержащей все доступные тарифы.
-
-    Args:
-        message (Message): Объект входящего сообщения Telegram.
-        session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
-    """
-    await message.answer(
-        await jinja_render(
-            "points/description", {"user": await current_user(session, message=message)}
-        ),
-        reply_markup=await with_all_tariffs_keyboard(),
-    )
+    await show_points_info(message=message, session=session)

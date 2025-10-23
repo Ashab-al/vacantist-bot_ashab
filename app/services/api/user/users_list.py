@@ -1,5 +1,5 @@
 from models.category import User
-from repositories.users.get_all_users import get_all_users
+from query_objects.users.get_all_users import get_all_users
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
