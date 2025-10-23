@@ -76,13 +76,13 @@ services:
       - PUBLIC_URL=https://${DIRECTUS_SUBDOMAIN}.${DOMAIN_NAME}
       - SECRET=${SECRET}
       - ADMIN_EMAIL=${SSL_EMAIL}
-      - ADMIN_PASSWORD=${PASSWORD_PGADMIN}
-      - DB_CLIENT=pg
-      - DB_HOST=db
+      - ADMIN_PASSWORD=${PASSWORD_DIRECTUS}
+      - DB_CLIENT=#{DIRECTUS_DB_CLIENT}
+      - DB_HOST=${DB_HOST}
       - DB_DATABASE=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_PORT=5432
+      - DB_PORT=${DB_PORT}
       - WEBSOCKETS_ENABLED=true
         # далее натсроки для smtp
       #- EMAIL_FROM=${EMAIL_FROM}

@@ -75,23 +75,20 @@ async def lifespan(_app: FastAPI):
     logging.info("Webhook deleted")
 
 
-common_kwargs = {
+common_kwargs: dict = {
     "lifespan": lifespan,
     "title": "Vacantist Bot",
     "description": "Telegram-бот для поиска вакансий",
 }
 
-app = None
-if settings.mode == ModeEnum.DEVELOP:
-    app = FastAPI(**common_kwargs)
-elif settings.mode == ModeEnum.PRODUCTION:
-    app = FastAPI(
-        **common_kwargs,
+if settings.mode == ModeEnum.PRODUCTION:
+    common_kwargs.update(
         docs_url=None,
         redoc_url=None,
-        openapi_url=None,
+        openapi_url=None
     )
 
+app = FastAPI(**common_kwargs)
 app.include_router(api_router, prefix="/api/v1")
 
 
