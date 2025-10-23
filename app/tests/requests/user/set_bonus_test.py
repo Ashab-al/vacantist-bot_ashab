@@ -1,33 +1,36 @@
 import random
+from unittest.mock import patch
 
 import pytest
+from fastapi import status
 from models.user import User
-from tests.conftest import create_tg_user
+from tests.factories.user import UserFactoryWithoutSubscriptions
 
 
 @pytest.mark.asyncio
-async def test_set_bonus(client, session):
+@patch("services.api.user.find_user_by_id.get_user_by_id")
+async def test_set_bonus(mock_get_user_by_id, client):
     """Тестирует эндпоинт обновления количество бонусов у пользователя"""
     bonus_count: int = random.randint(1, 100)
-    user: User = await create_tg_user(session)
-
+    user: User = UserFactoryWithoutSubscriptions()
+    mock_get_user_by_id.return_value = user
     response = await client.post(
         f"/users/{user.id}/set_bonus", json={"count": bonus_count}
     )
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json().get("bonus") == bonus_count
 
 
 @pytest.mark.asyncio
-async def test_set_bonus_when_user_is_not_exist(client):
+@patch("services.api.user.find_user_by_id.get_user_by_id")
+async def test_set_bonus_when_user_is_not_exist(mock_get_user_by_id, client):
     """Тестирует эндпоинт обновления количество бонусов у пользователя, которого не существует"""
     bonus_count: int = random.randint(1, 100)
     user_id: int = random.randint(1, 100)
-
+    mock_get_user_by_id.return_value = None
     response = await client.post(
         f"/users/{user_id}/set_bonus", json={"count": bonus_count}
     )
 
-    assert response.status_code == 404
-    assert response.json().get("detail") == f"Пользователя по id - {user_id} нет в базе"
+    assert response.status_code == status.HTTP_404_NOT_FOUND

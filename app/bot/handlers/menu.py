@@ -1,4 +1,4 @@
-"""Модуль работы с Telegram-ботом через aiogram."""
+"""Обработчики команд главного меню бота."""
 
 from aiogram import F, Router
 from aiogram.filters.command import Command
@@ -6,9 +6,14 @@ from aiogram.types import Message
 from bot.filters.button import AdvertisementButtonFilter, HelpButtonFilter
 from bot.keyboards.kbs import menu_keyboard
 from database import with_session
+from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
+from models.user import User
 from services.tg.advertisement import advertisement
-from services.tg.user.current_user import current_user
+from services.tg.user.find_or_create_user_with_analytics import (
+    find_or_create_user_with_analytics,
+)
+from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик главного меню")
@@ -19,23 +24,30 @@ router.message.filter(F.chat.type == "private")
 @with_session
 async def cmd_start(message: Message, session: AsyncSession) -> None:
     """
-    Обрабатывает команду /start.
+    Обрабатывает команду /start и /main_menu.
 
     Args:
         message (Message): Объект сообщения от пользователя.
         session (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
 
     Notes:
-        - Создает или обновляет пользователя через `current_user`.
+        - Создает или возвращает пользователя через `find_or_create_user_with_analytics`.
+        - Обновляет пользователя через `update_bot_status`.
         - Отправляет приветственное сообщение с инструкциями.
         - Прикрепляет основное меню с кнопками.
     """
-    await current_user(session, message=message)
+
+    user: User = await find_or_create_user_with_analytics(session, message.from_user)
+    if user.bot_status == BotStatusEnum.BOT_BLOCKED:
+        await update_bot_status(session, user, BotStatusEnum.WORKS)
 
     await message.answer(
-        (await jinja_render("menu/default"))
-        + "\n\n"
-        + (await jinja_render("menu/instructions")),
+        "\n\n".join(
+            [
+                await jinja_render("menu/default"),
+                await jinja_render("menu/instructions"),
+            ]
+        ),
         reply_markup=await menu_keyboard(),
     )
 

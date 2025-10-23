@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from database import get_async_session
+from exceptions.user_not_found_error import UserNotFoundError
 from fastapi import APIRouter, Depends, HTTPException, Path
 from schemas.api.users.show.request import ShowUserRequest
 from schemas.api.users.show.response import ShowUserResponse
@@ -38,7 +39,7 @@ async def show(
     """
     try:
         user = await find_user_by_id(session, user_id)
-    except ValueError as e:
+    except UserNotFoundError as e:
         raise HTTPException(404, str(e)) from e
 
     return user

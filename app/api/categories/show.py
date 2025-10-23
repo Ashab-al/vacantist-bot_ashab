@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from database import get_async_session
+from exceptions.category.category_not_found_error import CategoryNotFoundError
 from fastapi import APIRouter, Depends, HTTPException, Path
 from schemas.api.categories.show.request import ShowCategoryRequest
 from schemas.api.categories.show.response import ShowCategoryResponse
@@ -35,7 +36,7 @@ async def show_category(
     """
     try:
         category = await find_category_by_id(session, category_id)
-    except ValueError as e:
+    except CategoryNotFoundError as e:
         raise HTTPException(404, str(e)) from e
 
     return category

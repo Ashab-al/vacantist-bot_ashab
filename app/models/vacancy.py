@@ -20,6 +20,7 @@ class Vacancy(Base):
         platform_id (str): Идентификатор отправителя вакансии.
         category_id (str): Внешний ключ на категорию вакансии.
         category (Category): Связанная категория вакансии.
+        индекс для оптимизации запросов по category_id.
     """
 
     __tablename__ = "vacancies"
@@ -30,5 +31,5 @@ class Vacancy(Base):
     source: Mapped[str] = mapped_column(String, nullable=False)
     platform_id: Mapped[str] = mapped_column(String, nullable=False)
 
-    category_id: Mapped[str] = mapped_column(ForeignKey("categories.id"))
+    category_id: Mapped[str] = mapped_column(ForeignKey("categories.id"), index=True)
     category: Mapped["Category"] = relationship(back_populates="vacancies")

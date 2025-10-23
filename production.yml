@@ -59,24 +59,6 @@ services:
       - traefik.http.routers.web-secure.tls.certresolver=mytlschallenge
       - traefik.http.services.web.loadbalancer.server.port=8080
 
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    depends_on:
-      - db
-    volumes:
-      - ./pgadmin_data:/var/lib/pgadmin
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${SSL_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PASSWORD_PGADMIN}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.pgadmin.entrypoints=web,websecure
-      - traefik.http.routers.pgadmin.tls=true
-      - traefik.http.routers.pgadmin.rule=Host(`${PGADMIN_SUBDOMAIN}.${DOMAIN_NAME}`)
-      - traefik.http.routers.pgadmin.tls.certresolver=mytlschallenge
-      - traefik.http.services.pgadmin.loadbalancer.server.port=80
-
   directus:
     image: directus/directus:11.12.0
     container_name: directus
@@ -94,13 +76,13 @@ services:
       - PUBLIC_URL=https://${DIRECTUS_SUBDOMAIN}.${DOMAIN_NAME}
       - SECRET=${SECRET}
       - ADMIN_EMAIL=${SSL_EMAIL}
-      - ADMIN_PASSWORD=${PASSWORD_PGADMIN}
-      - DB_CLIENT=pg
-      - DB_HOST=db
+      - ADMIN_PASSWORD=${PASSWORD_DIRECTUS}
+      - DB_CLIENT=#{DIRECTUS_DB_CLIENT}
+      - DB_HOST=${DB_HOST}
       - DB_DATABASE=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_PORT=5432
+      - DB_PORT=${DB_PORT}
       - WEBSOCKETS_ENABLED=true
         # далее натсроки для smtp
       #- EMAIL_FROM=${EMAIL_FROM}

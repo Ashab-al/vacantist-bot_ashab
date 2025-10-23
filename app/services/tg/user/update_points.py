@@ -1,6 +1,6 @@
 from aiogram.types.user import User as AiogramTgUser
 from models.user import User
-from repositories.users.get_user_by_platform_id import get_user_by_platform_id
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -17,14 +17,8 @@ async def update_points(
 
     Returns:
         None
-
-    Raises:
-        ValueError: Пользователь с platform_id `user.platform_id` не найден
     """
-    user: User = await get_user_by_platform_id(db, aiogram_user.id)
-
-    if user is None:
-        raise ValueError(f"Пользователь с platform_id {aiogram_user.id} не найден")
+    user: User = await find_user_by_platform_id(db, aiogram_user.id)
 
     user.point = user.point + points
 

@@ -1,4 +1,6 @@
+from exceptions.category.category_not_found_error import CategoryNotFoundError
 from models.category import Category
+from query_objects.categories.get_category_by_id import get_category_by_id
 from schemas.api.categories.show.request import ShowCategoryRequest
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,11 +19,11 @@ async def find_category_by_id(
         Category: Объект категории
 
     Raises:
-        ValueError: Категории по id - `category_id.id` нет в базе
+        CategoryNotFoundError: Категория с ID {category_id} не найдена
     """
-    category: Category = await db.get(Category, category_id.id)
+    category: Category = await get_category_by_id(db, category_id.id)
 
     if not category:
-        raise ValueError(f"Категории по id - {category_id.id} нет в базе")
+        raise CategoryNotFoundError(category_id.id)
 
     return category

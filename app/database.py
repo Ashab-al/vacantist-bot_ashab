@@ -8,13 +8,14 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 database_url: str = settings.database_dsn
 """URL базы данных"""
-engine = None
-"""Асинхронный движок SQLAlchemy"""
+ECHO = None
 if settings.mode == ModeEnum.DEVELOP:
-    engine = create_async_engine(url=database_url, echo="debug", pool_pre_ping=True)
+    ECHO = "debug"
 elif settings.mode == ModeEnum.PRODUCTION:
-    engine = create_async_engine(url=database_url, echo=False, pool_pre_ping=True)
+    ECHO = False
 
+engine = create_async_engine(url=database_url, echo=ECHO, pool_pre_ping=True)
+"""Асинхронный движок SQLAlchemy"""
 # Фабрика асинхронных сессий
 async_session_maker = async_sessionmaker(engine, class_=AsyncSession)
 

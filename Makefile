@@ -5,6 +5,8 @@ lint:
 	-black .
 	-pylint .
 	-flake8 .
+lintci:
+	pylint app --ignore=venv,tests,migration
 dev:
 	docker compose -f develop.yml up
 prod:

@@ -1,6 +1,6 @@
 [MASTER]
 ignore=venv,tests,migration
-
+ignore-patterns=migration/.*
 [MESSAGES CONTROL]
 disable=too-few-public-methods, missing-module-docstring,not-callable
 init-hook='import sys, os; sys.path.append(os.path.abspath("app"))'

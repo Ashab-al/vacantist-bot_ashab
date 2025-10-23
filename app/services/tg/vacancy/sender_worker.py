@@ -3,17 +3,15 @@ import asyncio
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError
 from bot.keyboards.vacancy_keyboard import vacancy_keyboard
-from config import settings
 from database import get_async_session_for_bot
-from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
 from models.user import User
 from models.vacancy import Vacancy
-from repositories.users.find_users_where_have_subscribe_to_category import (
+from query_objects.users.find_users_where_have_subscribe_to_category import (
     find_users_where_have_subscribe_to_category,
 )
-from sqlalchemy import update
-from sqlalchemy.ext.asyncio import AsyncSession
+from services.tg.admin_alert import admin_alert
+from services.tg.user.update_users_bot_status import update_users_bot_status
 
 DELAY = 0.4
 
@@ -100,34 +98,3 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
         )
 
     await admin_alert(bot, "ВЫХОД ИЗ ЦИКЛА")
-
-
-async def update_users_bot_status(
-    db: AsyncSession, blocked_user_ids: list[int]
-) -> None:
-    """
-    Обновить `bot_status` на `BOT_BLOCKED` у пользователей
-
-    Args:
-        db (AsyncSession): Асинхронная сессия SQLAlchemy для работы с базой данных.
-        blocked_user_ids (list[int]): Список id пользователей
-    """
-    await db.execute(
-        (
-            update(User)
-            .where(User.id.in_(blocked_user_ids))
-            .values(bot_status=BotStatusEnum.BOT_BLOCKED)
-        )
-    )
-    await db.commit()
-
-
-async def admin_alert(bot: Bot, text: str) -> None:
-    """
-    Отправить в группу админа уведомление
-
-    Args:
-        bot (Bot): Экземпляр бота, для отправки сообщения
-        text (str): Текст, который нужно отправить в группу
-    """
-    await bot.send_message(chat_id=settings.admin_chat_id, text=text)

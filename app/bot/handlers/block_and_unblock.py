@@ -4,8 +4,11 @@ from aiogram import F, Router
 from aiogram.filters.chat_member_updated import KICKED, MEMBER, ChatMemberUpdatedFilter
 from aiogram.types import ChatMemberUpdated
 from database import with_session
-from services.tg.user.current_user import current_user
-from services.tg.user.status_changes_for_block import status_changes_for_block
+from enums.bot_status_enum import BotStatusEnum
+from services.tg.user.find_or_create_user_with_analytics import (
+    find_or_create_user_with_analytics,
+)
+from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик блокировки и разблокировки бота")
@@ -24,9 +27,13 @@ async def user_blocked_bot(event: ChatMemberUpdated, session: AsyncSession):
 
     Notes:
         Вызывается, когда пользователь блокирует бота в личном чате.
-        Производит обновление статуса пользователя в базе данных через `status_changes_for_block`.
+        Производит обновление статуса пользователя в базе данных через `update_bot_status`.
     """
-    await status_changes_for_block(session, event.from_user)
+    await update_bot_status(
+        db=session,
+        user=await find_or_create_user_with_analytics(session, event.from_user),
+        new_status=BotStatusEnum.BOT_BLOCKED,
+    )
 
 
 @router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=MEMBER))
@@ -41,6 +48,10 @@ async def user_unblocked_bot(event: ChatMemberUpdated, session: AsyncSession):
 
     Notes:
         Вызывается, когда пользователь разблокирует бота в личном чате.
-        Производит обновление или создание пользователя в базе данных через `current_user`.
+        Производит обновление в базе данных через `update_bot_status`.
     """
-    await current_user(session, event=event)
+    await update_bot_status(
+        db=session,
+        user=await find_or_create_user_with_analytics(session, event.from_user),
+        new_status=BotStatusEnum.WORKS,
+    )
