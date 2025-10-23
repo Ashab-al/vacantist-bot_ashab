@@ -5,6 +5,8 @@ lint:
 	-black .
 	-pylint .
 	-flake8 .
+lintci:
+	pylint .
 dev:
 	docker compose -f develop.yml up
 prod:

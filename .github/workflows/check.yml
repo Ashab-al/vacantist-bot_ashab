@@ -12,5 +12,7 @@ jobs:
           pip install -r requirements-dev.txt
       - name: User .env.ci for tests
         run: cp .env.ci .env
+      - name: Run tests
+        run: make test
       - name: Lint
-        run: pytest .
+        run: make lintci
