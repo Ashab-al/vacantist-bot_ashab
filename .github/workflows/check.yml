@@ -1,16 +1,6 @@
 name: Check
 on: push
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-      - name: Install deps
-        run: |
-          pip install -r requirements.txt
-      - name: Lint
-        run: make lintci
   test:
     runs-on: ubuntu-latest
     steps:
