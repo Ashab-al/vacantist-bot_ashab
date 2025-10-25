@@ -82,11 +82,7 @@ common_kwargs: dict = {
 }
 
 if settings.mode == ModeEnum.PRODUCTION:
-    common_kwargs.update(
-        docs_url=None,
-        redoc_url=None,
-        openapi_url=None
-    )
+    common_kwargs.update(docs_url=None, redoc_url=None, openapi_url=None)
 
 app = FastAPI(**common_kwargs)
 app.include_router(api_router, prefix="/api/v1")
