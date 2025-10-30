@@ -60,6 +60,7 @@ class Settings(BaseSettings):
     domain_name: str
     subdomain: str
     directus_subdomain: str
+    n8n_subdomain: str
     directus_db_client: str
     ssl_email: str
     postgres_password: str
