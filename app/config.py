@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     password_directus: str
     secret: str
     mode: ModeEnum
+    generic_timezone: str
 
     def ngrok_url(self):
         """
