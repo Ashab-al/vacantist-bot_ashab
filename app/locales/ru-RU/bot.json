@@ -132,7 +132,15 @@
             "every_day": "Ежедневно",
             "free_points": "бесплатных поинта",
             "ready": "Готовы к новым возможностям",
-            "go": "и вперёд"
+            "go": "и вперёд",
+            "any_questions": "Есть вопросы",
+            "helper": "Напишите их мне в Telegram",
+            "tg_admin": "@AshabAl",
+            "good_links": "Полезные ссылки",
+            "vacancies_group":"https://t.me/infobizaa",
+            "group_for_feedback":"https://t.me/infobizaa_feedback",
+            "text_for_vacancies_group":"Наша группа с вакансиями",
+            "text_for_feedback_group":"Оставить отзыв или предложение по улучшению бота"
         },
         "choice_category": {
             "choice": "Выберите категории ",
