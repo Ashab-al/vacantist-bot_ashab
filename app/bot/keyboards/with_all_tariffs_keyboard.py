@@ -3,7 +3,15 @@ from bot.filters.callback.tariff_callback import TariffCallback
 from lib.tg.common import jinja_render
 
 CURRENCY = "XTR"
-TARIFFS_PRICES = {10: 31, 30: 85, 50: 135, 100: 255, 150: 362, 200: 450}
+TARIFFS_PRICES = {
+    10: 50,  # 5.0 звезд за штуку
+    20: 90,  # 4.5 звезд за штуку
+    30: 135,  # 4.5 звезд за штуку
+    50: 220,  # 4.4 звезд за штуку
+    100: 400,  # 4.0 звезд за штуку
+    150: 550,  # 3.7 звезд за штуку
+    200: 700,  # 3.5 звезд за штуку
+}
 MAX_COUNT_BUTTON_IN_LINE = 1
 
 
