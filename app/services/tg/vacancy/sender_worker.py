@@ -44,6 +44,7 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
         - Для остановки воркера в очередь нужно положить `None`.
     """
     await admin_alert(bot, "Воркер для рассылки запущен и ждет вакансии...")
+    background_tasks: set = set()
     while True:
         print("ЦИКЛ ЗАПУЩЕН, ОЖИДАЮ ВАКАНСИИ")
         vacancy: Vacancy | None = await queue.get()
@@ -72,7 +73,9 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
             )
             # Отправка вакансии всем подписанным пользователям.
             for user in users:
-                asyncio.create_task(send_vacancy_to_user(bot, user, vacancy))
+                task = asyncio.create_task(send_vacancy_to_user(bot, user, vacancy))
+                background_tasks.add(task)
+                task.add_done_callback(background_tasks.discard)
 
         queue.task_done()
 
