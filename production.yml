@@ -23,7 +23,7 @@ services:
       - ./traefik_data:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
   db:
-    image: postgres:latest
+    image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
