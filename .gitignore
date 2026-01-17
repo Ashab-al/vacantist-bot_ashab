@@ -24,3 +24,4 @@ extensions/
 templates/
 local-files/
 postgres/
+n8n_data/
