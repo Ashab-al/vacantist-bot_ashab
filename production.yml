@@ -45,6 +45,8 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
+    extra_hosts:
+      - "api.ashabal.ru:45.144.176.245"
     env_file: .env
     command: |
       bash -c "
