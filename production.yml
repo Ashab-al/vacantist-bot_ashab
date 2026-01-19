@@ -42,9 +42,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
     extra_hosts:
       - "api.ashabal.ru:45.144.176.245"
     env_file: .env
@@ -154,6 +151,7 @@ services:
       - EXECUTIONS_DATA_MAX_AGE=168 #сколько часов хранить выполнения
       - EXECUTIONS_DATA_PRUNE_MAX_COUNT=10000 #колличество выполнений котрое храним
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem #при работе с бинарными данными записывать их на диск
+      - N8N_PROXY_HOPS=1
     volumes:
       - ./n8n_data:/home/node/.n8n # где будет наш преокт
       - ./local-files:/files       # папка для локальных файлов
