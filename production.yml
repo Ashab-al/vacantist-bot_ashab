@@ -170,3 +170,4 @@ services:
       - n8n
 volumes:
   postgres_data:
+  n8n_data:
