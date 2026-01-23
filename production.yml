@@ -113,6 +113,7 @@ services:
       - traefik.http.services.directus.loadbalancer.server.port=8055
   n8n:
     image: docker.n8n.io/n8nio/n8n
+    container_name: n8n-main
     restart: always
     depends_on:
       - db
