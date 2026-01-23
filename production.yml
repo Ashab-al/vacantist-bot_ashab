@@ -164,9 +164,13 @@ services:
   task-runners:
     image: n8nio/runners
     container_name: n8n-runners
+    restart: always
     environment:
       - N8N_RUNNERS_TASK_BROKER_URI=${N8N_RUNNERS_TASK_BROKER_URI}
       - N8N_RUNNERS_AUTH_TOKEN=${N8N_RUNNERS_AUTH_TOKEN}
+      - N8N_RUNNERS_STDLIB_ALLOW=*
+    volumes:
+      - ./n8n-task-runners.json:/etc/n8n-task-runners.json
     depends_on:
       - n8n
 volumes:
