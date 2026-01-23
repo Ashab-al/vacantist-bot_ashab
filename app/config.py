@@ -68,6 +68,8 @@ class Settings(BaseSettings):
     secret: str
     mode: ModeEnum
     generic_timezone: str
+    n8n_runners_auth_token: str
+    n8n_runners_task_broker_uri: str
 
     def ngrok_url(self):
         """
