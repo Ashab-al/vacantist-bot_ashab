@@ -3,6 +3,7 @@ from asyncio import TaskGroup
 import random
 import logging
 
+from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError
 from bot.keyboards.vacancy_keyboard import vacancy_keyboard
@@ -74,16 +75,17 @@ async def sender_vacancy(vacancy_id: int) -> None:
         )
         # Отправка вакансии всем подписанным пользователям.
         tasks = [
-            asyncio.create_task(send_vacancy_to_user(bot, user, vacancy))
+            asyncio.create_task(send_vacancy_to_user(bot, user, vacancy, db))
             for user in users
         ]
         await asyncio.gather(*tasks)
+        await db.commit()
 
     logging.info("Рассылка вакансии с ID: %s завершена", vacancy_id)
     await admin_alert(bot, f"Рассылка вакансии с ID: {vacancy_id} завершена.")
 
 
-async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy) -> None:
+async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy, db: AsyncSession) -> None:
     """Отправить вакансию пользователю с задержкой."""
     await asyncio.sleep(
         random.randint(
@@ -97,26 +99,21 @@ async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy) -> None:
             text=await jinja_render("vacancy", {"vacancy": vacancy, "user": user}),
             reply_markup=await vacancy_keyboard(vacancy=vacancy, user=user),
         )
-
+        db.add(
+            SentMessage(
+                user_id=user.id,
+                vacancy_id=vacancy.id,
+                message_id=result.message_id,
+            )
+        )
         logging.info(str(result))
     except TelegramForbiddenError:
-        async with get_async_session_for_bot() as db:
-            await update_bot_status(
-                db=db,
-                user=await get_user_by_id(db, user.id),
-                new_status=BotStatusEnum.BOT_BLOCKED,
-            )
-        raise
+        await update_bot_status(
+            db=db,
+            user=user,
+            new_status=BotStatusEnum.BOT_BLOCKED,
+        )
 
     except Exception as e:  # pylint: disable=broad-exception-caught
         await admin_alert(bot, str(e) + "\n\nsender_worker")
-        raise
-
-    async with get_async_session_for_bot() as db:
-        sent_message = SentMessage(
-            user_id=user.id,
-            vacancy_id=vacancy.id,
-            message_id=result.message_id,
-        )
-        db.add(sent_message)
-        await db.commit()
+        logging.error(str(e))
