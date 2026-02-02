@@ -41,9 +41,9 @@ async def lifespan(_app: FastAPI):
     logging.info("Starting bot setup...")
     dp.include_router(main_router)
 
-    await start_bot()
     webhook_url = settings.get_webhook_url()
-
+    await start_bot()
+    logging.info("Webhook URL: %s", webhook_url)
     drop_pending_updates: bool | None = None
     if settings.mode == ModeEnum.PRODUCTION:
         drop_pending_updates = False
@@ -60,7 +60,7 @@ async def lifespan(_app: FastAPI):
         logging.error(f"!!! Webhook NOT set: {e}")
         logging.info("Application will continue to work without webhook for now.")
 
-    worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))
+    # worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))
 
     logging.info("Webhook set to %s", webhook_url)
 

@@ -41,7 +41,8 @@ class Settings(BaseSettings):
     admin_id: int
     admin_chat_id: str
     model_config = SettingsConfigDict(
-        env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
+        env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"),
+        extra="ignore"
     )
     ngrok_api: str
 
@@ -53,6 +54,12 @@ class Settings(BaseSettings):
     db_user: str
     db_pass: str
     db_name: str
+
+    # proxy
+    proxy_host: str
+    proxy_port: int
+    proxy_user: str
+    proxy_pass: str
 
     ngrok_authtoken: Optional[str] = None
 
@@ -70,24 +77,24 @@ class Settings(BaseSettings):
     generic_timezone: str
     n8n_runners_auth_token: str
     n8n_runners_task_broker_uri: str
+    ngrok_url: str
+    # def ngrok_url(self):
+    #     """
+    #     Получает публичный HTTPS URL от локального ngrok API.
 
-    def ngrok_url(self):
-        """
-        Получает публичный HTTPS URL от локального ngrok API.
-
-        Returns:
-            str: Публичный URL для вебхука
-        """
-        logging.info("Поиск Ngrok URL")
-        response = requests.get(self.ngrok_api, timeout=10)
-        response.raise_for_status()
-
-        for tunnel in response.json().get("tunnels", []):
-            if tunnel.get("proto") == "https":
-                public_url = tunnel.get("public_url")
-                logging.info("✅ Ngrok URL найден: %s", public_url)
-                return public_url
-        return None
+    #     Returns:
+    #         str: Публичный URL для вебхука
+    #     """
+    #     logging.info("Поиск Ngrok URL %s", self.ngrok_api)
+    #     response = requests.get(self.ngrok_api, timeout=10)
+    #     response.raise_for_status()
+    #     logging.info("Ngrok response %s", response.json())
+    #     for tunnel in response.json().get("tunnels", []):
+    #         if tunnel.get("proto") == "https":
+    #             public_url = tunnel.get("public_url")
+    #             logging.info("✅ Ngrok URL найден: %s", public_url)
+    #             return public_url
+    #     return None
 
     def get_webhook_url(self) -> str:
         """
@@ -100,7 +107,7 @@ class Settings(BaseSettings):
             return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
 
         if self.mode == ModeEnum.DEVELOP:
-            return f"{self.ngrok_url()}/api/v1/webhook"
+            return f"{self.ngrok_url}/api/v1/webhook"
 
         return None
 
