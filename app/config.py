@@ -77,7 +77,7 @@ class Settings(BaseSettings):
     generic_timezone: str
     n8n_runners_auth_token: str
     n8n_runners_task_broker_uri: str
-    ngrok_url: str
+    tuna_url: str
 
 
     def get_webhook_url(self) -> str:
@@ -91,7 +91,7 @@ class Settings(BaseSettings):
             return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
 
         if self.mode == ModeEnum.DEVELOP:
-            return f"{self.ngrok_url}/api/v1/webhook"
+            return f"{self.tuna_url}/api/v1/webhook"
 
         return None
 
