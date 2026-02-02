@@ -61,10 +61,9 @@ class Settings(BaseSettings):
     proxy_user: str
     proxy_pass: str
 
-    # celery
-    celery_backend_url: str
-    celery_broker_url: str
-    celery_include: list[str]
+    # Задержки для рассылки вакансий
+    min_delay_seconds: int
+    max_delay_seconds: int
 
     # для продакшена
     domain_name: str
@@ -109,6 +108,3 @@ with open(f"{BASE_DIR}/locales/ru-RU/bot.json", encoding="utf-8") as f:
 
 jinja_env.globals["i18n"] = i18n
 jinja_env.globals["pluralize"] = pluralize
-
-vacancy_queue: asyncio.Queue = asyncio.Queue(maxsize=0)
-"""Глобальная очередь вакансий"""

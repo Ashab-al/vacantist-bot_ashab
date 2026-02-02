@@ -8,7 +8,6 @@
 """
 
 # pylint: disable=broad-except, unused-import
-import asyncio  # noqa: F401
 import logging
 from contextlib import asynccontextmanager
 
@@ -16,10 +15,9 @@ from aiogram.types import Update
 from api import api_router
 from bot.create_bot import bot, dp, start_bot, stop_bot
 from bot.handlers import main_router
-from config import settings, vacancy_queue  # noqa: F401
+from config import settings  # noqa: F401
 from enums.mode_enum import ModeEnum
 from fastapi import FastAPI, Request
-from services.tg.vacancy.sender_worker import sender_worker  # noqa: F401
 
 # pylint: enable=broad-except, unused-import
 logging.basicConfig(
@@ -44,11 +42,8 @@ async def lifespan(_app: FastAPI):
     webhook_url = settings.get_webhook_url()
     await start_bot()
     logging.info("Webhook URL: %s", webhook_url)
-    drop_pending_updates: bool | None = None
-    if settings.mode == ModeEnum.PRODUCTION:
-        drop_pending_updates = False
-    elif settings.mode == ModeEnum.DEVELOP:
-        drop_pending_updates = True
+    drop_pending_updates: bool = settings.mode is ModeEnum.DEVELOP
+    logging.info("drop_pending_updates -> %s", drop_pending_updates)
     try:
         logging.info(f"Webhook set to {webhook_url}")
         await bot.set_webhook(
@@ -60,16 +55,12 @@ async def lifespan(_app: FastAPI):
         logging.error(f"!!! Webhook NOT set: {e}")
         logging.info("Application will continue to work without webhook for now.")
 
-    worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))
 
     logging.info("Webhook set to %s", webhook_url)
 
     yield
 
     logging.info("Sending shutdown signal to sender_worker...")
-    await vacancy_queue.put(None)#TODO потом включить # pylint: disable=fixme
-    await vacancy_queue.join()#TODO потом включить # pylint: disable=fixme
-    worker_task.cancel()  # TODO потом включить # pylint: disable=fixme
     logging.info("Sender_worker finished successfully.")
 
     logging.info("Shutting down bot...")

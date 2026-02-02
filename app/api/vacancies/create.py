@@ -1,15 +1,14 @@
 from typing import Annotated
 
+
 from database import get_async_session
 from exceptions.vacancy.blacklisted_vacancy import BlacklistedVacancyError
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, BackgroundTasks
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.api.vacancies.create.response import CreateVacancyResponse
 from services.api.vacancy.check_and_create_vacancy import check_and_create_vacancy
-from services.tg.vacancy.add_vacancy_to_sending_queue import (
-    add_vacancy_to_sending_queue,
-)
 from sqlalchemy.ext.asyncio import AsyncSession
+from services.tg.vacancy.sender_vacancy import sender_vacancy
 
 router = APIRouter()
 
@@ -23,6 +22,7 @@ router = APIRouter()
 async def create_new_vacancy(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     vacancy_data: Annotated[CreateVacancyRequest, Body()],
+    background_tasks: BackgroundTasks
 ):
     """
     Создать новую вакансию и отправить её пользователям.
@@ -46,8 +46,8 @@ async def create_new_vacancy(
         new_vacancy = await check_and_create_vacancy(session, vacancy_data)
     except BlacklistedVacancyError as e:
         raise HTTPException(400, str(e)) from e
-
-    await add_vacancy_to_sending_queue(new_vacancy)
+    # Добавляем задачу отправки вакансии в фоновый режим
+    background_tasks.add_task(sender_vacancy, new_vacancy.id)
 
     return CreateVacancyResponse(
         id=new_vacancy.id,

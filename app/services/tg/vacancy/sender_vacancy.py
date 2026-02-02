@@ -1,5 +1,7 @@
 import asyncio
+from asyncio import TaskGroup
 import random
+import logging
 
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError
@@ -9,18 +11,22 @@ from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
 from models.user import User
 from models.vacancy import Vacancy
+from models.sent_message import SentMessage
 from query_objects.users.find_users_where_have_subscribe_to_category import (
     find_users_where_have_subscribe_to_category,
 )
 from query_objects.users.get_user_by_id import get_user_by_id
+from query_objects.vacancies.find_vacancy_by_id import find_vacancy_by_id
 from services.tg.admin_alert import admin_alert
 from services.tg.user.update_bot_status import update_bot_status
+from bot.create_bot import bot
+from config import settings
 
 MIN_DELAY = 2
 MAX_DELAY = 60
 
 
-async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
+async def sender_vacancy(vacancy_id: int) -> None:
     """
     Асинхронный воркер для рассылки вакансий подписанным пользователям.
 
@@ -43,54 +49,56 @@ async def sender_worker(queue: asyncio.Queue, bot: Bot) -> None:
           на `BOT_BLOCKED`.
         - Для остановки воркера в очередь нужно положить `None`.
     """
-    await admin_alert(bot, "Воркер для рассылки запущен и ждет вакансии...")
-    background_tasks: set = set()
-    while True:
-        print("ЦИКЛ ЗАПУЩЕН, ОЖИДАЮ ВАКАНСИИ")
-        vacancy: Vacancy | None = await queue.get()
+    await admin_alert(bot, f"Запущена рассылка вакансии с ID: {vacancy_id}")
+
+    logging.info("Запущена рассылка вакансии с ID: %s", vacancy_id)
+
+    async with get_async_session_for_bot() as db:
+        vacancy: Vacancy | None = await find_vacancy_by_id(db, vacancy_id)
 
         if vacancy is None:
+            raise ValueError("Vacancy not found")
+
+        users: list[User] = await find_users_where_have_subscribe_to_category(
+            db, vacancy.category_id
+        )
+        if not users:
             await admin_alert(
-                bot, "Получен сигнал на завершение. Воркер останавливается."
+                bot, f"Для вакансии '{vacancy.title}' не найдено подписчиков."
             )
-            queue.task_done()
-            break
+            raise ValueError("No subscribed users found")
 
-        async with get_async_session_for_bot() as db:
-            users: list[User] = await find_users_where_have_subscribe_to_category(
-                db, vacancy.category_id
-            )
-            if not users:
-                await admin_alert(
-                    bot, f"Для вакансии '{vacancy.title}' не найдено подписчиков."
-                )
-                queue.task_done()
-                continue
+        await admin_alert(
+            bot,
+            f"Рассылка вакансии '{vacancy.title}' для {len(users)} пользователей.",
+        )
+        # Отправка вакансии всем подписанным пользователям.
+        tasks = [
+            asyncio.create_task(send_vacancy_to_user(bot, user, vacancy))
+            for user in users
+        ]
+        await asyncio.gather(*tasks)
 
-            await admin_alert(
-                bot,
-                f"Рассылка вакансии '{vacancy.title}' для {len(users)} пользователей.",
-            )
-            # Отправка вакансии всем подписанным пользователям.
-            for user in users:
-                task = asyncio.create_task(send_vacancy_to_user(bot, user, vacancy))
-                background_tasks.add(task)
-                task.add_done_callback(background_tasks.discard)
-
-        queue.task_done()
-
-    await admin_alert(bot, "ВЫХОД ИЗ ЦИКЛА")
+    logging.info("Рассылка вакансии с ID: %s завершена", vacancy_id)
+    await admin_alert(bot, f"Рассылка вакансии с ID: {vacancy_id} завершена.")
 
 
 async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy) -> None:
     """Отправить вакансию пользователю с задержкой."""
-    await asyncio.sleep(random.randint(MIN_DELAY, MAX_DELAY))
+    await asyncio.sleep(
+        random.randint(
+            settings.min_delay_seconds,
+            settings.max_delay_seconds
+        )
+    )
     try:
-        await bot.send_message(
+        result = await bot.send_message(
             chat_id=user.platform_id,
             text=await jinja_render("vacancy", {"vacancy": vacancy, "user": user}),
             reply_markup=await vacancy_keyboard(vacancy=vacancy, user=user),
         )
+
+        logging.info(str(result))
     except TelegramForbiddenError:
         async with get_async_session_for_bot() as db:
             await update_bot_status(
@@ -98,5 +106,17 @@ async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy) -> None:
                 user=await get_user_by_id(db, user.id),
                 new_status=BotStatusEnum.BOT_BLOCKED,
             )
+        raise
+
     except Exception as e:  # pylint: disable=broad-exception-caught
         await admin_alert(bot, str(e) + "\n\nsender_worker")
+        raise
+
+    async with get_async_session_for_bot() as db:
+        sent_message = SentMessage(
+            user_id=user.id,
+            vacancy_id=vacancy.id,
+            message_id=result.message_id,
+        )
+        db.add(sent_message)
+        await db.commit()
