@@ -1,6 +1,6 @@
 from config import vacancy_queue
 from models.vacancy import Vacancy
-
+import logging
 
 async def add_vacancy_to_sending_queue(vacancy: Vacancy) -> None:
     """
@@ -9,5 +9,5 @@ async def add_vacancy_to_sending_queue(vacancy: Vacancy) -> None:
     Args:
         vacancy (Vacancy): Объект вакансии, который нужно поставить в очередь
     """
-    print(f"Добавляю вакансию '{vacancy.title}' в очередь на рассылку.")
+    logging.info(f"Добавляю вакансию '{vacancy.title}' в очередь на рассылку.")
     await vacancy_queue.put(vacancy)

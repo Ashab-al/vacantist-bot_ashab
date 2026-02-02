@@ -60,15 +60,15 @@ async def lifespan(_app: FastAPI):
         logging.error(f"!!! Webhook NOT set: {e}")
         logging.info("Application will continue to work without webhook for now.")
 
-    # worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))
+    worker_task = asyncio.create_task(sender_worker(vacancy_queue, bot))
 
     logging.info("Webhook set to %s", webhook_url)
 
     yield
 
     logging.info("Sending shutdown signal to sender_worker...")
-    # await vacancy_queue.put(None)#TODO потом включить # pylint: disable=fixme
-    # await vacancy_queue.join()#TODO потом включить # pylint: disable=fixme
+    await vacancy_queue.put(None)#TODO потом включить # pylint: disable=fixme
+    await vacancy_queue.join()#TODO потом включить # pylint: disable=fixme
     worker_task.cancel()  # TODO потом включить # pylint: disable=fixme
     logging.info("Sender_worker finished successfully.")
 

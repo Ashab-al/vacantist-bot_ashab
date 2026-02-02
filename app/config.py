@@ -30,21 +30,21 @@ class Settings(BaseSettings):
         bot_token (str): Токен Telegram бота
         admin_id (int): ID администратора
         admin_chat_id (str): ID чата администратора
-        ngrok_api (str): URL локального ngrok API для получения публичного HTTPS URL
+        url_for_local_develop (str): URL для локальной разработки
         database_dsn (str): DSN для подключения к базе данных
         echo_db_engine (Optional[bool]): Флаг логирования SQLAlchemy
         db_host (str), db_port (int), db_user (str), db_pass (str), db_name (str): параметры БД
-        ngrok_authtoken (Optional[str]): токен для ngrok (если нужен)
     """
 
     bot_token: str
     admin_id: int
     admin_chat_id: str
+    url_for_local_develop: str
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"),
         extra="ignore"
     )
-    ngrok_api: str
+
 
     # БД
     database_dsn: str
@@ -61,7 +61,10 @@ class Settings(BaseSettings):
     proxy_user: str
     proxy_pass: str
 
-    ngrok_authtoken: Optional[str] = None
+    # celery
+    celery_backend_url: str
+    celery_broker_url: str
+    celery_include: list[str]
 
     # для продакшена
     domain_name: str
@@ -75,9 +78,6 @@ class Settings(BaseSettings):
     secret: str
     mode: ModeEnum
     generic_timezone: str
-    n8n_runners_auth_token: str
-    n8n_runners_task_broker_uri: str
-    tuna_url: str
 
 
     def get_webhook_url(self) -> str:
@@ -90,11 +90,7 @@ class Settings(BaseSettings):
         if self.mode == ModeEnum.PRODUCTION:
             return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
 
-        if self.mode == ModeEnum.DEVELOP:
-            return f"{self.tuna_url}/api/v1/webhook"
-
-        return None
-
+        return f"{self.url_for_local_develop}/api/v1/webhook"
 
 settings = Settings()
 """Экземпляр настроек"""

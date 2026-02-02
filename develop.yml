@@ -33,6 +33,35 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  rabbit:
+    image: rabbitmq:3.11-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+  worker:
+    build: .
+    env_file:
+      - .env
+    command: ["celery", "-A", "celery_app.celery", "worker", "--loglevel=info"]
+    volumes:
+      - ./app:/app
+    depends_on:
+      - db
+      - rabbit
+      - redis
+  beat:
+    build: .
+    env_file: .env
+    command: ["celery", "-A", "celery_app.celery", "beat", "--loglevel=info"]
+    volumes:
+      - ./app:/app
+    depends_on:
+      - redis
+
 
 volumes:
   postgres_data:

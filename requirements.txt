@@ -44,3 +44,5 @@ requests
 fastapi_camelcase
 debugpy
 aiohttp-socks
+celery
+redis
