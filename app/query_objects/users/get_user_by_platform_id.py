@@ -1,4 +1,5 @@
 from models.user import User
+from models.sent_message import SentMessage
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload

@@ -15,6 +15,7 @@ from models.category import Category
 from models.subscription import subscription
 from models.user import User
 from models.vacancy import Vacancy
+from models.sent_message import SentMessage
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config

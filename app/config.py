@@ -78,23 +78,7 @@ class Settings(BaseSettings):
     n8n_runners_auth_token: str
     n8n_runners_task_broker_uri: str
     ngrok_url: str
-    # def ngrok_url(self):
-    #     """
-    #     Получает публичный HTTPS URL от локального ngrok API.
 
-    #     Returns:
-    #         str: Публичный URL для вебхука
-    #     """
-    #     logging.info("Поиск Ngrok URL %s", self.ngrok_api)
-    #     response = requests.get(self.ngrok_api, timeout=10)
-    #     response.raise_for_status()
-    #     logging.info("Ngrok response %s", response.json())
-    #     for tunnel in response.json().get("tunnels", []):
-    #         if tunnel.get("proto") == "https":
-    #             public_url = tunnel.get("public_url")
-    #             logging.info("✅ Ngrok URL найден: %s", public_url)
-    #             return public_url
-    #     return None
 
     def get_webhook_url(self) -> str:
         """
