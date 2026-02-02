@@ -23,9 +23,6 @@ from services.tg.user.update_bot_status import update_bot_status
 from bot.create_bot import bot
 from config import settings
 
-MIN_DELAY = 2
-MAX_DELAY = 60
-
 
 async def sender_vacancy(vacancy_id: int) -> None:
     """
