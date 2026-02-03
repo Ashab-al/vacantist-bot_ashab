@@ -18,7 +18,7 @@ from query_objects.users.find_users_where_have_subscribe_to_category import (
 )
 from query_objects.users.get_user_by_id import get_user_by_id
 from query_objects.vacancies.find_vacancy_by_id import find_vacancy_by_id
-from services.tg.admin_alert import admin_alert
+from services.tg.admin_alert import admin_alert_mailing_vacancies, admin_alert_mailing_errors
 from services.tg.user.update_bot_status import update_bot_status
 from bot.create_bot import bot
 from config import settings
@@ -47,7 +47,7 @@ async def sender_vacancy(vacancy_id: int) -> None:
           на `BOT_BLOCKED`.
         - Для остановки воркера в очередь нужно положить `None`.
     """
-    await admin_alert(bot, f"Запущена рассылка вакансии с ID: {vacancy_id}")
+    await admin_alert_mailing_vacancies(bot, f"Запущена рассылка вакансии с ID: {vacancy_id}")
 
     logging.info("Запущена рассылка вакансии с ID: %s", vacancy_id)
 
@@ -55,18 +55,19 @@ async def sender_vacancy(vacancy_id: int) -> None:
         vacancy: Vacancy | None = await find_vacancy_by_id(db, vacancy_id)
 
         if vacancy is None:
+            await admin_alert_mailing_errors(bot, f"Вакансия с ID {vacancy_id} не найдена")
             raise ValueError("Vacancy not found")
 
         users: list[User] = await find_users_where_have_subscribe_to_category(
             db, vacancy.category_id
         )
         if not users:
-            await admin_alert(
+            await admin_alert_mailing_errors(
                 bot, f"Для вакансии '{vacancy.title}' не найдено подписчиков."
             )
             raise ValueError("No subscribed users found")
 
-        await admin_alert(
+        await admin_alert_mailing_vacancies(
             bot,
             f"Рассылка вакансии '{vacancy.title}' для {len(users)} пользователей.",
         )
@@ -75,11 +76,11 @@ async def sender_vacancy(vacancy_id: int) -> None:
             asyncio.create_task(send_vacancy_to_user(bot, user, vacancy, db))
             for user in users
         ]
-        await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks) # сделать так чтобы возвращались объекты SentMessage
         await db.commit()
 
     logging.info("Рассылка вакансии с ID: %s завершена", vacancy_id)
-    await admin_alert(bot, f"Рассылка вакансии с ID: {vacancy_id} завершена.")
+    await admin_alert_mailing_vacancies(bot, f"Рассылка вакансии с ID: {vacancy_id} завершена.")
 
 
 async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy, db: AsyncSession) -> None:
@@ -104,13 +105,16 @@ async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy, db: Async
             )
         )
         logging.info(str(result))
-    except TelegramForbiddenError:
-        await update_bot_status(
-            db=db,
-            user=user,
-            new_status=BotStatusEnum.BOT_BLOCKED,
-        )
+    except TelegramForbiddenError as e:
+        logging.error(str(e))
+        await admin_alert_mailing_errors(bot, str(e) + "\n\nTelegramForbiddenError sender_worker")
+        async with get_async_session_for_bot() as session:
+            await update_bot_status(
+                db=session,
+                user=await get_user_by_id(session, user.id),
+                new_status=BotStatusEnum.BOT_BLOCKED,
+            )
 
     except Exception as e:  # pylint: disable=broad-exception-caught
-        await admin_alert(bot, str(e) + "\n\nsender_worker")
+        await admin_alert_mailing_errors(bot, str(e) + "\n\nsender_worker")
         logging.error(str(e))
