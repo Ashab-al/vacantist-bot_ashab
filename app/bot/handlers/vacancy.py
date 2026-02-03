@@ -3,7 +3,7 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
 from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
-from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallback
+from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallback, SpamVacancyCallbackForAdmin
 from bot.keyboards.open_vacancy_keyboard import open_vacancy_keyboard
 from database import with_session
 from enums.check_vacancy_enum import CheckVacancyEnum
@@ -11,6 +11,7 @@ from lib.tg.common import jinja_render
 from services.tg.vacancy.open_vacancy_and_show_alert import open_vacancy_and_show_alert
 from services.tg.vacancy.spam_vacancy import BLACKLISTED, spam_vacancy
 from sqlalchemy.ext.asyncio import AsyncSession
+from services.tg.vacancy.send_spam_vacancy_in_admin_group import send_spam_vacancy_in_admin_group
 
 router = Router(name="Обработчик вакансий")
 
@@ -64,7 +65,10 @@ async def reaction_choice_vacancy(
 @router.callback_query(SpamVacancyCallback.filter())
 @with_session
 async def reaction_choice_spam_vacancy(
-    callback: CallbackQuery, callback_data: SpamVacancyCallback, session: AsyncSession
+    callback: CallbackQuery,
+    callback_data: SpamVacancyCallback,
+    session: AsyncSession,
+    bot: Bot,
 ):
     """
     Обрабатывает нажатие на кнопку «Спам» в Telegram-боте.
@@ -85,13 +89,19 @@ async def reaction_choice_spam_vacancy(
     Returns:
         None
     """
-    await callback.answer(
-        await jinja_render(
-            "callback_query/spam_vacancy",
-            {
-                "outcome": await spam_vacancy(session, callback_data.vacancy_id),
-                "BLACKLISTED": BLACKLISTED,
-            },
-        ),
-        show_alert=True,
+    await send_spam_vacancy_in_admin_group(
+        bot,
+        callback_data,
+        callback,
+        session
     )
+    # await callback.answer(
+    #     await jinja_render(
+    #         "callback_query/spam_vacancy",
+    #         {
+    #             "outcome": await spam_vacancy(session, callback_data.vacancy_id),
+    #             "BLACKLISTED": BLACKLISTED,
+    #         },
+    #     ),
+    #     show_alert=True,
+    # )

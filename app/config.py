@@ -49,6 +49,7 @@ class Settings(BaseSettings):
     mailing_payments_thread_id: int
     mailing_errors_thread_id: int
     mailing_new_users_thread_id: int
+    mailing_new_spam_vacancies_thread_id: int
     # БД
     database_dsn: str
     echo_db_engine: Optional[bool] = True

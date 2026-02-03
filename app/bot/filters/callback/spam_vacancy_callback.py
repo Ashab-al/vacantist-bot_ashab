@@ -13,3 +13,8 @@ class SpamVacancyCallback(CallbackData, prefix="spam_vacancy"):
     """
 
     vacancy_id: int
+
+class SpamVacancyCallbackForAdmin(CallbackData, prefix="spam_vacancy_admin"):
+    vacancy_id: int
+    user_id: int
+    message_id: int
