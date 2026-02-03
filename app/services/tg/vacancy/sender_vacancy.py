@@ -116,5 +116,5 @@ async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy, db: Async
             )
 
     except Exception as e:  # pylint: disable=broad-exception-caught
-        await admin_alert_mailing_errors(bot, str(e) + "\n\nsender_worker")
         logging.error(str(e))
+        await admin_alert_mailing_errors(bot, str(e) + "\n\nsender_worker")
