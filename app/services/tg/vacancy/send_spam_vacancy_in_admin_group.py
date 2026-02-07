@@ -36,7 +36,7 @@ async def send_spam_vacancy_in_admin_group(
         text=await jinja_render(
             "spam/vacancy",
             {
-                "username": (None or html.code(i18n["user"]["user_not_has_username"])),
+                "username": _username(callback.from_user.username),
                 "vacancy": vacancy,
                 "user": user,
             },
@@ -64,7 +64,7 @@ def _buttons(callback_data: SpamVacancyCallback, callback: CallbackQuery):
     return admin_chat_spam_vacancy_button(**callback_data_dict)
 
 
-def _username_replacement(username: str | None) -> str:
+def _username(username: str | None) -> str:
     if username is not None:
         return username
 
