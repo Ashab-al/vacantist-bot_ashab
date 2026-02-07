@@ -7,6 +7,7 @@ from bot.filters.callback.spam_vacancy_callback import (
     SpamVacancyCallback,
     SpamVacancyCallbackForAdmin,
     SpamAndIncrementUserBonusForSpamVacancyCallback,
+    NotSpamButDeleteMessagesForSpamVacancyCallback,
 )
 from database import with_session
 from services.tg.vacancy.send_spam_vacancy_in_admin_group import (
@@ -51,6 +52,10 @@ async def reaction_choice_spam_vacancy(
     await send_spam_vacancy_in_admin_group(bot, callback_data, callback, session)
 
 
+@router.callback_query(SpamVacancyCallbackForAdmin.filter())
+@with_session
+async def spam_vacancy_for_admin(): ...
+
 @router.callback_query(IncrementUserBonusForSpamVacancyCallback.filter())
 @with_session
 async def increment_user_bonus_for_spam_vacancy(): ...
@@ -59,10 +64,10 @@ async def increment_user_bonus_for_spam_vacancy(): ...
 @with_session
 async def reject_spam_vacancy(): ...
 
-@router.callback_query(SpamVacancyCallbackForAdmin.filter())
-@with_session
-async def spam_vacancy_for_admin(): ...
-
 @router.callback_query(SpamAndIncrementUserBonusForSpamVacancyCallback.filter())
 @with_session
 async def spam_and_increment_user_bonus_for_spam_vacancy(): ...
+
+@router.callback_query(NotSpamButDeleteMessagesForSpamVacancyCallback.filter())
+@with_session
+async def not_spam_but_delete_messages_for_spam_vacancy(): ...
