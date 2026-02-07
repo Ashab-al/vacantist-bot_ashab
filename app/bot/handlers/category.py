@@ -2,6 +2,7 @@
 
 from aiogram import F, Router
 from aiogram.types import CallbackQuery, Message
+from aiogram.enums.chat_type import ChatType
 from bot.filters.button import CategoryButtonFilter
 from bot.filters.callback.category_callback import CategoryCallback
 from bot.keyboards.with_all_categories_keyboard import with_all_categories_keyboard
@@ -16,7 +17,7 @@ from services.tg.user.update_subscription_with_category import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик категорий")
-router.message.filter(F.chat.type == "private")
+router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 
 @router.message(CategoryButtonFilter())

@@ -1,12 +1,13 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
-from aiogram import Bot, Router
+from aiogram import Bot, Router, F
 from aiogram.types import CallbackQuery
 from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
 from bot.filters.callback.spam_vacancy_callback import (
     SpamVacancyCallback,
     SpamVacancyCallbackForAdmin,
 )
+from aiogram.enums.chat_type import ChatType
 from bot.keyboards.open_vacancy_keyboard import open_vacancy_keyboard
 from database import with_session
 from enums.check_vacancy_enum import CheckVacancyEnum
@@ -19,7 +20,7 @@ from services.tg.vacancy.spam_vacancy import BLACKLISTED, spam_vacancy
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик вакансий")
-
+router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 @router.callback_query(OpenVacancyCallback.filter())
 @with_session
@@ -65,43 +66,3 @@ async def reaction_choice_vacancy(
                 user=user, vacancy=vacancy_data.get("vacancy")
             ),
         )
-
-
-@router.callback_query(SpamVacancyCallback.filter())
-@with_session
-async def reaction_choice_spam_vacancy(
-    callback: CallbackQuery,
-    callback_data: SpamVacancyCallback,
-    session: AsyncSession,
-    bot: Bot,
-):
-    """
-    Обрабатывает нажатие на кнопку «Спам» в Telegram-боте.
-
-    Функция:
-    - Получает данные о вакансии, на которую пользователь пожаловался.
-    - Вызывает сервис `spam_vacancy` для обработки жалобы
-    и возможного добавления вакансии в чёрный список.
-    - Отправляет пользователю alert с результатом действия
-    (например, "вакансия добавлена в список спама").
-
-    Args:
-        callback (CallbackQuery): Объект Telegram callback-запроса, вызванного при нажатии кнопки.
-        callback_data (SpamVacancyCallback): Данные, переданные вместе с callback
-        (включая ID вакансии).
-        session (AsyncSession): Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
-
-    Returns:
-        None
-    """
-    await send_spam_vacancy_in_admin_group(bot, callback_data, callback, session)
-    # await callback.answer(
-    #     await jinja_render(
-    #         "callback_query/spam_vacancy",
-    #         {
-    #             "outcome": await spam_vacancy(session, callback_data.vacancy_id),
-    #             "BLACKLISTED": BLACKLISTED,
-    #         },
-    #     ),
-    #     show_alert=True,
-    # )

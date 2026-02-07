@@ -3,6 +3,7 @@
 from aiogram import F, Router
 from aiogram.filters.chat_member_updated import KICKED, MEMBER, ChatMemberUpdatedFilter
 from aiogram.types import ChatMemberUpdated
+from aiogram.enums.chat_type import ChatType
 from database import with_session
 from enums.bot_status_enum import BotStatusEnum
 from services.tg.user.find_or_create_user_with_analytics import (
@@ -12,7 +13,7 @@ from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик блокировки и разблокировки бота")
-router.my_chat_member.filter(F.chat.type == "private")
+router.my_chat_member.filter(F.chat.type == ChatType.PRIVATE)
 
 
 @router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=KICKED))
