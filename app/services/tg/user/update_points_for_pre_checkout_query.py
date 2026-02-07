@@ -2,7 +2,7 @@ from aiogram import Bot
 from aiogram.types import PreCheckoutQuery
 from bot.filters.callback.tariff_callback import TariffCallback
 from lib.tg.common import jinja_render
-from services.tg.admin_alert import admin_alert
+from services.tg.admin_alert import admin_alert_mailing_errors
 from services.tg.user.update_points import update_points
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -37,7 +37,7 @@ async def update_points_for_pre_checkout_query(
             text=await jinja_render("pre_checkout_query/fail_payment"),
         )
 
-        await admin_alert(
+        await admin_alert_mailing_errors(
             bot=bot,
             text="\n\n".join([str(e), "Метод process_pre_checkout_query"]),
         )

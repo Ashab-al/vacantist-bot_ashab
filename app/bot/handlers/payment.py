@@ -8,6 +8,7 @@ from aiogram.types import (
     Message,
     PreCheckoutQuery,
 )
+from aiogram.enums.chat_type import ChatType
 from bot.filters.button import PointsButtonFilter
 from bot.filters.callback.tariff_callback import TariffCallback
 from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
@@ -23,7 +24,7 @@ from services.tg.user.update_points_for_pre_checkout_query import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик тарифов и платежей")
-router.message.filter(F.chat.type == "private")
+router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 
 @router.message(PointsButtonFilter())

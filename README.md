@@ -69,10 +69,11 @@ docker compose -f develop.yml run --rm web alembic upgrade head
 make test
 ```
 
-### 5. Ngrok (для вебхуков и для локально разработки)
-##### Для работы вебхуков установите Ngrok: [Инструкция по установке Ngrok](https://ngrok.com/docs/getting-started/).
-- Убедитесь, что переменная `NGROK_AUTHTOKEN` установлена.
-- Ngrok нужен для получения публичного URL для вебхуков Telegram.
+### 5. Tuna (для вебхуков и для локально разработки)
+##### Для работы вебхуков установите Tuna: [Инструкция по установке Tuna](https://tuna.am/docs/getting-started/#%D1%88%D0%B0%D0%B3-1-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%82%D0%B5-%D0%BA%D0%BB%D0%B8%D0%B5%D0%BD%D1%82https://tuna.am/docs/getting-started/#%D1%88%D0%B0%D0%B3-1-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%82%D0%B5-%D0%BA%D0%BB%D0%B8%D0%B5%D0%BD%D1%82).
+- Tuna нужен для получения публичного URL для вебхуков Telegram.
+- Запуск туннеля `tuna http 5050`
+- Полученную ссылку добавить в .env TUNA_URL и после уже запускать проект
 
 ## Примечание
 - Проект использует PostgreSQL через Docker.

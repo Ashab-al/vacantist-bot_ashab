@@ -2,6 +2,7 @@
 
 from aiogram import Bot, F, Router
 from aiogram.types import CallbackQuery
+from aiogram.enums.chat_type import ChatType
 from bot.filters.callback.get_vacancies_callback import GetVacanciesCallback
 from bot.keyboards.get_more_vacancies_keyboard import get_more_vacancies_keyboard
 from database import with_session
@@ -10,7 +11,7 @@ from services.tg.vacancy.vacancies_pagination import vacancies_pagination
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик пагинации вакансий")
-router.message.filter(F.chat.type == "private")
+router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 
 @router.callback_query(GetVacanciesCallback.filter())

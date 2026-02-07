@@ -15,11 +15,20 @@ Functions:
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
+from aiohttp import BasicAuth
 from config import settings
 
-bot = Bot(
-    token=settings.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+bot: Bot = Bot(
+    token=settings.bot_token,
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+    session=AiohttpSession(
+        proxy=(
+            f"http://{settings.proxy_host}:{settings.proxy_port}",
+            BasicAuth(login=settings.proxy_user, password=settings.proxy_pass),
+        )
+    ),
 )
 """Экземпляр Telegram-бота с предустановленными свойствами."""
 
