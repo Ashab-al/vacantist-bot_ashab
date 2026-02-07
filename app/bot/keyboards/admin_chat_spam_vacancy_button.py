@@ -5,7 +5,7 @@ from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallbackForAdm
 MAX_COUNT_BUTTON_IN_LINE = 1
 
 
-async def admin_chat_spam_vacancy_button(
+def admin_chat_spam_vacancy_button(
     spam_vacancy: SpamVacancyCallbackForAdmin
 ) -> InlineKeyboardMarkup:
 

@@ -117,7 +117,8 @@
             "all_users_count": "Всего пользователей в боте",
             "users_status_works": "Все у кого статус works",
             "users_status_bot_blocked": "Все у кого статус bot_blocked",
-            "user_not_has_username": "Пользователь не указал username"
+            "user_not_has_username": "Пользователь не указал username",
+            "categories": "Категории на которые подписан пользователь"
         },
         "advertisement": "Количество пользователей в боте",
         "still_in_development": "(Еще в разработке)",

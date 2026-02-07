@@ -47,8 +47,6 @@ async def send_spam_vacancy_in_admin_group(
 
         raise ValueError(f"В send_spam_vacancy_in_admin_group не найден пользователь с telegram_id: {callback.from_user.id}")
 
-    btn = await admin_chat_spam_vacancy_button(spam_vacancy)
-
     await bot.send_message(
         chat_id=settings.admin_chat_id,
         text=await jinja_render(
@@ -58,7 +56,7 @@ async def send_spam_vacancy_in_admin_group(
                 "user": user
             }
         ),
-        reply_markup=btn,
+        reply_markup=admin_chat_spam_vacancy_button(spam_vacancy),
         message_thread_id=settings.mailing_new_spam_vacancies_thread_id
     )
 
