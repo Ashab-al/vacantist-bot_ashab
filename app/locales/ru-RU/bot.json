@@ -166,7 +166,9 @@
             "was_blacklisted": "Вакансия была добавлена в черный список",
             "confirm_spam": "Подтвердить спам",
             "reject_spam": "Отклонить жалобу",
-            "increment_user_bonus_for_spam_vacancy": "Зачислить 1 бонус клиенту"
+            "increment_user_bonus_for_spam_vacancy": "Зачислить 1 бонус клиенту",
+            "spam_and_increment_user_bonus": "В спам и 1 бонус клиенту",
+            "not_spam_but_delete_messages": "Не спам. Но удалить все сообщения"
         },
         "telegram": "Телеграм"
     }

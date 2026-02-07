@@ -2,7 +2,11 @@ from aiogram import Bot, Router, F
 from aiogram.enums.chat_type import ChatType
 from aiogram.types import CallbackQuery
 from bot.filters.callback.spam_vacancy_callback import (
+    IncrementUserBonusForSpamVacancyCallback,
+    RejectSpamVacancyCallback,
     SpamVacancyCallback,
+    SpamVacancyCallbackForAdmin,
+    SpamAndIncrementUserBonusForSpamVacancyCallback,
 )
 from database import with_session
 from services.tg.vacancy.send_spam_vacancy_in_admin_group import (
@@ -15,6 +19,7 @@ router = Router(name="Обработчик логики связанной со 
 router.message.filter(
     (F.chat.type == ChatType.PRIVATE) | (F.chat.id == settings.admin_chat_id)
 )
+
 
 @router.callback_query(SpamVacancyCallback.filter())
 @with_session
@@ -44,3 +49,20 @@ async def reaction_choice_spam_vacancy(
         None
     """
     await send_spam_vacancy_in_admin_group(bot, callback_data, callback, session)
+
+
+@router.callback_query(IncrementUserBonusForSpamVacancyCallback.filter())
+@with_session
+async def increment_user_bonus_for_spam_vacancy(): ...
+
+@router.callback_query(RejectSpamVacancyCallback.filter())
+@with_session
+async def reject_spam_vacancy(): ...
+
+@router.callback_query(SpamVacancyCallbackForAdmin.filter())
+@with_session
+async def spam_vacancy_for_admin(): ...
+
+@router.callback_query(SpamAndIncrementUserBonusForSpamVacancyCallback.filter())
+@with_session
+async def spam_and_increment_user_bonus_for_spam_vacancy(): ...

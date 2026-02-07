@@ -22,11 +22,24 @@ class SpamVacancyCallbackForAdmin(CallbackData, prefix="spam_vacancy_admin"):
 
 
 class IncrementUserBonusForSpamVacancyCallback(
-    CallbackData, prefix="increment_user_bonus_for_spam_vacancy"
+    CallbackData, prefix="increment_user_bonus"
 ):
     user_id: int
     vacancy_id: int
 
+class SpamAndIncrementUserBonusForSpamVacancyCallback(
+    CallbackData, prefix="spam_and_increment_user_bonus"
+):
+    user_id: int
+    vacancy_id: int
+    message_id: int
+
+class NotSpamButDeleteMessagesForSpamVacancyCallback(
+    CallbackData, prefix="not_spam_but_delete_messages"
+):
+    user_id: int
+    vacancy_id: int
+    message_id: int
 
 class RejectSpamVacancyCallback(CallbackData, prefix="reject_spam_vacancy"):
     vacancy_id: int

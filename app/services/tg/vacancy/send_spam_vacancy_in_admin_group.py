@@ -1,10 +1,12 @@
 from aiogram import Bot, html
 from aiogram.types import CallbackQuery
 from bot.filters.callback.spam_vacancy_callback import (
+    SpamVacancyCallback,
     IncrementUserBonusForSpamVacancyCallback,
     RejectSpamVacancyCallback,
-    SpamVacancyCallback,
     SpamVacancyCallbackForAdmin,
+    SpamAndIncrementUserBonusForSpamVacancyCallback,
+    NotSpamButDeleteMessagesForSpamVacancyCallback,
 )
 from bot.keyboards.admin_chat_spam_vacancy_button import admin_chat_spam_vacancy_button
 from config import i18n, settings
@@ -59,6 +61,8 @@ def _buttons(callback_data: SpamVacancyCallback, callback: CallbackQuery):
         "spam_vacancy": SpamVacancyCallbackForAdmin,
         "increment_user_bonus_for_spam_vacancy": IncrementUserBonusForSpamVacancyCallback,
         "reject_spam_vacancy": RejectSpamVacancyCallback,
+        "spam_and_increment_user_bonus_for_spam_vacancy": SpamAndIncrementUserBonusForSpamVacancyCallback,
+        "not_spam_but_delete_messages_for_spam_vacancy": NotSpamButDeleteMessagesForSpamVacancyCallback,
     }
     callback_data_dict = {key: value(**data) for key, value in args.items()}
     return admin_chat_spam_vacancy_button(**callback_data_dict)
