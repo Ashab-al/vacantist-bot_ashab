@@ -3,7 +3,7 @@ from typing import List
 from models.base import Base
 from models.user import User
 from models.vacancy import Vacancy
-from sqlalchemy import Integer, String, BigInteger, ForeignKey
+from sqlalchemy import BigInteger, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -13,7 +13,9 @@ class SentMessage(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     # Внешние ключи обязательны для работы relationship
-    vacancy_id: Mapped[int] = mapped_column(ForeignKey("vacancies.id", ondelete="CASCADE"))
+    vacancy_id: Mapped[int] = mapped_column(
+        ForeignKey("vacancies.id", ondelete="CASCADE")
+    )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
     # Telegram ID сообщений могут быть большими, BigInteger надежнее

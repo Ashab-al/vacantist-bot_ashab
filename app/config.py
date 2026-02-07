@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     url_for_local_develop: str
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"),
-        extra="ignore"
+        extra="ignore",
     )
 
     mailing_vacancies_thread_id: int
@@ -82,7 +82,6 @@ class Settings(BaseSettings):
     mode: ModeEnum
     generic_timezone: str
 
-
     def get_webhook_url(self) -> str:
         """
         Формирует URL вебхука для Telegram бота.
@@ -94,6 +93,7 @@ class Settings(BaseSettings):
             return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
 
         return f"{self.url_for_local_develop}/api/v1/webhook"
+
 
 settings = Settings()
 """Экземпляр настроек"""

@@ -1,4 +1,5 @@
 from typing import List
+
 from models.base import Base
 from models.category import Category
 from sqlalchemy import ForeignKey, Integer, String
@@ -35,7 +36,5 @@ class Vacancy(Base):
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), index=True)
     category: Mapped["Category"] = relationship(back_populates="vacancies")
     sent_messages: Mapped[List["SentMessage"]] = relationship(
-        "SentMessage",
-        back_populates="vacancy",
-        cascade="all, delete-orphan"
+        "SentMessage", back_populates="vacancy", cascade="all, delete-orphan"
     )

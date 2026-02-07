@@ -1,14 +1,13 @@
 from typing import Annotated
 
-
 from database import get_async_session
 from exceptions.vacancy.blacklisted_vacancy import BlacklistedVacancyError
-from fastapi import APIRouter, Body, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException
 from schemas.api.vacancies.create.request import CreateVacancyRequest
 from schemas.api.vacancies.create.response import CreateVacancyResponse
 from services.api.vacancy.check_and_create_vacancy import check_and_create_vacancy
-from sqlalchemy.ext.asyncio import AsyncSession
 from services.tg.vacancy.sender_vacancy import sender_vacancy
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -22,7 +21,7 @@ router = APIRouter()
 async def create_new_vacancy(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     vacancy_data: Annotated[CreateVacancyRequest, Body()],
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
 ):
     """
     Создать новую вакансию и отправить её пользователям.

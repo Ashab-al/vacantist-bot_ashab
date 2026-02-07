@@ -1,27 +1,30 @@
 import asyncio
-from asyncio import TaskGroup
-import random
 import logging
+import random
+from asyncio import TaskGroup
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError
+from bot.create_bot import bot
 from bot.keyboards.vacancy_keyboard import vacancy_keyboard
+from config import settings
 from database import get_async_session_for_bot
 from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
+from models.sent_message import SentMessage
 from models.user import User
 from models.vacancy import Vacancy
-from models.sent_message import SentMessage
 from query_objects.users.find_users_where_have_subscribe_to_category import (
     find_users_where_have_subscribe_to_category,
 )
 from query_objects.users.get_user_by_id import get_user_by_id
 from query_objects.vacancies.find_vacancy_by_id import find_vacancy_by_id
-from services.tg.admin_alert import admin_alert_mailing_vacancies, admin_alert_mailing_errors
+from services.tg.admin_alert import (
+    admin_alert_mailing_errors,
+    admin_alert_mailing_vacancies,
+)
 from services.tg.user.update_bot_status import update_bot_status
-from bot.create_bot import bot
-from config import settings
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def sender_vacancy(vacancy_id: int) -> None:
@@ -47,7 +50,9 @@ async def sender_vacancy(vacancy_id: int) -> None:
           на `BOT_BLOCKED`.
         - Для остановки воркера в очередь нужно положить `None`.
     """
-    await admin_alert_mailing_vacancies(bot, f"Запущена рассылка вакансии с ID: {vacancy_id}")
+    await admin_alert_mailing_vacancies(
+        bot, f"Запущена рассылка вакансии с ID: {vacancy_id}"
+    )
 
     logging.info("Запущена рассылка вакансии с ID: %s", vacancy_id)
 
@@ -55,7 +60,9 @@ async def sender_vacancy(vacancy_id: int) -> None:
         vacancy: Vacancy | None = await find_vacancy_by_id(db, vacancy_id)
 
         if vacancy is None:
-            await admin_alert_mailing_errors(bot, f"Вакансия с ID {vacancy_id} не найдена")
+            await admin_alert_mailing_errors(
+                bot, f"Вакансия с ID {vacancy_id} не найдена"
+            )
             raise ValueError("Vacancy not found")
 
         users: list[User] = await find_users_where_have_subscribe_to_category(
@@ -76,20 +83,23 @@ async def sender_vacancy(vacancy_id: int) -> None:
             asyncio.create_task(send_vacancy_to_user(bot, user, vacancy, db))
             for user in users
         ]
-        await asyncio.gather(*tasks) # сделать так чтобы возвращались объекты SentMessage
+        await asyncio.gather(
+            *tasks
+        )  # сделать так чтобы возвращались объекты SentMessage
         await db.commit()
 
     logging.info("Рассылка вакансии с ID: %s завершена", vacancy_id)
-    await admin_alert_mailing_vacancies(bot, f"Рассылка вакансии с ID: {vacancy_id} завершена.")
+    await admin_alert_mailing_vacancies(
+        bot, f"Рассылка вакансии с ID: {vacancy_id} завершена."
+    )
 
 
-async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy, db: AsyncSession) -> None:
+async def send_vacancy_to_user(
+    bot: Bot, user: User, vacancy: Vacancy, db: AsyncSession
+) -> None:
     """Отправить вакансию пользователю с задержкой."""
     await asyncio.sleep(
-        random.randint(
-            settings.min_delay_seconds,
-            settings.max_delay_seconds
-        )
+        random.randint(settings.min_delay_seconds, settings.max_delay_seconds)
     )
     try:
         result = await bot.send_message(
@@ -107,7 +117,9 @@ async def send_vacancy_to_user(bot: Bot, user: User, vacancy: Vacancy, db: Async
         logging.info(str(result))
     except TelegramForbiddenError as e:
         logging.error(str(e))
-        await admin_alert_mailing_errors(bot, str(e) + "\n\nTelegramForbiddenError sender_worker")
+        await admin_alert_mailing_errors(
+            bot, str(e) + "\n\nTelegramForbiddenError sender_worker"
+        )
         async with get_async_session_for_bot() as session:
             await update_bot_status(
                 db=session,

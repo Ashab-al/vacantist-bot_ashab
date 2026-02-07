@@ -5,6 +5,7 @@ from config import settings
 from lib.tg.common import jinja_render
 from services.tg.admin_alert import admin_alert_mailing_payments_info
 
+
 async def send_info_about_new_payment(
     bot: Bot, tariff_data: TariffCallback, aiogram_user: AiogramTgUser
 ) -> None:
@@ -25,5 +26,5 @@ async def send_info_about_new_payment(
                 "points": tariff_data.points,
                 "stars": tariff_data.price,
             },
-        )
+        ),
     )

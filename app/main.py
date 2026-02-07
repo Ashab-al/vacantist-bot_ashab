@@ -55,7 +55,6 @@ async def lifespan(_app: FastAPI):
         logging.error(f"!!! Webhook NOT set: {e}")
         logging.info("Application will continue to work without webhook for now.")
 
-
     logging.info("Webhook set to %s", webhook_url)
 
     yield

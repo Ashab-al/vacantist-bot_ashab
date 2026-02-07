@@ -3,15 +3,20 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
 from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
-from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallback, SpamVacancyCallbackForAdmin
+from bot.filters.callback.spam_vacancy_callback import (
+    SpamVacancyCallback,
+    SpamVacancyCallbackForAdmin,
+)
 from bot.keyboards.open_vacancy_keyboard import open_vacancy_keyboard
 from database import with_session
 from enums.check_vacancy_enum import CheckVacancyEnum
 from lib.tg.common import jinja_render
 from services.tg.vacancy.open_vacancy_and_show_alert import open_vacancy_and_show_alert
+from services.tg.vacancy.send_spam_vacancy_in_admin_group import (
+    send_spam_vacancy_in_admin_group,
+)
 from services.tg.vacancy.spam_vacancy import BLACKLISTED, spam_vacancy
 from sqlalchemy.ext.asyncio import AsyncSession
-from services.tg.vacancy.send_spam_vacancy_in_admin_group import send_spam_vacancy_in_admin_group
 
 router = Router(name="Обработчик вакансий")
 
@@ -89,12 +94,7 @@ async def reaction_choice_spam_vacancy(
     Returns:
         None
     """
-    await send_spam_vacancy_in_admin_group(
-        bot,
-        callback_data,
-        callback,
-        session
-    )
+    await send_spam_vacancy_in_admin_group(bot, callback_data, callback, session)
     # await callback.answer(
     #     await jinja_render(
     #         "callback_query/spam_vacancy",

@@ -1,19 +1,33 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
-from lib.tg.common import jinja_render
-from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallbackForAdmin
+from bot.filters.callback.spam_vacancy_callback import (
+    IncrementUserBonusForSpamVacancyCallback,
+    RejectSpamVacancyCallback,
+    SpamVacancyCallbackForAdmin,
+)
+from config import i18n
 
 MAX_COUNT_BUTTON_IN_LINE = 1
 
 
 def admin_chat_spam_vacancy_button(
-    spam_vacancy: SpamVacancyCallbackForAdmin
+    spam_vacancy: SpamVacancyCallbackForAdmin,
+    increment_user_bonus_for_spam_vacancy: IncrementUserBonusForSpamVacancyCallback,
+    reject_spam_vacancy: RejectSpamVacancyCallback,
 ) -> InlineKeyboardMarkup:
 
     kb = InlineKeyboardBuilder()
 
     kb.button(
-        text="Подтвердить спам",
+        text=i18n["spam"]["confirm_spam"],
         callback_data=spam_vacancy.pack(),
+    )
+    kb.button(
+        text=i18n["spam"]["increment_user_bonus_for_spam_vacancy"],
+        callback_data=increment_user_bonus_for_spam_vacancy.pack(),
+    )
+    kb.button(
+        text=i18n["spam"]["reject_spam"],
+        callback_data=reject_spam_vacancy.pack(),
     )
     kb.adjust(MAX_COUNT_BUTTON_IN_LINE, repeat=True)
 

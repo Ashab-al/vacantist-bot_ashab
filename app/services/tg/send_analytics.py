@@ -2,10 +2,10 @@ from bot.create_bot import bot
 from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
 from models.user import User
+from services.tg.admin_alert import admin_alert_mailing_new_users
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.tg.admin_alert import admin_alert_mailing_new_users
 
 async def send_analytics(db: AsyncSession, user: User) -> None:
     """
@@ -29,5 +29,5 @@ async def send_analytics(db: AsyncSession, user: User) -> None:
             "analytics",
             {"user": user, "analytics": analytics, "bot_status": BotStatusEnum},
         ),
-        bot=bot
+        bot=bot,
     )

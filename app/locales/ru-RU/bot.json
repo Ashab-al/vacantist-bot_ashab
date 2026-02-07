@@ -162,7 +162,11 @@
             "meta_info": "Дополнительная информация",
             "user_data": "Данные пользователя",
             "vacancy_data": "Данные вакансии",
-            "user_first_name": "Имя пользователя"
+            "user_first_name": "Имя пользователя",
+            "was_blacklisted": "Вакансия была добавлена в черный список",
+            "confirm_spam": "Подтвердить спам",
+            "reject_spam": "Отклонить жалобу",
+            "increment_user_bonus_for_spam_vacancy": "Зачислить 1 бонус клиенту"
         },
         "telegram": "Телеграм"
     }

@@ -57,8 +57,6 @@ class User(Base):
             "Category", secondary=subscription, back_populates="users"
         )
     )
-    sent_messages: Mapped[List["SentMessage"]] = (
-        relationship(
-            "SentMessage", back_populates="user", cascade="all, delete-orphan"
-        )
+    sent_messages: Mapped[List["SentMessage"]] = relationship(
+        "SentMessage", back_populates="user", cascade="all, delete-orphan"
     )
