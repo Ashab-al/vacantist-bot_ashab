@@ -10,7 +10,7 @@ COMPLAINT_COUNTER = 1
 async def add_vacancy_to_blacklist(
     vacancy_id: int,
     db: AsyncSession
-) -> None:
+) -> BlackList:
     """
     Добавляет вакансию в черный список.
 
@@ -29,9 +29,11 @@ async def add_vacancy_to_blacklist(
     if await check_blacklist(db, vacancy):
         raise ValueError(f"Вакансия с контактной информацией {vacancy.contact_information} уже в черном списке")
 
-    new_blacklist: BlackList = BlackList(
-        contact_information=vacancy.contact_information, complaint_counter=COMPLAINT_COUNTER
+    blacklist: BlackList = BlackList(
+        contact_information=vacancy.contact_information,
+        complaint_counter=COMPLAINT_COUNTER
     )
-    db.add(new_blacklist)
+    db.add(blacklist)
     await db.commit()
-    await db.refresh(new_blacklist)
+    await db.refresh(blacklist)
+    return blacklist

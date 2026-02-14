@@ -3,7 +3,7 @@ from query_objects.blacklist.black_list_check_by_platform_id_and_contact_informa
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import BlackList, Vacancy
-from lib.tg.constants import SOURCE
+from asyncio import TaskGroup
 
 async def check_blacklist(db: AsyncSession, vacancy: Vacancy) -> BlackList | None:
     """
@@ -16,11 +16,16 @@ async def check_blacklist(db: AsyncSession, vacancy: Vacancy) -> BlackList | Non
     Returns:
         BlackList | None: Объект BlackList, если вакансия находится в черном списке, иначе None.
     """
-    contact_information: str = vacancy.contact_information
+    async with TaskGroup() as tg:
+        task_by_contact_information = tg.create_task(
+            black_list_check_by_platform_id_or_contact_information(
+                db, contact_information=vacancy.contact_information
+            )
+        )
+        task_by_platform_id = tg.create_task(
+            black_list_check_by_platform_id_or_contact_information(
+                db, contact_information=vacancy.platform_id
+            )
+        )
 
-    if vacancy.source == SOURCE:
-        contact_information = vacancy.platform_id
-
-    return await black_list_check_by_platform_id_or_contact_information(
-        db, contact_information=contact_information
-    )
+    return task_by_contact_information.result() or task_by_platform_id.result()

@@ -101,9 +101,6 @@ async def webhook(request: Request) -> None:
         Обновление валидируется и передается в диспетчер dp.feed_update для обработки.
     """
     logging.info("Received webhook update")
-    logging.info("Request headers: %s", request.headers)
-    logging.info("Request body: %s", await request.body())
-    logging.info("Request data: %s", await request.json())
     await dp.feed_update(
         bot, Update.model_validate(await request.json(), context={"bot": bot})
     )
