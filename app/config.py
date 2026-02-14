@@ -14,7 +14,6 @@ import os
 from typing import Optional
 
 import requests
-from enums.mode_enum import ModeEnum
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from lib.tg.pluralize import pluralize
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -30,20 +29,18 @@ class Settings(BaseSettings):
         bot_token (str): Токен Telegram бота
         admin_id (int): ID администратора
         admin_chat_id (str): ID чата администратора
-        url_for_local_develop (str): URL для локальной разработки
         database_dsn (str): DSN для подключения к базе данных
         echo_db_engine (Optional[bool]): Флаг логирования SQLAlchemy
         db_host (str), db_port (int), db_user (str), db_pass (str), db_name (str): параметры БД
     """
 
-    bot_token: str
-    admin_id: int
-    admin_chat_id: str
-    url_for_local_develop: str
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"),
         extra="ignore",
     )
+    bot_token: str
+    admin_id: int
+    admin_chat_id: str
 
     mailing_vacancies_thread_id: int
     mailing_payments_thread_id: int
@@ -72,16 +69,7 @@ class Settings(BaseSettings):
     # для продакшена
     domain_name: str
     subdomain: str
-    directus_subdomain: str
-    n8n_subdomain: str
-    directus_db_client: str
-    ssl_email: str
-    postgres_password: str
-    password_directus: str
-    secret: str
-    mode: ModeEnum
-    generic_timezone: str
-
+    debug: bool
     def get_webhook_url(self) -> str:
         """
         Формирует URL вебхука для Telegram бота.
@@ -89,10 +77,8 @@ class Settings(BaseSettings):
         Returns:
             str: URL вебхука
         """
-        if self.mode == ModeEnum.PRODUCTION:
-            return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
+        return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
 
-        return f"{self.url_for_local_develop}/api/v1/webhook"
 
 
 settings = Settings()

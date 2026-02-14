@@ -16,7 +16,6 @@ from api import api_router
 from bot.create_bot import bot, dp, start_bot, stop_bot
 from bot.handlers import main_router
 from config import settings  # noqa: F401
-from enums.mode_enum import ModeEnum
 from fastapi import FastAPI, Request
 
 # pylint: enable=broad-except, unused-import
@@ -42,14 +41,13 @@ async def lifespan(_app: FastAPI):
     webhook_url = settings.get_webhook_url()
     await start_bot()
     logging.info("Webhook URL: %s", webhook_url)
-    drop_pending_updates: bool = settings.mode is ModeEnum.DEVELOP
-    logging.info("drop_pending_updates -> %s", drop_pending_updates)
+
     try:
         logging.info(f"Webhook set to {webhook_url}")
         await bot.set_webhook(
             url=webhook_url,
             allowed_updates=dp.resolve_used_update_types(),
-            drop_pending_updates=drop_pending_updates,
+            drop_pending_updates=settings.debug,
         )
     except Exception as e:
         logging.error(f"!!! Webhook NOT set: {e}")
@@ -75,7 +73,7 @@ common_kwargs: dict = {
     "description": "Telegram-бот для поиска вакансий",
 }
 
-if settings.mode == ModeEnum.PRODUCTION:
+if settings.debug:
     common_kwargs.update(docs_url=None, redoc_url=None, openapi_url=None)
 
 app = FastAPI(**common_kwargs)
