@@ -35,7 +35,7 @@ async def reaction_choice_spam_vacancy(
 
     Функция:
     - Получает данные о вакансии, на которую пользователь пожаловался.
-    - Вызывает сервис `spam_vacancy` для обработки жалобы
+    - Вызывает сервис `send_spam_vacancy_in_admin_group` для обработки жалобы
     и возможного добавления вакансии в чёрный список.
     - Отправляет пользователю alert с результатом действия
     (например, "вакансия добавлена в список спама").
@@ -54,7 +54,14 @@ async def reaction_choice_spam_vacancy(
 
 @router.callback_query(SpamVacancyCallbackForAdmin.filter())
 @with_session
-async def spam_vacancy_for_admin(): ...
+async def spam_vacancy_for_admin(
+    callback: CallbackQuery,
+    callback_data: SpamVacancyCallbackForAdmin,
+    session: AsyncSession,
+    bot: Bot
+):
+    """Нажатие на кнопку 'Подтвердить спам'"""
+
 
 @router.callback_query(IncrementUserBonusForSpamVacancyCallback.filter())
 @with_session

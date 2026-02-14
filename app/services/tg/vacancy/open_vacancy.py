@@ -6,7 +6,8 @@ from query_objects.blacklist.black_list_check_by_platform_id_and_contact_informa
     black_list_check_by_platform_id_or_contact_information,
 )
 from query_objects.vacancies.find_vacancy_by_id import find_vacancy_by_id
-from services.tg.vacancy.spam_vacancy import COMPLAINT_COUNTER
+from services.tg.spam.add_vacancy_to_blacklist import COMPLAINT_COUNTER
+from services.tg.spam.check_blacklist import check_blacklist
 from sqlalchemy.ext.asyncio import AsyncSession
 
 REDUCE_BALANCE = 1
@@ -62,18 +63,14 @@ async def _check_vacancy(db: AsyncSession, user: User, vacancy: Vacancy) -> dict
             "path_view": "callback_query/out_of_points",
         }
 
-    contact_information: str = (
-        vacancy.platform_id if vacancy.source == SOURCE else vacancy.contact_information
-    )
-
-    if await _check_blacklist(db, contact_information):
+    if await check_blacklist(db, vacancy):
         return {
             "status": CheckVacancyEnum.WARNING,
             "vacancy": vacancy,
             "path_view": "callback_query/add_to_blacklist",
         }
 
-    if user.bonus > ZERO_BALANCE:
+    if user.bonus:
         user.bonus = user.bonus - REDUCE_BALANCE
     else:
         user.point = user.point - REDUCE_BALANCE
@@ -88,22 +85,3 @@ async def _check_vacancy(db: AsyncSession, user: User, vacancy: Vacancy) -> dict
         "path_view": "callback_query/open_vacancy",
         "low_points": user.point <= POINTS_EDGE,
     }
-
-
-async def _check_blacklist(db: AsyncSession, contact_information: str) -> bool:
-    """
-    Проверяет, находится ли контактная информация в черном списке.
-
-    Args:
-        db (AsyncSession): Асинхронная сессия SQLAlchemy.
-        contact_information (str): Контактная информация вакансии (platform_id или контакт).
-
-    Returns:
-        bool: True, если контактная информация есть в черном списке и количество жалоб
-              превышает COMPLAINT_COUNTER, иначе False.
-    """
-    blacklist = await black_list_check_by_platform_id_or_contact_information(
-        db, contact_information=contact_information
-    )
-
-    return blacklist and blacklist.complaint_counter >= COMPLAINT_COUNTER
