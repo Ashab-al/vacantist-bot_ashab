@@ -6,7 +6,7 @@ CURRENCY_XTR = "XTR"
 CURRENCY_RUB = "RUB"
 
 TARIFFS_PRICES = {
-    10: {CURRENCY_XTR: 50, CURRENCY_RUB: 1},  # 5.0 звезд за штуку
+    10: {CURRENCY_XTR: 50, CURRENCY_RUB: 90},  # 5.0 звезд за штуку
     20: {CURRENCY_XTR: 90, CURRENCY_RUB: 160},  # 4.5 звезд за штуку
     30: {CURRENCY_XTR: 135, CURRENCY_RUB: 240},  # 4.5 звезд за штуку
     50: {CURRENCY_XTR: 135, CURRENCY_RUB: 390},  # 4.4 звезд за штуку
