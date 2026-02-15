@@ -16,6 +16,7 @@ from services.tg.vacancy.send_spam_vacancy_in_admin_group import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from config import settings
 from services.tg.spam.admin_confirm_add_vacancy_to_blacklist import admin_confirm_add_vacancy_to_blacklist
+from services.tg.spam.increment_user_bonus import increment_user_bonus
 
 router = Router(name="Обработчик логики связанной со спамом")
 router.message.filter(
@@ -58,15 +59,23 @@ async def reaction_choice_spam_vacancy(
 async def spam_vacancy_for_admin(
     callback: CallbackQuery,
     callback_data: SpamVacancyCallbackForAdmin,
-    session: AsyncSession,
-    bot: Bot
+    session: AsyncSession
 ):
     """Нажатие на кнопку 'Подтвердить спам'"""
     await admin_confirm_add_vacancy_to_blacklist(callback, callback_data, session)
 
 @router.callback_query(IncrementUserBonusForSpamVacancyCallback.filter())
 @with_session
-async def increment_user_bonus_for_spam_vacancy(): ...
+async def increment_user_bonus_for_spam_vacancy(
+    callback: CallbackQuery,
+    callback_data: IncrementUserBonusForSpamVacancyCallback,
+    session: AsyncSession,
+    bot: Bot
+):
+    """
+    Нажатие на кнопку 'Зачислить 1 бонус клиенту'
+    """
+    await increment_user_bonus(callback, callback_data, session, bot)
 
 @router.callback_query(RejectSpamVacancyCallback.filter())
 @with_session

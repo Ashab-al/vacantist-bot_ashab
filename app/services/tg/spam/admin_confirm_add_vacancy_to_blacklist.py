@@ -6,9 +6,8 @@ from aiogram.types import CallbackQuery
 from bot.filters.callback.spam_vacancy_callback import (
     SpamVacancyCallbackForAdmin,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 from lib.tg.common import jinja_render
-
+from services.tg.spam.update_spam_message import update_spam_message
 
 async def admin_confirm_add_vacancy_to_blacklist(
     callback: CallbackQuery,
@@ -25,7 +24,6 @@ async def admin_confirm_add_vacancy_to_blacklist(
     Returns:
         None
     """
-
     await callback.answer()
     try:
         await add_vacancy_to_blacklist(callback_data.vacancy_id, session)
@@ -34,10 +32,7 @@ async def admin_confirm_add_vacancy_to_blacklist(
         await callback.message.answer(f"Ошибка: {e}")
         return
 
-    await callback.message.edit_text(
-        text = await jinja_render(
-            "spam/update_spam_message_in_admin_group",
-            {"text": callback.message.text}
-        ),
-        reply_markup=callback.message.reply_markup
+    await update_spam_message(
+        callback,
+        "spam/update_spam_message_for_user_after_confirm_spam"
     )

@@ -168,7 +168,12 @@
             "reject_spam": "Отклонить жалобу",
             "increment_user_bonus_for_spam_vacancy": "Зачислить 1 бонус клиенту",
             "spam_and_increment_user_bonus": "В спам и 1 бонус клиенту",
-            "not_spam_but_delete_messages": "Не спам. Но удалить все сообщения"
+            "not_spam_but_delete_messages": "Не спам. Но удалить все сообщения",
+            "increment_user_bonus": "Зачислили 1 бонус клиенту",
+            "help_with_spam":"Спасибо за помощь в борьбе со спамом",
+            "notify_the_user_about_the_bonus_transfer": "Ваш вклад помогает нам поддерживать качество вакансий и улучшать сервис для всех пользователей",
+            "credited_to_you": "Мы начислили вам 1 бонус за вашу жалобу на вакансию"
+
         },
         "telegram": "Телеграм"
     }
