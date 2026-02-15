@@ -15,5 +15,5 @@ class TariffCallback(CallbackData, prefix="tariff"):
     """
 
     points: int
-    price: int
-    currency: str
+    price_xtr: int
+    price_rub: int

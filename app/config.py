@@ -7,16 +7,14 @@
 - Глобальная очередь для вакансий
 """
 
-import asyncio
 import json
-import logging
 import os
 from typing import Optional
 
-import requests
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from lib.tg.pluralize import pluralize
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from yookassa import Configuration
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -66,6 +64,11 @@ class Settings(BaseSettings):
     min_delay_seconds: int
     max_delay_seconds: int
 
+    yookassa_api_key: str
+    yookassa_account_id: int
+    yookassa_after_pay_redirect_url: str
+    yookassa_confirmation_type: str
+
     # для продакшена
     domain_name: str
     subdomain: str
@@ -98,3 +101,7 @@ with open(f"{BASE_DIR}/locales/ru-RU/bot.json", encoding="utf-8") as f:
 
 jinja_env.globals["i18n"] = i18n
 jinja_env.globals["pluralize"] = pluralize
+
+# Добавление данных для юкассы
+Configuration.account_id = settings.yookassa_account_id
+Configuration.secret_key = settings.yookassa_api_key
