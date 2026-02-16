@@ -73,7 +73,7 @@ common_kwargs: dict = {
     "description": "Telegram-бот для поиска вакансий",
 }
 
-if settings.debug:
+if not settings.debug:
     common_kwargs.update(docs_url=None, redoc_url=None, openapi_url=None)
 
 app = FastAPI(**common_kwargs)

@@ -22,6 +22,8 @@ from services.tg.user.update_points_for_pre_checkout_query import (
     update_points_for_pre_checkout_query,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from services.tg.payment.create_payments import create_payments
+
 
 router = Router(name="Обработчик тарифов и платежей")
 router.message.filter(F.chat.type == ChatType.PRIVATE)
@@ -72,8 +74,12 @@ async def choice_btn_points(callback: CallbackQuery, bot: Bot, session: AsyncSes
 
 
 @router.callback_query(TariffCallback.filter())
+@with_session
 async def reaction_choice_tariff(
-    callback: CallbackQuery, callback_data: TariffCallback, bot: Bot
+    callback: CallbackQuery,
+    callback_data: TariffCallback,
+    bot: Bot,
+    session: AsyncSession
 ):
     """
     Обрабатывает выбор тарифа пользователем и отправляет инвойс для оплаты.
@@ -88,22 +94,11 @@ async def reaction_choice_tariff(
         - Отправляет счет через метод `send_invoice`.
     """
     await callback.answer()
-    await bot.send_invoice(
-        chat_id=callback.from_user.id,
-        title=await jinja_render("payment/title", {"tariff": callback_data.points}),
-        description=await jinja_render(
-            "points/tariff_callback", {"tariff": callback_data.points}
-        ),
-        payload=callback_data.pack(),
-        currency=callback_data.currency,
-        prices=[
-            LabeledPrice(
-                label=await jinja_render(
-                    "points/tariff_callback", {"tariff": callback_data.points}
-                ),
-                amount=callback_data.price,
-            )
-        ],
+    await create_payments(
+        callback,
+        callback_data,
+        bot,
+        session,
     )
 
 
