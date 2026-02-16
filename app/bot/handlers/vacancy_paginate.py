@@ -9,6 +9,7 @@ from database import with_session
 from lib.tg.common import jinja_render
 from services.tg.vacancy.vacancies_pagination import vacancies_pagination
 from sqlalchemy.ext.asyncio import AsyncSession
+import logging
 
 router = Router(name="Обработчик пагинации вакансий")
 router.message.filter(F.chat.type == ChatType.PRIVATE)
@@ -38,14 +39,22 @@ async def reaction_get_vacancies(
         - Отправляет вакансии пользователю с задержкой DELAY между сообщениями.
         - Прикрепляет клавиатуру для получения следующей страницы вакансий.
     """
-    user, number, next_page, count = await vacancies_pagination(
-        callback, callback_data, session, bot
-    )
+    try:
+        user, number, next_page, count = await vacancies_pagination(
+            callback, callback_data, session, bot
+        )
+    except ValueError as e:
+        logging.error(e)
+        return
+
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=await jinja_render(
             "pagination/sended_vacancies",
             {"number": number, "count": count},
         ),
-        reply_markup=await get_more_vacancies_keyboard(user=user, page=next_page),
+        reply_markup=await get_more_vacancies_keyboard(
+            user=user,
+            page=next_page
+        ),
     )

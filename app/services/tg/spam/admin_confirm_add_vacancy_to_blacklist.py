@@ -24,7 +24,7 @@ async def admin_confirm_add_vacancy_to_blacklist(
     Returns:
         None
     """
-    await callback.answer()
+
     try:
         await add_vacancy_to_blacklist(callback_data.vacancy_id, session)
     except ValueError as e:
@@ -34,5 +34,5 @@ async def admin_confirm_add_vacancy_to_blacklist(
 
     await update_spam_message(
         callback,
-        "spam/update_spam_message_for_user_after_confirm_spam"
+        "spam/update_spam_message_in_admin_group"
     )
