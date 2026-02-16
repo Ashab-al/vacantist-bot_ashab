@@ -1,7 +1,6 @@
 from aiogram import Bot
 from aiogram.types.user import User as AiogramTgUser
 from bot.filters.callback.tariff_callback import TariffCallback
-from config import settings
 from lib.tg.common import jinja_render
 from services.tg.admin_alert import admin_alert_mailing_payments_info
 
