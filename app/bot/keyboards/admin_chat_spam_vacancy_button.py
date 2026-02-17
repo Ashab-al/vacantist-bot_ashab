@@ -1,10 +1,10 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
 from bot.filters.callback.spam_vacancy_callback import (
     IncrementUserBonusForSpamVacancyCallback,
-    RejectSpamVacancyCallback,
-    SpamVacancyCallbackForAdmin,
-    SpamAndIncrementUserBonusForSpamVacancyCallback,
     NotSpamButDeleteMessagesForSpamVacancyCallback,
+    RejectSpamVacancyCallback,
+    SpamAndIncrementUserBonusForSpamVacancyCallback,
+    SpamVacancyCallbackForAdmin,
 )
 from config import i18n
 

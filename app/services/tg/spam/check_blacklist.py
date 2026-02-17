@@ -1,9 +1,11 @@
+from asyncio import TaskGroup
+
+from models import BlackList, Vacancy
 from query_objects.blacklist.black_list_check_by_platform_id_and_contact_information import (
     black_list_check_by_platform_id_or_contact_information,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-from models import BlackList, Vacancy
-from asyncio import TaskGroup
+
 
 async def check_blacklist(db: AsyncSession, vacancy: Vacancy) -> BlackList | None:
     """

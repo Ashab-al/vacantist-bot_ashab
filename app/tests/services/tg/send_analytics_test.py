@@ -8,9 +8,13 @@ from services.tg.send_analytics import send_analytics
 
 @pytest.mark.asyncio
 # Мокаем саму функцию отправки алерта, так как send_analytics вызывает её
-@patch("services.tg.send_analytics.admin_alert_mailing_new_users", new_callable=AsyncMock)
+@patch(
+    "services.tg.send_analytics.admin_alert_mailing_new_users", new_callable=AsyncMock
+)
 @patch("services.tg.send_analytics.jinja_render", new_callable=AsyncMock)
-@patch("services.tg.send_analytics.bot") # Мокаем инстанс бота, который импортируется в файл
+@patch(
+    "services.tg.send_analytics.bot"
+)  # Мокаем инстанс бота, который импортируется в файл
 async def test_send_analytics(mock_bot, mock_render, mock_admin_alert):
     """
     Тестирует корректность работы функции `send_analytics`.
@@ -39,7 +43,7 @@ async def test_send_analytics(mock_bot, mock_render, mock_admin_alert):
     mock_db.execute.side_effect = [mock_result_group, mock_result_count]
 
     # Настройка мока пользователя
-    mock_user = MagicMock() # Для моделей лучше MagicMock или Mock, если не нужны await
+    mock_user = MagicMock()  # Для моделей лучше MagicMock или Mock, если не нужны await
     mock_user.username = "test_user"
 
     # Ожидаемая структура данных для рендера
@@ -53,17 +57,19 @@ async def test_send_analytics(mock_bot, mock_render, mock_admin_alert):
 
     # Вызов тестируемой функции
     from services.tg.send_analytics import send_analytics
+
     await send_analytics(mock_db, mock_user)
 
     # Проверки
     # 1. Проверяем, что рендер вызван с правильными аргументами
     mock_render.assert_awaited_once_with(
         "analytics",
-        {"user": mock_user, "analytics": expected_analytics, "bot_status": BotStatusEnum},
+        {
+            "user": mock_user,
+            "analytics": expected_analytics,
+            "bot_status": BotStatusEnum,
+        },
     )
 
     # 2. Проверяем, что функция алерта вызвана с отрендеренным текстом и моком бота
-    mock_admin_alert.assert_awaited_once_with(
-        text=jinja_text,
-        bot=mock_bot
-    )
+    mock_admin_alert.assert_awaited_once_with(text=jinja_text, bot=mock_bot)

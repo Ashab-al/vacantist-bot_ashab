@@ -1,37 +1,25 @@
+from asyncio import TaskGroup
 
 from aiogram import Bot
-from aiogram.types import (
-    CallbackQuery,
-    LabeledPrice,
-)
+from aiogram.types import CallbackQuery, LabeledPrice
 from bot.filters.callback.tariff_callback import TariffCallback
-from lib.tg.common import jinja_render
-from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
-from sqlalchemy.ext.asyncio import AsyncSession
-from services.tg.yookassa.create_payment import create_payment
-from lib.tg.common import jinja_render
-from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
 from bot.keyboards.payment_link_button import payment_link_button
-from asyncio import TaskGroup
+from lib.tg.common import jinja_render
+from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
+from services.tg.yookassa.create_payment import create_payment
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def create_payments(
     callback: CallbackQuery,
     callback_data: TariffCallback,
     bot: Bot,
-    session: AsyncSession
+    session: AsyncSession,
 ):
-    await _send_stars_payment(
-        callback,
-        callback_data,
-        bot
-    )
+    await _send_stars_payment(callback, callback_data, bot)
 
-    await _create_and_send_yookassa_payment(
-        callback,
-        callback_data,
-        session
-    )
+    await _create_and_send_yookassa_payment(callback, callback_data, session)
+
 
 async def _send_stars_payment(
     callback: CallbackQuery,
@@ -56,40 +44,35 @@ async def _send_stars_payment(
         ],
     )
 
+
 async def _create_and_send_yookassa_payment(
-    callback: CallbackQuery,
-    callback_data: TariffCallback,
-    session: AsyncSession
+    callback: CallbackQuery, callback_data: TariffCallback, session: AsyncSession
 ) -> None:
     async with TaskGroup() as tg:
         description_task = tg.create_task(
             jinja_render(
-                "points/tariff_name", {
+                "points/tariff_name",
+                {
                     "tariff": callback_data.points,
                     "price_xtr": callback_data.price_xtr,
-                    "price_rub": callback_data.price_rub
-                }
+                    "price_rub": callback_data.price_rub,
+                },
             )
         )
         user_task = tg.create_task(
             find_user_by_platform_id(session, callback.from_user.id)
         )
         text_task = tg.create_task(
-            jinja_render(
-                "payment/card_payment_title",
-                {
-                    "tariff": callback_data.points
-                }
-            )
+            jinja_render("payment/card_payment_title", {"tariff": callback_data.points})
         )
 
     result = create_payment(
         amount=callback_data.price_rub,
         description=description_task.result(),
         user=user_task.result(),
-        points_count=callback_data.points
+        points_count=callback_data.points,
     )
     await callback.message.answer(
-        text=text_task.result() ,
-        reply_markup=await payment_link_button(result.confirmation.confirmation_url)
+        text=text_task.result(),
+        reply_markup=await payment_link_button(result.confirmation.confirmation_url),
     )

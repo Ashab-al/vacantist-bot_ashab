@@ -1,18 +1,16 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from services.tg.spam.add_vacancy_to_blacklist import add_vacancy_to_blacklist
 from aiogram import Bot
 from aiogram.types import CallbackQuery
-from bot.filters.callback.spam_vacancy_callback import (
-    SpamVacancyCallbackForAdmin,
-)
+from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallbackForAdmin
 from lib.tg.common import jinja_render
+from services.tg.spam.add_vacancy_to_blacklist import add_vacancy_to_blacklist
 from services.tg.spam.update_spam_message import update_spam_message
+from sqlalchemy.ext.asyncio import AsyncSession
 
-async def admin_confirm_add_vacancy_to_blacklist(
+
+async def admin_confirm_add_vacancy_to_blacklist_then_update_message(
     callback: CallbackQuery,
     callback_data: SpamVacancyCallbackForAdmin,
-    session: AsyncSession
+    session: AsyncSession,
 ) -> None:
     """
     Подтверждает добавление вакансии в черный список.
@@ -30,9 +28,5 @@ async def admin_confirm_add_vacancy_to_blacklist(
     except ValueError as e:
 
         await callback.message.answer(f"Ошибка: {e}")
-        return
 
-    await update_spam_message(
-        callback,
-        "spam/update_spam_message_in_admin_group"
-    )
+    await update_spam_message(callback, "spam/update_spam_message_in_admin_group")

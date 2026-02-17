@@ -73,6 +73,7 @@ class Settings(BaseSettings):
     domain_name: str
     subdomain: str
     debug: bool
+
     def get_webhook_url(self) -> str:
         """
         Формирует URL вебхука для Telegram бота.
@@ -81,7 +82,6 @@ class Settings(BaseSettings):
             str: URL вебхука
         """
         return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
-
 
 
 settings = Settings()

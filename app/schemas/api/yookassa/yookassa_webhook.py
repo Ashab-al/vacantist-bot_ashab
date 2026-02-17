@@ -1,14 +1,18 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+
 
 class PaymentAmount(BaseModel):
     value: str
     currency: str
 
+
 class PaymentMetadata(BaseModel):
     points_count: str
     user_platform_id: str
     user_id: str
+
 
 class PaymentObject(BaseModel):
     id: str
@@ -18,6 +22,7 @@ class PaymentObject(BaseModel):
     description: Optional[str] = None
     metadata: PaymentMetadata
     paid: bool
+
 
 class YookassaWebhook(BaseModel):
     event: str

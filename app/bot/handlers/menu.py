@@ -1,9 +1,9 @@
 """Обработчики команд главного меню бота."""
 
 from aiogram import F, Router
+from aiogram.enums.chat_type import ChatType
 from aiogram.filters.command import Command
 from aiogram.types import Message
-from aiogram.enums.chat_type import ChatType
 from bot.filters.button import AdvertisementButtonFilter, HelpButtonFilter
 from bot.keyboards.kbs import menu_keyboard
 from database import with_session

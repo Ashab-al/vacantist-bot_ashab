@@ -1,7 +1,5 @@
-from fastapi import APIRouter
-
 from api.yookassa.success import router as success_router
-
+from fastapi import APIRouter
 
 yookassa_router = APIRouter()
 

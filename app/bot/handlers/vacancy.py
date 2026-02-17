@@ -1,9 +1,9 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
-from aiogram import Bot, Router, F
+from aiogram import Bot, F, Router
+from aiogram.enums.chat_type import ChatType
 from aiogram.types import CallbackQuery
 from bot.filters.callback.open_vacancy_callback import OpenVacancyCallback
-from aiogram.enums.chat_type import ChatType
 from bot.keyboards.open_vacancy_keyboard import open_vacancy_keyboard
 from database import with_session
 from enums.check_vacancy_enum import CheckVacancyEnum
@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик вакансий")
 router.message.filter(F.chat.type == ChatType.PRIVATE)
+
 
 @router.callback_query(OpenVacancyCallback.filter())
 @with_session

@@ -1,12 +1,12 @@
 from aiogram import Bot, html
 from aiogram.types import CallbackQuery
 from bot.filters.callback.spam_vacancy_callback import (
-    SpamVacancyCallback,
     IncrementUserBonusForSpamVacancyCallback,
-    RejectSpamVacancyCallback,
-    SpamVacancyCallbackForAdmin,
-    SpamAndIncrementUserBonusForSpamVacancyCallback,
     NotSpamButDeleteMessagesForSpamVacancyCallback,
+    RejectSpamVacancyCallback,
+    SpamAndIncrementUserBonusForSpamVacancyCallback,
+    SpamVacancyCallback,
+    SpamVacancyCallbackForAdmin,
 )
 from bot.keyboards.admin_chat_spam_vacancy_button import admin_chat_spam_vacancy_button
 from config import i18n, settings

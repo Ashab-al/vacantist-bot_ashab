@@ -1,11 +1,5 @@
-
-
 async def update_admin_vacancy_message(
-    bot: Bot,
-    chat_id: int,
-    message_id: int,
-    vacancy_id: int,
-    session: AsyncSession
+    bot: Bot, chat_id: int, message_id: int, vacancy_id: int, session: AsyncSession
 ) -> None:
     """
     Обновляет сообщение о вакансии в админ-группе после того, как вакансия была признана спамом.

@@ -1,12 +1,10 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from models import User
 from query_objects.users.get_user_by_platform_id import get_user_by_platform_id
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def increment_bonus_by_user_platform_id(
-    user_platform_id: int,
-    session: AsyncSession
+    user_platform_id: int, session: AsyncSession
 ) -> User:
     user: User | None = await get_user_by_platform_id(session, user_platform_id)
 

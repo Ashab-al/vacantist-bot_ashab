@@ -16,8 +16,10 @@ TARIFFS_PRICES = {
 }
 
 MAX_COUNT_BUTTON_IN_LINE = 1
-EMOJI_ID="5471952986970267163"
-BUTTON_STYLE="primary"
+EMOJI_ID = "5471952986970267163"
+BUTTON_STYLE = "primary"
+
+
 async def with_all_tariffs_keyboard() -> InlineKeyboardMarkup:
     """
     Создать и вернуть клавиатуру с тарифами.
@@ -33,19 +35,20 @@ async def with_all_tariffs_keyboard() -> InlineKeyboardMarkup:
     for points, currencies in TARIFFS_PRICES.items():
         kb.button(
             text=await jinja_render(
-                "points/tariff_name", {
+                "points/tariff_name",
+                {
                     "tariff": points,
                     "price_xtr": currencies[CURRENCY_XTR],
-                    "price_rub": currencies[CURRENCY_RUB]
-                }
+                    "price_rub": currencies[CURRENCY_RUB],
+                },
             ),
             callback_data=TariffCallback(
                 points=points,
                 price_xtr=currencies[CURRENCY_XTR],
-                price_rub=currencies[CURRENCY_RUB]
+                price_rub=currencies[CURRENCY_RUB],
             ).pack(),
             style=BUTTON_STYLE,
-            icon_custom_emoji_id=EMOJI_ID
+            icon_custom_emoji_id=EMOJI_ID,
         )
 
     kb.adjust(MAX_COUNT_BUTTON_IN_LINE, repeat=True)

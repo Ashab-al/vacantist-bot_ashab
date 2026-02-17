@@ -1,15 +1,16 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
+import logging
+
 from aiogram import Bot, F, Router
-from aiogram.types import CallbackQuery
 from aiogram.enums.chat_type import ChatType
+from aiogram.types import CallbackQuery
 from bot.filters.callback.get_vacancies_callback import GetVacanciesCallback
 from bot.keyboards.get_more_vacancies_keyboard import get_more_vacancies_keyboard
 from database import with_session
 from lib.tg.common import jinja_render
 from services.tg.vacancy.vacancies_pagination import vacancies_pagination
 from sqlalchemy.ext.asyncio import AsyncSession
-import logging
 
 router = Router(name="Обработчик пагинации вакансий")
 router.message.filter(F.chat.type == ChatType.PRIVATE)
@@ -53,8 +54,5 @@ async def reaction_get_vacancies(
             "pagination/sended_vacancies",
             {"number": number, "count": count},
         ),
-        reply_markup=await get_more_vacancies_keyboard(
-            user=user,
-            page=next_page
-        ),
+        reply_markup=await get_more_vacancies_keyboard(user=user, page=next_page),
     )

@@ -1,6 +1,7 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
 from aiogram import Bot, F, Router
+from aiogram.enums.chat_type import ChatType
 from aiogram.types import (
     CallbackQuery,
     ContentType,
@@ -8,13 +9,13 @@ from aiogram.types import (
     Message,
     PreCheckoutQuery,
 )
-from aiogram.enums.chat_type import ChatType
 from bot.filters.button import PointsButtonFilter
 from bot.filters.callback.tariff_callback import TariffCallback
 from bot.keyboards.with_all_tariffs_keyboard import with_all_tariffs_keyboard
 from config import i18n
 from database import with_session
 from lib.tg.common import jinja_render
+from services.tg.payment.create_payments import create_payments
 from services.tg.point.show_points_info import show_points_info
 from services.tg.send_info_about_new_payment import send_info_about_new_payment
 from services.tg.user.find_user_by_platform_id import find_user_by_platform_id
@@ -22,8 +23,6 @@ from services.tg.user.update_points_for_pre_checkout_query import (
     update_points_for_pre_checkout_query,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-from services.tg.payment.create_payments import create_payments
-
 
 router = Router(name="Обработчик тарифов и платежей")
 router.message.filter(F.chat.type == ChatType.PRIVATE)
@@ -79,7 +78,7 @@ async def reaction_choice_tariff(
     callback: CallbackQuery,
     callback_data: TariffCallback,
     bot: Bot,
-    session: AsyncSession
+    session: AsyncSession,
 ):
     """
     Обрабатывает выбор тарифа пользователем и отправляет инвойс для оплаты.
