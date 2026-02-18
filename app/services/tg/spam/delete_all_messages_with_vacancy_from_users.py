@@ -2,7 +2,7 @@ import asyncio
 import logging
 from asyncio import TaskGroup
 from random import randint
-
+from aiogram.exceptions import TelegramBadRequest
 from bot.create_bot import bot
 from bot.filters.callback.spam_vacancy_callback import SpamVacancyCallbackForAdmin
 from config import settings
@@ -11,7 +11,8 @@ from query_objects.sent_message.find_sent_messages_by_vacancy_id import (
     find_sent_messages_by_vacancy_id,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from config import i18n
+from lib.tg.common import jinja_render
 
 async def delete_all_messages_with_vacancy_from_users(
     callback_data: SpamVacancyCallbackForAdmin,
@@ -58,7 +59,9 @@ async def _delete_all_messages(
 
 
 async def _delete_message(
-    sent_message: SentMessage, chat_id: int, session: AsyncSession
+    sent_message: SentMessage,
+    chat_id: int,
+    session: AsyncSession
 ):
     """
     Удаляет одно сообщение у пользователя через Telegram Bot API.
@@ -70,15 +73,15 @@ async def _delete_message(
     :param chat_id: ID чата пользователя, где нужно удалить сообщение.
     :param session: Асинхронная сессия SQLAlchemy для удаления записи из БД.
     """
+    logging.info(
+        "Удаление сообщения у %s, id сообщения: %s",
+        chat_id,
+        sent_message.message_id,
+    )
+    await asyncio.sleep(
+        randint(settings.min_delay_seconds, settings.max_delay_seconds)
+    )
     try:
-        logging.info(
-            "Удаление сообщения у %s, id сообщения: %s",
-            chat_id,
-            sent_message.message_id,
-        )
-        await asyncio.sleep(
-            randint(settings.min_delay_seconds, settings.max_delay_seconds)
-        )
         res = await bot.delete_message(
             chat_id=chat_id, message_id=sent_message.message_id
         )
@@ -89,6 +92,31 @@ async def _delete_message(
             res,
         )
         await session.delete(sent_message)
+    except TelegramBadRequest as e:
+        logging.error("TelegramBadRequest: %s", e)
+        if "message can't be deleted for everyone" in str(e):
+            logging.warning("Не удалось удалить сообщение: оно слишком старое или нет прав.")
+            logging.warning("Пробуем отредактировать сообщение.")
+            await _edit_spam_text(chat_id, sent_message, session)
+        else:
+            logging.error("Другая ошибка TelegramBadRequest: %s", e)
+        return
     except Exception as e:
         logging.error(e)
         return
+
+async def _edit_spam_text(
+    chat_id: int,
+    sent_message: SentMessage,
+    session: AsyncSession
+):
+    try:
+        await bot.edit_message_text(
+            chat_id=chat_id,
+            message_id=sent_message.message_id,
+            text=await jinja_render("spam/this_vacancy_add_to_spam"),
+            reply_markup=None
+        )
+        await session.delete(sent_message)
+    except Exception as e:
+        logging.error(e)

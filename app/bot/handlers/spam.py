@@ -29,7 +29,7 @@ from services.tg.vacancy.send_spam_vacancy_in_admin_group import (
     send_spam_vacancy_in_admin_group,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-
+import logging
 router = Router(name="Обработчик логики связанной со спамом")
 router.message.filter((F.chat.id == settings.admin_chat_id))
 
