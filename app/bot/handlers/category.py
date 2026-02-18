@@ -1,6 +1,7 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
 from aiogram import F, Router
+from aiogram.enums.chat_type import ChatType
 from aiogram.types import CallbackQuery, Message
 from bot.filters.button import CategoryButtonFilter
 from bot.filters.callback.category_callback import CategoryCallback
@@ -16,7 +17,7 @@ from services.tg.user.update_subscription_with_category import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик категорий")
-router.message.filter(F.chat.type == "private")
+router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 
 @router.message(CategoryButtonFilter())

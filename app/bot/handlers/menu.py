@@ -1,6 +1,7 @@
 """Обработчики команд главного меню бота."""
 
 from aiogram import F, Router
+from aiogram.enums.chat_type import ChatType
 from aiogram.filters.command import Command
 from aiogram.types import Message
 from bot.filters.button import AdvertisementButtonFilter, HelpButtonFilter
@@ -17,7 +18,7 @@ from services.tg.user.update_bot_status import update_bot_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик главного меню")
-router.message.filter(F.chat.type == "private")
+router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 
 @router.message(Command(commands=["start", "main_menu"]))

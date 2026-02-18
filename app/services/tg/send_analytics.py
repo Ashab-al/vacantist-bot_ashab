@@ -1,8 +1,8 @@
 from bot.create_bot import bot
-from config import settings
 from enums.bot_status_enum import BotStatusEnum
 from lib.tg.common import jinja_render
 from models.user import User
+from services.tg.admin_alert import admin_alert_mailing_new_users
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,10 +24,10 @@ async def send_analytics(db: AsyncSession, user: User) -> None:
         await db.execute(select(func.count()).select_from(User))
     ).scalar()
 
-    await bot.send_message(
-        chat_id=settings.admin_chat_id,
+    await admin_alert_mailing_new_users(
         text=await jinja_render(
             "analytics",
             {"user": user, "analytics": analytics, "bot_status": BotStatusEnum},
         ),
+        bot=bot,
     )

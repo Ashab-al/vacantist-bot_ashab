@@ -1,6 +1,9 @@
 """Модуль работы с Telegram-ботом через aiogram."""
 
+import logging
+
 from aiogram import Bot, F, Router
+from aiogram.enums.chat_type import ChatType
 from aiogram.types import CallbackQuery
 from bot.filters.callback.get_vacancies_callback import GetVacanciesCallback
 from bot.keyboards.get_more_vacancies_keyboard import get_more_vacancies_keyboard
@@ -10,7 +13,7 @@ from services.tg.vacancy.vacancies_pagination import vacancies_pagination
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик пагинации вакансий")
-router.message.filter(F.chat.type == "private")
+router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 
 @router.callback_query(GetVacanciesCallback.filter())
@@ -37,9 +40,14 @@ async def reaction_get_vacancies(
         - Отправляет вакансии пользователю с задержкой DELAY между сообщениями.
         - Прикрепляет клавиатуру для получения следующей страницы вакансий.
     """
-    user, number, next_page, count = await vacancies_pagination(
-        callback, callback_data, session, bot
-    )
+    try:
+        user, number, next_page, count = await vacancies_pagination(
+            callback, callback_data, session, bot
+        )
+    except ValueError as e:
+        logging.error(e)
+        return
+
     await bot.send_message(
         chat_id=callback.from_user.id,
         text=await jinja_render(
