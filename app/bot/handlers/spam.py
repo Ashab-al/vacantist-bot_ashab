@@ -4,7 +4,6 @@ from aiogram.types import CallbackQuery
 from bot.filters.callback.spam_vacancy_callback import (
     IncrementUserBonusForSpamVacancyCallback,
     NotSpamButDeleteMessagesForSpamVacancyCallback,
-    RejectSpamVacancyCallback,
     SpamAndIncrementUserBonusForSpamVacancyCallback,
     SpamVacancyCallback,
     SpamVacancyCallbackForAdmin,

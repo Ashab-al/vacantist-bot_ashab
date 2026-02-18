@@ -2,7 +2,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardMarkup
 from bot.filters.callback.spam_vacancy_callback import (
     IncrementUserBonusForSpamVacancyCallback,
     NotSpamButDeleteMessagesForSpamVacancyCallback,
-    RejectSpamVacancyCallback,
     SpamAndIncrementUserBonusForSpamVacancyCallback,
     SpamVacancyCallbackForAdmin,
 )
@@ -14,7 +13,6 @@ MAX_COUNT_BUTTON_IN_LINE = 1
 def admin_chat_spam_vacancy_button(
     spam_vacancy: SpamVacancyCallbackForAdmin,
     increment_user_bonus_for_spam_vacancy: IncrementUserBonusForSpamVacancyCallback,
-    reject_spam_vacancy: RejectSpamVacancyCallback,
     spam_and_increment_user_bonus_for_spam_vacancy: SpamAndIncrementUserBonusForSpamVacancyCallback,
     not_spam_but_delete_messages_for_spam_vacancy: NotSpamButDeleteMessagesForSpamVacancyCallback,
 ) -> InlineKeyboardMarkup:

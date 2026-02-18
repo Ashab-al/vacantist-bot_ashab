@@ -3,7 +3,6 @@ from aiogram.types import CallbackQuery
 from bot.filters.callback.spam_vacancy_callback import (
     IncrementUserBonusForSpamVacancyCallback,
     NotSpamButDeleteMessagesForSpamVacancyCallback,
-    RejectSpamVacancyCallback,
     SpamAndIncrementUserBonusForSpamVacancyCallback,
     SpamVacancyCallback,
     SpamVacancyCallbackForAdmin,
@@ -28,7 +27,22 @@ async def send_spam_vacancy_in_admin_group(
     callback: CallbackQuery,
     session: AsyncSession,
 ):
+    """
+    Отправляет сообщение о жалобе на спам-вакансию в админ-чат.
 
+    Выполняет следующие действия:
+    1. Проверяет существование вакансии.
+    2. Проверяет, не находится ли отправитель в чёрном списке.
+    3. Находит пользователя в базе данных.
+    4. Формирует и отправляет сообщение в админ-чат с кнопками действий.
+    5. Подтверждает пользователю, что жалоба отправлена.
+
+    :param bot: Экземпляр Aiogram Bot для отправки сообщений.
+    :param callback_data: Данные коллбэка с ID вакансии.
+    :param callback: Объект CallbackQuery от пользователя.
+    :param session: Асинхронная сессия SQLAlchemy для работы с БД.
+    :raises ValueError: Если вакансия или пользователь не найдены, или отправитель в чёрном списке.
+    """
     vacancy = await _validate_vacancy(bot, callback_data, session)
     await _validate_blacklist(callback, session)
     user: User = await _validate_user(bot, callback, session)
@@ -52,6 +66,21 @@ async def send_spam_vacancy_in_admin_group(
 
 
 def _buttons(callback_data: SpamVacancyCallback, callback: CallbackQuery):
+    """
+    Генерирует клавиатуру с действиями для модерации спам-вакансии.
+
+    Создаёт набор callback-данных для четырёх кнопок:
+    - Спам (удалить и подтвердить)
+    - Начислить бонус
+    - Спам + бонус
+    - Не спам, но удалить сообщения
+
+    Использует `admin_chat_spam_vacancy_button` для построения инлайн-клавиатуры.
+
+    :param callback_data: Исходные данные коллбэка (ID вакансии).
+    :param callback: Объект CallbackQuery для получения контекста (ID сообщения, пользователя).
+    :return: Объект InlineKeyboardMarkup с кнопками действий.
+    """
     data = {
         "vacancy_id": callback_data.vacancy_id,
         "user_id": callback.from_user.id,
@@ -60,7 +89,6 @@ def _buttons(callback_data: SpamVacancyCallback, callback: CallbackQuery):
     args = {
         "spam_vacancy": SpamVacancyCallbackForAdmin,
         "increment_user_bonus_for_spam_vacancy": IncrementUserBonusForSpamVacancyCallback,
-        "reject_spam_vacancy": RejectSpamVacancyCallback,
         "spam_and_increment_user_bonus_for_spam_vacancy": SpamAndIncrementUserBonusForSpamVacancyCallback,
         "not_spam_but_delete_messages_for_spam_vacancy": NotSpamButDeleteMessagesForSpamVacancyCallback,
     }
@@ -69,6 +97,14 @@ def _buttons(callback_data: SpamVacancyCallback, callback: CallbackQuery):
 
 
 def _username(username: str | None) -> str:
+    """
+    Форматирует имя пользователя для отображения.
+
+    Если у пользователя нет username, возвращается кодированный текст-заглушка из локализации.
+
+    :param username: Telegram username пользователя, может быть None.
+    :return: Отформатированное имя: либо @username, либо зашифрованное сообщение о его отсутствии.
+    """
     if username is not None:
         return username
 
@@ -78,6 +114,17 @@ def _username(username: str | None) -> str:
 async def _validate_vacancy(
     bot: Bot, callback_data: SpamVacancyCallback, session: AsyncSession
 ):
+    """
+    Проверяет наличие вакансии в базе данных по её ID.
+
+    Если вакансия не найдена — отправляет оповещение администраторам и выбрасывает исключение.
+
+    :param bot: Экземпляр Aiogram Bot для отправки уведомлений об ошибках.
+    :param callback_data: Данные коллбэка, содержащие vacancy_id.
+    :param session: Асинхронная сессия SQLAlchemy.
+    :return: Объект Vacancy, если найден.
+    :raises ValueError: Если вакансия не найдена.
+    """
     vacancy: Vacancy | None = await find_vacancy_by_id(
         session, callback_data.vacancy_id
     )
@@ -97,6 +144,16 @@ async def _validate_vacancy(
 async def _validate_blacklist(
     callback: CallbackQuery, session: AsyncSession
 ) -> bool | None:
+    """
+    Проверяет, находится ли пользователь в чёрном списке по его platform_id.
+
+    Если да — отправляет алерт через callback и выбрасывает исключение.
+
+    :param callback: Объект CallbackQuery, содержит данные пользователя.
+    :param session: Асинхронная сессия SQLAlchemy.
+    :return: True, если пользователь в чёрном списке (но в этом случае всегда выбрасывается исключение).
+    :raises ValueError: Если пользователь или контакт в чёрном списке.
+    """
     if await black_list_check_by_platform_id_or_contact_information(
         session, platform_id=str(callback.from_user.id), contact_information=None
     ):
@@ -109,6 +166,17 @@ async def _validate_blacklist(
 async def _validate_user(
     bot: Bot, callback: CallbackQuery, session: AsyncSession
 ) -> User:
+    """
+    Проверяет наличие пользователя в базе данных по его platform_id (Telegram ID).
+
+    Если пользователь не найден — отправляет оповещение администраторам и выбрасывает исключение.
+
+    :param bot: Экземпляр Aiogram Bot для отправки уведомлений об ошибках.
+    :param callback: Объект CallbackQuery, содержит ID пользователя.
+    :param session: Асинхронная сессия SQLAlchemy.
+    :return: Объект User, если найден.
+    :raises ValueError: Если пользователь не найден.
+    """
     user: User | None = await get_user_by_platform_id(session, callback.from_user.id)
     if not user:
         await admin_alert_mailing_errors(

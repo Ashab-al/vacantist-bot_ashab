@@ -35,7 +35,3 @@ class IncrementUserBonusForSpamVacancyCallback(
 class NotSpamButDeleteMessagesForSpamVacancyCallback(
     SpamVacancyCallbackForAdmin, prefix="not_spam"
 ): ...
-
-
-class RejectSpamVacancyCallback(SpamVacancyCallbackForAdmin, prefix="reject_spam"):
-    message_id: int = 0
