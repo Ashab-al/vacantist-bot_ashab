@@ -9,6 +9,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def payment_processing(payload: YookassaWebhook, db: AsyncSession) -> None:
+    """
+    Основная функция обработки платежа из YooKassa.
+
+    Выполняет последовательно:
+    1. Поиск пользователя и начисление баллов.
+    2. Рассылку администраторам информации о платеже.
+    3. Отправку пользователю актуальной информации о его баллах.
+    4. Уведомление пользователя об успешной оплате.
+
+    :param payload: Объект вебхука YooKassa, содержащий данные о платеже.
+    :param db: Асинхронная сессия SQLAlchemy для взаимодействия с базой данных.
+    """
     user_platform_id: int = int(payload.object.metadata.user_platform_id)
     await _find_and_update_user_points(payload, db, user_platform_id)
     await _admin_alert_mailing_payments_info(payload, db, user_platform_id)
@@ -17,6 +29,14 @@ async def payment_processing(payload: YookassaWebhook, db: AsyncSession) -> None
 
 
 async def _notify_user(payload):
+    """
+    Отправляет пользователю сообщение об успешной оплате через Telegram.
+
+    Использует шаблон 'pre_checkout_query/success_payment' для генерации текста.
+    Получает chat_id из метаданных платежа.
+
+    :param payload: Объект вебхука YooKassa с данными о платеже.
+    """
     text = await jinja_render(
         "pre_checkout_query/success_payment",
         {"points": int(payload.object.metadata.points_count)},
@@ -28,6 +48,16 @@ async def _notify_user(payload):
 async def _find_and_update_user_points(
     payload: YookassaWebhook, db: AsyncSession, user_platform_id: int
 ) -> None:
+    """
+    Находит пользователя по platform_id и начисляет ему баллы за платёж.
+
+    Баллы берутся из метаданных платежа (points_count). После обновления объекта User
+    изменения сохраняются в базе данных.
+
+    :param payload: Объект вебхука YooKassa с информацией о платеже.
+    :param db: Асинхронная сессия SQLAlchemy.
+    :param user_platform_id: Telegram ID пользователя (platform_id), которому начисляются баллы.
+    """
     user: User = await find_user_by_platform_id(db, user_platform_id)
     user.point += int(payload.object.metadata.points_count)
 
@@ -39,6 +69,16 @@ async def _find_and_update_user_points(
 async def _admin_alert_mailing_payments_info(
     payload: YookassaWebhook, db: AsyncSession, user_platform_id: int
 ):
+    """
+    Отправляет администраторам уведомление о новом платеже.
+
+    Использует шаблон 'payment_info_for_admin_ru_card' для формирования сообщения.
+    В контекст передаются имя пользователя, количество баллов, сумма и валюта платежа.
+
+    :param payload: Объект вебхука YooKassa с данными о платеже.
+    :param db: Асинхронная сессия SQLAlchemy.
+    :param user_platform_id: Telegram ID пользователя, совершившего платёж.
+    """
     user: User = await find_user_by_platform_id(db, user_platform_id)
     await admin_alert_mailing_payments_info(
         bot=bot,
