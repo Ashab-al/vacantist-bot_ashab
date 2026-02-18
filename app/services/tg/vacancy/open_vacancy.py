@@ -1,14 +1,9 @@
+from sqlalchemy.ext.asyncio import AsyncSession
 from enums.check_vacancy_enum import CheckVacancyEnum
-from lib.tg.constants import SOURCE
 from models.user import User
 from models.vacancy import Vacancy
-from query_objects.blacklist.black_list_check_by_platform_id_and_contact_information import (
-    black_list_check_by_platform_id_or_contact_information,
-)
 from query_objects.vacancies.find_vacancy_by_id import find_vacancy_by_id
-from services.tg.spam.add_vacancy_to_blacklist import COMPLAINT_COUNTER
 from services.tg.spam.check_blacklist import check_blacklist
-from sqlalchemy.ext.asyncio import AsyncSession
 
 REDUCE_BALANCE = 1
 ZERO_BALANCE = 0
@@ -34,7 +29,7 @@ async def open_vacancy(db: AsyncSession, user: User, vacancy_id: int) -> dict:
     Raises:
         ValueError: Если вакансия с указанным ID не найдена.
     """
-    vacancy: Vacancy = await find_vacancy_by_id(db, vacancy_id)
+    vacancy: Vacancy | None = await find_vacancy_by_id(db, vacancy_id)
     if not vacancy:
         raise ValueError(f"{vacancy_id} - такой вакансии нет в базе данных")
 

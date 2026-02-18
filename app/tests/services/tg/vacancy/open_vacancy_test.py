@@ -10,7 +10,7 @@ from tests.factories.vacancy import VacancyWithCategoryFactory
 
 
 @pytest.mark.asyncio
-@patch("services.tg.vacancy.open_vacancy._check_blacklist")
+@patch("services.tg.vacancy.open_vacancy.check_blacklist")
 @patch("services.tg.vacancy.open_vacancy.find_vacancy_by_id")
 async def test_open_vacancy(mock_find_vacancy_by_id, mock_check_blacklist):
     """Проверяет открытие вакансии"""
@@ -45,7 +45,7 @@ async def test_open_vacancy_when_vacancy_is_not_exist(mock_find_vacancy_by_id):
 
 
 @pytest.mark.asyncio
-@patch("services.tg.vacancy.open_vacancy._check_blacklist")
+@patch("services.tg.vacancy.open_vacancy.check_blacklist")
 @patch("services.tg.vacancy.open_vacancy.find_vacancy_by_id")
 async def test_open_vacancy_when_user_balance_zero(
     mock_find_vacancy_by_id, mock_check_blacklist
@@ -64,7 +64,7 @@ async def test_open_vacancy_when_user_balance_zero(
 
 
 @pytest.mark.asyncio
-@patch("services.tg.vacancy.open_vacancy._check_blacklist")
+@patch("services.tg.vacancy.open_vacancy.check_blacklist")
 @patch("services.tg.vacancy.open_vacancy.find_vacancy_by_id")
 async def test_open_vacancy_when_vacancy_in_blacklist(
     mock_find_vacancy_by_id, mock_check_blacklist
