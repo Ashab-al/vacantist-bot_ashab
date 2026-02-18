@@ -1,0 +1,30 @@
+{{ i18n['spam']['user'] }} @{{ username }} {{ i18n['spam']['complain'] }}
+
+<b>{{ i18n['spam']['user_data'] }}:</b>
+- <b>{{ i18n['spam']['id'] }}:</b> <code>{{ user.id }}</code>
+- <b>{{ i18n['telegram'] }} {{ i18n['spam']['id']}}:</b> <code>{{ user.platform_id }}</code>
+- <b>{{ i18n['spam']['user_first_name'] }}:</b> {{ user.first_name }}
+- <b>{{ i18n['user']['balance']['paid_bill'] }}:</b> {{ user.point }}
+- <b>{{ i18n['user']['balance']['bonus_account'] }}:</b> {{ user.bonus }}
+- <b>{{ i18n['user']['balance']['total_balance'] }}:</b> {{ user.bonus + user.point }}
+
+<b>{{ i18n['user']['categories'] }}:</b>
+
+{% for category in user.categories -%}
+- {{ category.name }}
+{% endfor %}
+
+<b>{{ i18n['spam']['vacancy_data'] }}:</b>
+- <b>{{ i18n['spam']['vacancy'] }} {{i18n['spam']['id']}}:</b> <code>{{ vacancy.id }}</code>
+- <b>{{ i18n['vacancy']['category'] }}:</b> {{ vacancy.title }}
+- <b>{{ i18n['vacancy']['date_create'] }}:</b> {{ vacancy.created_at.strftime('%d.%m.%Y, %H:%M') }}
+<blockquote>
+{{ vacancy.description }}
+</blockquote>
+
+<b>{{ i18n['vacancy']['contacts'] }}:</b>
+{{ vacancy.contact_information }}
+
+<b>{{ i18n['spam']['meta_info'] }}:</b>
+- <b>{{ i18n['spam']['source'] }}:</b> {{ vacancy.source }}
+- <b>{{ i18n['spam']['platform_id'] }}:</b> {{ vacancy.platform_id }}

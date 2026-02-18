@@ -21,7 +21,6 @@ pgadmin_data/
 database/
 uploads/
 extensions/
-templates/
 local-files/
 postgres/
 n8n_data/
