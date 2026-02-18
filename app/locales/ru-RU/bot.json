@@ -16,7 +16,8 @@
                 "success": "Оплата прошла успешно",
                 "client": "Клиент",
                 "points": "Поинты",
-                "stars": "Звезд заплатили"
+                "stars": "Звезд заплатили",
+                "count_rub": "Рублей заплатил"
             },
             "for_user": {
                 "congratulations": "Поздравляю",
@@ -26,7 +27,9 @@
                     "wrong": "Что-то пошло не так",
                     "write": "Напишите администратору",
                     "admin": "AshabAl"
-                }
+                },
+                "pay_card": "Оплата картой РФ",
+                "to_pay": "Оплатить"
             }
         },
         "points": {
@@ -116,7 +119,9 @@
             "bot_status": "Статус пользователя в боте",
             "all_users_count": "Всего пользователей в боте",
             "users_status_works": "Все у кого статус works",
-            "users_status_bot_blocked": "Все у кого статус bot_blocked"
+            "users_status_bot_blocked": "Все у кого статус bot_blocked",
+            "user_not_has_username": "Пользователь не указал username",
+            "categories": "Категории на которые подписан пользователь"
         },
         "advertisement": "Количество пользователей в боте",
         "still_in_development": "(Еще в разработке)",
@@ -147,6 +152,33 @@
             "instruction": "Просто нажмите на интересующие кнопки",
             "category_is_selected": "означает что категория выбрана",
             "category_not_selected": "означает что категория НЕ выбрана"
-        }
+        },
+        "spam": {
+            "user": "Пользователь",
+            "the_user": "пользователя",
+            "complain": "пожаловался на вакансию",
+            "vacancy": "Вакансия",
+            "id": "ID",
+            "platform_id": "platform_id",
+            "source": "Источник",
+            "date": "Дата жалобы",
+            "meta_info": "Дополнительная информация",
+            "user_data": "Данные пользователя",
+            "vacancy_data": "Данные вакансии",
+            "user_first_name": "Имя пользователя",
+            "was_blacklisted": "Вакансия была добавлена в черный список",
+            "confirm_spam": "Подтвердить спам",
+            "reject_spam": "Отклонить жалобу",
+            "increment_user_bonus_for_spam_vacancy": "Зачислить 1 бонус клиенту",
+            "spam_and_increment_user_bonus": "В спам и 1 бонус клиенту",
+            "not_spam_but_delete_messages": "Не спам. Но удалить все сообщения",
+            "increment_user_bonus": "Зачислили 1 бонус клиенту",
+            "help_with_spam":"Спасибо за помощь в борьбе со спамом",
+            "notify_the_user_about_the_bonus_transfer": "Ваш вклад помогает нам поддерживать качество вакансий и улучшать сервис для всех пользователей",
+            "credited_to_you": "Мы начислили вам 1 бонус за вашу жалобу на вакансию",
+            "all_spam_messages_delete": "Были удалены все спам сообщения"
+
+        },
+        "telegram": "Телеграм"
     }
 }

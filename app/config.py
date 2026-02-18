@@ -7,17 +7,14 @@
 - Глобальная очередь для вакансий
 """
 
-import asyncio
 import json
-import logging
 import os
 from typing import Optional
 
-import requests
-from enums.mode_enum import ModeEnum
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from lib.tg.pluralize import pluralize
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from yookassa import Configuration
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -30,21 +27,24 @@ class Settings(BaseSettings):
         bot_token (str): Токен Telegram бота
         admin_id (int): ID администратора
         admin_chat_id (str): ID чата администратора
-        ngrok_api (str): URL локального ngrok API для получения публичного HTTPS URL
         database_dsn (str): DSN для подключения к базе данных
         echo_db_engine (Optional[bool]): Флаг логирования SQLAlchemy
         db_host (str), db_port (int), db_user (str), db_pass (str), db_name (str): параметры БД
-        ngrok_authtoken (Optional[str]): токен для ngrok (если нужен)
     """
 
+    model_config = SettingsConfigDict(
+        env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env"),
+        extra="ignore",
+    )
     bot_token: str
     admin_id: int
     admin_chat_id: str
-    model_config = SettingsConfigDict(
-        env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
-    )
-    ngrok_api: str
 
+    mailing_vacancies_thread_id: int
+    mailing_payments_thread_id: int
+    mailing_errors_thread_id: int
+    mailing_new_users_thread_id: int
+    mailing_new_spam_vacancies_thread_id: int
     # БД
     database_dsn: str
     echo_db_engine: Optional[bool] = True
@@ -54,40 +54,25 @@ class Settings(BaseSettings):
     db_pass: str
     db_name: str
 
-    ngrok_authtoken: Optional[str] = None
+    # proxy
+    proxy_host: str
+    proxy_port: int
+    proxy_user: str
+    proxy_pass: str
+
+    # Задержки для рассылки вакансий
+    min_delay_seconds: int
+    max_delay_seconds: int
+
+    yookassa_api_key: str
+    yookassa_account_id: int
+    yookassa_after_pay_redirect_url: str
+    yookassa_confirmation_type: str
 
     # для продакшена
     domain_name: str
     subdomain: str
-    directus_subdomain: str
-    n8n_subdomain: str
-    directus_db_client: str
-    ssl_email: str
-    postgres_password: str
-    password_directus: str
-    secret: str
-    mode: ModeEnum
-    generic_timezone: str
-    n8n_runners_auth_token: str
-    n8n_runners_task_broker_uri: str
-
-    def ngrok_url(self):
-        """
-        Получает публичный HTTPS URL от локального ngrok API.
-
-        Returns:
-            str: Публичный URL для вебхука
-        """
-        logging.info("Поиск Ngrok URL")
-        response = requests.get(self.ngrok_api, timeout=10)
-        response.raise_for_status()
-
-        for tunnel in response.json().get("tunnels", []):
-            if tunnel.get("proto") == "https":
-                public_url = tunnel.get("public_url")
-                logging.info("✅ Ngrok URL найден: %s", public_url)
-                return public_url
-        return None
+    debug: bool
 
     def get_webhook_url(self) -> str:
         """
@@ -96,13 +81,7 @@ class Settings(BaseSettings):
         Returns:
             str: URL вебхука
         """
-        if self.mode == ModeEnum.PRODUCTION:
-            return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
-
-        if self.mode == ModeEnum.DEVELOP:
-            return f"{self.ngrok_url()}/api/v1/webhook"
-
-        return None
+        return f"https://{self.subdomain}.{self.domain_name}/api/v1/webhook"
 
 
 settings = Settings()
@@ -123,5 +102,6 @@ with open(f"{BASE_DIR}/locales/ru-RU/bot.json", encoding="utf-8") as f:
 jinja_env.globals["i18n"] = i18n
 jinja_env.globals["pluralize"] = pluralize
 
-vacancy_queue: asyncio.Queue = asyncio.Queue(maxsize=0)
-"""Глобальная очередь вакансий"""
+# Добавление данных для юкассы
+Configuration.account_id = settings.yookassa_account_id
+Configuration.secret_key = settings.yookassa_api_key

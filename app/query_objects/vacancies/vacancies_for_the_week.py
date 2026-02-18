@@ -93,6 +93,11 @@ class VacancyForTheWeekQuery:
             select(Vacancy)
             .where(Vacancy.category_id.in_(category_ids))
             .where(Vacancy.platform_id.not_in(select(BlackList.contact_information)))
+            .where(
+                Vacancy.contact_information.not_in(
+                    select(BlackList.contact_information)
+                )
+            )
             .where(Vacancy.created_at.between(low_datetime, now_datetime))
             .order_by(Vacancy.created_at.desc())
         )

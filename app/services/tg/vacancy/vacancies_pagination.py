@@ -44,7 +44,7 @@ async def vacancies_pagination(
             ),
             show_alert=True,
         )
-        return
+        raise ValueError("Список вакансий пуст")
 
     if callback_data.page <= vacancies_for_the_week["meta"]["max_pages"]:
         next_page = callback_data.page + 1
