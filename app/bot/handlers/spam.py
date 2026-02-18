@@ -20,6 +20,9 @@ from services.tg.spam.delete_all_messages_and_confirm_add_vacancy_to_blacklist i
 from services.tg.spam.delete_all_messages_with_vacancy_from_users import (
     delete_all_messages_with_vacancy_from_users,
 )
+from services.tg.spam.delete_all_messages_with_vacancy_from_users_and_update_message import (
+    delete_all_messages_with_vacancy_from_users_and_update_message,
+)
 from services.tg.spam.increment_bonus_and_notify_user_then_update_message import (
     increment_bonus_and_notify_user_then_update_message,
 )
@@ -27,13 +30,9 @@ from services.tg.vacancy.send_spam_vacancy_in_admin_group import (
     send_spam_vacancy_in_admin_group,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-from services.tg.spam.delete_all_messages_with_vacancy_from_users_and_update_message import delete_all_messages_with_vacancy_from_users_and_update_message
-
 
 router = Router(name="Обработчик логики связанной со спамом")
-router.message.filter(
-    (F.chat.id == settings.admin_chat_id)
-)
+router.message.filter((F.chat.id == settings.admin_chat_id))
 
 
 @router.callback_query(SpamVacancyCallback.filter())
@@ -96,6 +95,7 @@ async def increment_user_bonus_for_spam_vacancy(
         callback, callback_data, session, bot
     )
 
+
 @router.callback_query(SpamAndIncrementUserBonusForSpamVacancyCallback.filter())
 async def spam_and_increment_user_bonus_for_spam_vacancy(
     callback: CallbackQuery,
@@ -116,4 +116,6 @@ async def not_spam_but_delete_messages_for_spam_vacancy(
     session: AsyncSession,
 ):
     await callback.answer()
-    await delete_all_messages_with_vacancy_from_users_and_update_message(callback, callback_data, session)
+    await delete_all_messages_with_vacancy_from_users_and_update_message(
+        callback, callback_data, session
+    )

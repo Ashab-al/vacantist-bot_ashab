@@ -4,15 +4,15 @@ from aiogram import Bot
 from aiogram.types import CallbackQuery
 from bot.filters.callback.get_vacancies_callback import GetVacanciesCallback
 from bot.keyboards.vacancy_keyboard import vacancy_keyboard
+from database import with_session
 from lib.tg.common import jinja_render
+from models import SentMessage
 from models.user import User
 from models.vacancy import Vacancy
-from models import SentMessage
-from database import with_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
 DELAY = 0.6
+
 
 @with_session
 async def send_vacancies(
@@ -21,7 +21,7 @@ async def send_vacancies(
     callback_data: GetVacanciesCallback,
     user: User,
     bot: Bot,
-    session: AsyncSession
+    session: AsyncSession,
 ) -> int:
     """
     Отправляет список вакансий пользователю с нумерацией и клавиатурой.

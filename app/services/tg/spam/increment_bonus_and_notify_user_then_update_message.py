@@ -15,7 +15,5 @@ async def increment_bonus_and_notify_user_then_update_message(
     session: AsyncSession,
     bot: Bot,
 ) -> None:
-    user: User = await increment_bonus_and_notify_user(
-        callback_data, session, bot
-    )
+    user: User = await increment_bonus_and_notify_user(callback_data, session, bot)
     await update_spam_message(callback, "spam/increment_user_bonus", {"user": user})
