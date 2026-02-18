@@ -20,15 +20,20 @@ from aiogram.enums import ParseMode
 from aiohttp import BasicAuth
 from config import settings
 
-bot: Bot = Bot(
-    token=settings.bot_token,
-    default=DefaultBotProperties(parse_mode=ParseMode.HTML),
-    session=AiohttpSession(
+if settings.debug:
+    session = AiohttpSession(
         proxy=(
             f"http://{settings.proxy_host}:{settings.proxy_port}",
             BasicAuth(login=settings.proxy_user, password=settings.proxy_pass),
         )
-    ),
+    )
+else:
+    session = None
+
+bot: Bot = Bot(
+    token=settings.bot_token,
+    default=DefaultBotProperties(parse_mode="HTML"),
+    session=session,
 )
 """Экземпляр Telegram-бота с предустановленными свойствами."""
 
