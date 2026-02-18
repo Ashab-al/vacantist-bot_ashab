@@ -96,12 +96,6 @@ async def increment_user_bonus_for_spam_vacancy(
         callback, callback_data, session, bot
     )
 
-
-@router.callback_query(RejectSpamVacancyCallback.filter())
-@with_session
-async def reject_spam_vacancy(): ...
-
-
 @router.callback_query(SpamAndIncrementUserBonusForSpamVacancyCallback.filter())
 async def spam_and_increment_user_bonus_for_spam_vacancy(
     callback: CallbackQuery,

@@ -30,10 +30,6 @@ def admin_chat_spam_vacancy_button(
         callback_data=increment_user_bonus_for_spam_vacancy.pack(),
     )
     kb.button(
-        text=i18n["spam"]["reject_spam"],
-        callback_data=reject_spam_vacancy.pack(),
-    )
-    kb.button(
         text=i18n["spam"]["spam_and_increment_user_bonus"],
         callback_data=spam_and_increment_user_bonus_for_spam_vacancy.pack(),
     )

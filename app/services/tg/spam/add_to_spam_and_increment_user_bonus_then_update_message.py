@@ -41,7 +41,7 @@ async def _increment_bonus_and_notify_user(
     bot: Bot,
     session: AsyncSession | None = None,
 ):
-    await increment_bonus_and_notify_user(callback_data, session, bot)
+    return await increment_bonus_and_notify_user(callback_data, session, bot)
 
 @with_session
 async def _delete_all_messages_with_vacancy_from_users(
@@ -64,11 +64,10 @@ async def _add_vacancy_to_blacklist(
 
         await callback.message.answer(f"Ошибка: {e}")
 
-
 async def _generate_text(callback: CallbackQuery, user: User) -> str:
     text = await jinja_render(
         "spam/increment_user_bonus", {"text": callback.message.text, "user": user}
     )
     text = await jinja_render("spam/update_spam_message_in_admin_group", {"text": text})
-
+    text = await jinja_render("spam/update_spam_message_delete_all_spam_messages", {"text": text})
     return text
