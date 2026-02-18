@@ -7,16 +7,21 @@ from bot.keyboards.vacancy_keyboard import vacancy_keyboard
 from lib.tg.common import jinja_render
 from models.user import User
 from models.vacancy import Vacancy
+from models import SentMessage
+from database import with_session
+from sqlalchemy.ext.asyncio import AsyncSession
+
 
 DELAY = 0.6
 
-
+@with_session
 async def send_vacancies(
     callback: CallbackQuery,
     vacancies: list[Vacancy],
     callback_data: GetVacanciesCallback,
     user: User,
     bot: Bot,
+    session: AsyncSession
 ) -> int:
     """
     Отправляет список вакансий пользователю с нумерацией и клавиатурой.
@@ -41,12 +46,20 @@ async def send_vacancies(
     for vacancy in vacancies:
         data: dict[str, object] = {"vacancy": vacancy, "number": number, "user": user}
 
-        await bot.send_message(
+        result = await bot.send_message(
             chat_id=callback.from_user.id,
             text=await jinja_render("pagination/vacancy", data),
             reply_markup=await vacancy_keyboard(user, vacancy),
         )
+        session.add(
+            SentMessage(
+                user_id=user.id,
+                message_id=result.message_id,
+                vacancy_id=vacancy.id,
+            )
+        )
         number += 1
         await asyncio.sleep(DELAY)
+    await session.commit()
 
     return number - 1

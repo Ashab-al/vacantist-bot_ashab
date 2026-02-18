@@ -13,27 +13,56 @@ from services.tg.spam.delete_all_messages_with_vacancy_from_users import (
 )
 from services.tg.spam.increment_user_bonus import increment_bonus_and_notify_user
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from database import with_session
 
 async def add_to_spam_and_increment_user_bonus_then_update_message(
     callback: CallbackQuery,
     callback_data: SpamAndIncrementUserBonusForSpamVacancyCallback,
-    session: AsyncSession,
     bot: Bot,
 ) -> None:
     async with TaskGroup() as tg:
         tg.create_task(
-            delete_all_messages_with_vacancy_from_users(callback_data, session)
+            _delete_all_messages_with_vacancy_from_users(callback_data)
         )
-        tg.create_task(_add_vacancy_to_blacklist(callback, callback_data, session))
+        tg.create_task(_add_vacancy_to_blacklist(callback, callback_data))
         user_task = tg.create_task(
-            increment_bonus_and_notify_user(callback_data, session, bot)
+            _increment_bonus_and_notify_user(callback_data, bot)
         )
 
     await callback.message.edit_text(
         text=await _generate_text(callback, user_task.result()),
         reply_markup=callback.message.reply_markup,
     )
+
+
+@with_session
+async def _increment_bonus_and_notify_user(
+    callback_data: SpamAndIncrementUserBonusForSpamVacancyCallback,
+    bot: Bot,
+    session: AsyncSession | None = None,
+):
+    await increment_bonus_and_notify_user(callback_data, session, bot)
+
+@with_session
+async def _delete_all_messages_with_vacancy_from_users(
+    callback_data: SpamAndIncrementUserBonusForSpamVacancyCallback,
+    session: AsyncSession | None = None
+):
+    await delete_all_messages_with_vacancy_from_users(
+        callback_data, session
+    )
+
+@with_session
+async def _add_vacancy_to_blacklist(
+    callback: CallbackQuery,
+    callback_data: SpamAndIncrementUserBonusForSpamVacancyCallback,
+    session: AsyncSession | None = None,
+):
+    try:
+        await add_vacancy_to_blacklist(callback_data.vacancy_id, session)
+    except ValueError as e:
+
+        await callback.message.answer(f"Ошибка: {e}")
 
 
 async def _generate_text(callback: CallbackQuery, user: User) -> str:
@@ -43,15 +72,3 @@ async def _generate_text(callback: CallbackQuery, user: User) -> str:
     text = await jinja_render("spam/update_spam_message_in_admin_group", {"text": text})
 
     return text
-
-
-async def _add_vacancy_to_blacklist(
-    callback: CallbackQuery,
-    callback_data: SpamAndIncrementUserBonusForSpamVacancyCallback,
-    session: AsyncSession,
-):
-    try:
-        await add_vacancy_to_blacklist(callback_data.vacancy_id, session)
-    except ValueError as e:
-
-        await callback.message.answer(f"Ошибка: {e}")

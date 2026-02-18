@@ -30,7 +30,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 router = Router(name="Обработчик логики связанной со спамом")
 router.message.filter(
-    (F.chat.type == ChatType.PRIVATE) | (F.chat.id == settings.admin_chat_id)
+    (F.chat.id == settings.admin_chat_id)
 )
 
 
@@ -101,16 +101,14 @@ async def reject_spam_vacancy(): ...
 
 
 @router.callback_query(SpamAndIncrementUserBonusForSpamVacancyCallback.filter())
-@with_session
 async def spam_and_increment_user_bonus_for_spam_vacancy(
     callback: CallbackQuery,
     callback_data: SpamAndIncrementUserBonusForSpamVacancyCallback,
-    session: AsyncSession,
     bot: Bot,
 ):
     await callback.answer()
     await add_to_spam_and_increment_user_bonus_then_update_message(
-        callback, callback_data, session, bot
+        callback, callback_data, bot
     )
 
 
