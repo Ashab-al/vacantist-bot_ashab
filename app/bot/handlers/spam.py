@@ -27,6 +27,8 @@ from services.tg.vacancy.send_spam_vacancy_in_admin_group import (
     send_spam_vacancy_in_admin_group,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from services.tg.spam.delete_all_messages_with_vacancy_from_users_and_update_message import delete_all_messages_with_vacancy_from_users_and_update_message
+
 
 router = Router(name="Обработчик логики связанной со спамом")
 router.message.filter(
@@ -118,6 +120,6 @@ async def not_spam_but_delete_messages_for_spam_vacancy(
     callback: CallbackQuery,
     callback_data: NotSpamButDeleteMessagesForSpamVacancyCallback,
     session: AsyncSession,
-    bot: Bot,
 ):
-    await delete_all_messages_with_vacancy_from_users(callback_data, session)
+    await callback.answer()
+    await delete_all_messages_with_vacancy_from_users_and_update_message(callback, callback_data, session)

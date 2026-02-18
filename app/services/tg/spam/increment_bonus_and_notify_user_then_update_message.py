@@ -2,14 +2,10 @@ from aiogram import Bot
 from aiogram.types import CallbackQuery
 from bot.filters.callback.spam_vacancy_callback import (
     IncrementUserBonusForSpamVacancyCallback,
-    SpamAndIncrementUserBonusForSpamVacancyCallback,
 )
 from models import User
 from services.tg.spam.increment_user_bonus import increment_bonus_and_notify_user
 from services.tg.spam.update_spam_message import update_spam_message
-from services.tg.user.increment_bonus_by_user_platform_id import (
-    increment_bonus_by_user_platform_id,
-)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -20,6 +16,6 @@ async def increment_bonus_and_notify_user_then_update_message(
     bot: Bot,
 ) -> None:
     user: User = await increment_bonus_and_notify_user(
-        callback, callback_data, session, bot
+        callback_data, session, bot
     )
     await update_spam_message(callback, "spam/increment_user_bonus", {"user": user})
