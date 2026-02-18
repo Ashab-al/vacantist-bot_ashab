@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import random
-from asyncio import TaskGroup
 
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError
@@ -50,10 +49,6 @@ async def sender_vacancy(vacancy_id: int) -> None:
           на `BOT_BLOCKED`.
         - Для остановки воркера в очередь нужно положить `None`.
     """
-    await admin_alert_mailing_vacancies(
-        bot, f"Запущена рассылка вакансии с ID: {vacancy_id}"
-    )
-
     logging.info("Запущена рассылка вакансии с ID: %s", vacancy_id)
 
     async with get_async_session_for_bot() as db:
@@ -76,7 +71,7 @@ async def sender_vacancy(vacancy_id: int) -> None:
 
         await admin_alert_mailing_vacancies(
             bot,
-            f"Рассылка вакансии '{vacancy.title}' для {len(users)} пользователей.",
+            f"Рассылка вакансии с ID: {vacancy_id} \n'{vacancy.title}' для {len(users)} пользователей.",
         )
         # Отправка вакансии всем подписанным пользователям.
         tasks = [
@@ -114,7 +109,6 @@ async def send_vacancy_to_user(
                 message_id=result.message_id,
             )
         )
-        logging.info(str(result))
     except TelegramForbiddenError as e:
         logging.error(str(e))
         await admin_alert_mailing_errors(

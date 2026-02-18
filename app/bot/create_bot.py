@@ -32,7 +32,7 @@ else:
 
 bot: Bot = Bot(
     token=settings.bot_token,
-    default=DefaultBotProperties(ParseMode.HTML),
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     session=session,
 )
 """Экземпляр Telegram-бота с предустановленными свойствами."""
