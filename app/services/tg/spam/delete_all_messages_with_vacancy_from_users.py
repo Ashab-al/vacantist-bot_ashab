@@ -13,11 +13,14 @@ from query_objects.sent_message.find_sent_messages_by_vacancy_id import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from config import i18n
 from lib.tg.common import jinja_render
+from database import get_async_session_for_bot
+
+
+background_tasks: set = set()
 
 async def delete_all_messages_with_vacancy_from_users(
     callback_data: SpamVacancyCallbackForAdmin,
-    session: AsyncSession
-):
+) -> None:
     """
     Удаляет все сообщения с указанной вакансией из чатов пользователей и очищает записи из базы данных.
 
@@ -29,19 +32,15 @@ async def delete_all_messages_with_vacancy_from_users(
     :param session: Асинхронная сессия SQLAlchemy для работы с базой данных.
     :raises ValueError: Если сообщения с указанной вакансией не найдены.
     """
-    sent_messages: list[tuple[SentMessage, int]] | None = (
-        await find_sent_messages_by_vacancy_id(callback_data.vacancy_id, session)
-    )
 
-    if sent_messages is None:
-        raise ValueError("Сообщения не найдены")
-    await _delete_all_messages(sent_messages, session)
-    await session.commit()
-    logging.info("Удаление сообщений завершено и удалены данные из базы")
+    task = asyncio.create_task(_find_and_delete_all_messages(callback_data))
+    background_tasks.add(task)
+    task.add_done_callback(background_tasks.discard)
 
+    return None
 
-async def _delete_all_messages(
-    sent_messages: list[tuple[SentMessage, int]], session: AsyncSession
+async def _find_and_delete_all_messages(
+    callback_data: SpamVacancyCallbackForAdmin
 ):
     """
     Асинхронно удаляет все указанные сообщения параллельно с использованием TaskGroup.
@@ -52,9 +51,19 @@ async def _delete_all_messages(
     :param sent_messages: Список кортежей, каждый содержит объект SentMessage и chat_id пользователя.
     :param session: Асинхронная сессия SQLAlchemy для удаления записей из БД.
     """
-    async with TaskGroup() as tg:
+    seconds = 0.2
+    async with get_async_session_for_bot() as session:
+        sent_messages: list[tuple[SentMessage, int]] | None = (
+            await find_sent_messages_by_vacancy_id(callback_data.vacancy_id, session)
+        )
+        if sent_messages is None:
+            raise ValueError("Сообщения не найдены")
+
         for sent_message, chat_id in sent_messages:
-            tg.create_task(_delete_message(sent_message, chat_id, session))
+            await _delete_message(sent_message, chat_id, session)
+            await asyncio.sleep(seconds)
+
+        await session.commit()
     logging.info("Все сообщения удалены")
 
 
@@ -77,9 +86,6 @@ async def _delete_message(
         "Удаление сообщения у %s, id сообщения: %s",
         chat_id,
         sent_message.message_id,
-    )
-    await asyncio.sleep(
-        randint(settings.min_delay_seconds, settings.max_delay_seconds)
     )
     try:
         res = await bot.delete_message(

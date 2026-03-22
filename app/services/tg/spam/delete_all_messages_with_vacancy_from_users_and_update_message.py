@@ -24,7 +24,7 @@ async def delete_all_messages_with_vacancy_from_users_and_update_message(
     :param callback_data: Данные коллбэка с ID вакансии, которую нужно обработать.
     :param session: Асинхронная сессия SQLAlchemy для выполнения операций в БД.
     """
-    await delete_all_messages_with_vacancy_from_users(callback_data, session)
+    await delete_all_messages_with_vacancy_from_users(callback_data)
     await update_spam_message(
         callback, "spam/update_spam_message_delete_all_spam_messages"
     )
