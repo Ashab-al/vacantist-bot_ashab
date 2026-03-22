@@ -27,7 +27,7 @@ async def delete_all_messages_and_confirm_add_vacancy_to_blacklist(
     :param callback_data: Данные коллбэка с информацией о вакансии (например, её ID).
     :param session: Асинхронная сессия SQLAlchemy для работы с базой данных.
     """
-    await delete_all_messages_with_vacancy_from_users(callback_data, session)
+    await delete_all_messages_with_vacancy_from_users(callback_data)
     await admin_confirm_add_vacancy_to_blacklist_then_update_message(
         callback, callback_data, session
     )
