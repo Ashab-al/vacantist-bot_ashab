@@ -34,17 +34,14 @@ async def add_to_spam_and_increment_user_bonus_then_update_message(
     :param callback_data: Данные коллбэка, содержащие ID вакансии и пользователя.
     :param bot: Экземпляр бота Aiogram для отправки уведомлений.
     """
-    async with TaskGroup() as tg:
-        tg.create_task(
-            _delete_all_messages_with_vacancy_from_users(callback_data)
-        )
-        tg.create_task(_add_vacancy_to_blacklist(callback, callback_data))
-        user_task = tg.create_task(
-            _increment_bonus_and_notify_user(callback_data, bot)
-        )
+    await delete_all_messages_with_vacancy_from_users(
+        callback_data
+    )
+    await _add_vacancy_to_blacklist(callback, callback_data)
+    user_task = await _increment_bonus_and_notify_user(callback_data, bot)
 
     await callback.message.edit_text(
-        text=await _generate_text(callback, user_task.result()),
+        text=await _generate_text(callback, user_task),
         reply_markup=callback.message.reply_markup,
     )
 
@@ -68,23 +65,6 @@ async def _increment_bonus_and_notify_user(
     """
     return await increment_bonus_and_notify_user(callback_data, kwargs["session"], bot)
 
-@with_session
-async def _delete_all_messages_with_vacancy_from_users(
-    callback_data: SpamAndIncrementUserBonusForSpamVacancyCallback,
-    **kwargs
-):
-    """
-    Удаляет все сообщения с указанной вакансией из переписок пользователей.
-
-    Выполняется в рамках сессии базы данных.
-    Удаление происходит асинхронно через соответствующий сервис.
-
-    :param callback_data: Данные коллбэка с ID вакансии.
-    :param kwargs: Дополнительные аргументы, включая сессию БД.
-    """
-    await delete_all_messages_with_vacancy_from_users(
-        callback_data, kwargs["session"]
-    )
 
 @with_session
 async def _add_vacancy_to_blacklist(
